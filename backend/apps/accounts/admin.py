@@ -1,9 +1,10 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django import forms
 
 from .models import Invoice, User, UserProfile
+from .stats_reset import reset_all_users_stats, reset_user_stats
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -60,6 +61,7 @@ class UserAdmin(BaseUserAdmin):
     form = CustomUserChangeForm
     add_form = CustomUserCreationForm
     inlines = [UserProfileInline]
+    actions = ["reset_stats_selected", "reset_stats_all_users"]
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         ("Informações", {"fields": ("name",)}),
@@ -93,6 +95,31 @@ class UserAdmin(BaseUserAdmin):
         if obj is None:
             return []
         return super().get_inline_instances(request, obj)
+
+    @admin.action(description="Resetar estatísticas dos usuários selecionados")
+    def reset_stats_selected(self, request, queryset):
+        total = 0
+        for user in queryset:
+            reset_user_stats(user)
+            total += 1
+        self.message_user(
+            request,
+            f"Estatísticas resetadas para {total} usuário(s).",
+            messages.SUCCESS,
+        )
+
+    @admin.action(description="⚠ Resetar estatísticas de TODOS os usuários (global)")
+    def reset_stats_all_users(self, request, queryset):
+        # Ação global — ignora seleção e zera a plataforma
+        result = reset_all_users_stats()
+        self.message_user(
+            request,
+            (
+                f"Reset global: {result['usuarios']} usuários, "
+                f"{result['tentativas']} tentativas, {result['dominios']} domínios."
+            ),
+            messages.WARNING,
+        )
 
 
 @admin.register(UserProfile)

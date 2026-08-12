@@ -25,12 +25,30 @@ export function truncate(text: string, max = 120) {
 }
 
 const PT_UNGLUE =
-  /([a-záéíóúâêôãõç])(apenas|quando|quanto|sobre|entre|pelas|pelos|antes|desde|também|independentemente|independente|pessoais|privadas|públicas|empresas|anonimizados|tratamento|controlador|operador|aplica|aplicam|disposições|âmbito|aplicação|alternativa|correta|mediante|exceto|inclusive|qualquer|quaisquer|pessoa|natural|jurídica|território|brasileiro|exterior|coleta|armazenamento|assinale|proteção|informação|informações|possibilidade|possibilita)(?=[a-záéíóúâêôãõç]|$)/gi
+  /([a-záéíóúâêôãõç])(apenas|quando|quanto|sobre|entre|pelas|pelos|antes|desde|também|independentemente|independente|pessoais|privadas|públicas|empresas|anonimizados|tratamento|controlador|operador|aplica|aplicam|disposições|âmbito|aplicação|alternativa|correta|mediante|exceto|inclusive|qualquer|quaisquer|pessoa|natural|jurídica|território|brasileiro|exterior|coleta|armazenamento|assinale|proteção|informação|informações|possibilidade|possibilita|gráfica|acentuação)(?=[a-záéíóúâêôãõç]|$)/gi
+
+const PHRASE_FIXES: [RegExp, string][] = [
+  [/ACENTUA[CÇ][AÃ]OGR[AÁ]FICA/gi, 'Acentuação Gráfica'],
+  [/ENDERE[CÇ]AMENTOIPEROTEAMENTO/gi, 'Endereçamento IP e Roteamento'],
+  [/EQUIPAMENTOSDEREDE:?SWITCHESE?/gi, 'Equipamentos de Rede: Switches e'],
+  [/GOVERNAN[CÇ]ADETI:?ITILV3\/?V4ECOBIT/gi, 'Governança de TI: ITIL v3/v4 e COBIT'],
+  [/NORMASNBRISO27001ENBRISO27002/gi, 'Normas NBR ISO 27001 e NBR ISO 27002'],
+  [/TecnologiadaInforma[cç][aã]o/gi, 'Tecnologia da Informação'],
+  [/L[ií]nguaPortuguesa/gi, 'Língua Portuguesa'],
+  [/Desenvolvimentode\s*Sistemas/gi, 'Desenvolvimento de Sistemas'],
+  [/Linguagensde/gi, 'Linguagens de'],
+]
 
 /** Corrige texto colado de PDF e evita estouro no mobile. */
 export function formatStudyText(text: string | null | undefined) {
   if (!text) return ''
   let out = text.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim()
+  for (const [pat, repl] of PHRASE_FIXES) {
+    out = out.replace(pat, repl)
+  }
+  out = out.replace(/(\d+\.)([A-Za-zÀ-ú])/g, '$1 $2')
+  out = out.replace(/(\d+\.\d+\.)([A-Za-zÀ-ú])/g, '$1 $2')
+  out = out.replace(/([a-záéíóúãõâêôç])·([A-ZÁÉÍÓÚÃÕÂÊÔÇ])/g, '$1 · $2')
   out = out.replace(/([a-záéíóúâêôãõç])([A-ZÁÉÍÓÚÂÊÔÃÕÇ])/g, '$1 $2')
   for (let i = 0; i < 4; i++) {
     const next = out.replace(PT_UNGLUE, '$1 $2')

@@ -1,15 +1,22 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Bookmark, CheckCircle2, Flag, Sparkles, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   useAnswerQuestion,
+  useNextQuestion,
   useQuestion,
   useToggleFavorite,
   useToggleReview,
 } from '@/hooks/use-api'
-import { cn, formatStudyText, getErrorMessage, difficultyBadgeVariant, difficultyLabel } from '@/lib/utils'
-import type { AnswerResult } from '@/lib/types'
+import {
+  cn,
+  formatStudyText,
+  getErrorMessage,
+  difficultyBadgeVariant,
+  difficultyLabel,
+} from '@/lib/utils'
+import type { AnswerResult, QuestionFilters } from '@/lib/types'
 import { ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -18,20 +25,41 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ExplanationContent } from '@/components/questions/ExplanationContent'
 import { QuestionFigure } from '@/components/questions/QuestionFigure'
 
+type SolveLocationState = {
+  filters?: QuestionFilters
+}
+
+function cleanFilters(filters: QuestionFilters | undefined) {
+  if (!filters) {
+    return { status: 'nao_acertadas' as const }
+  }
+  const out: Record<string, string> = {}
+  for (const [k, v] of Object.entries(filters)) {
+    if (v != null && String(v).trim() !== '') out[k] = String(v)
+  }
+  if (!out.status) out.status = 'nao_acertadas'
+  return out
+}
+
 export function QuestionSolvePage() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
+  const filters = cleanFilters((location.state as SolveLocationState | null)?.filters)
   const { data, isLoading, isError, refetch } = useQuestion(id)
   const answer = useAnswerQuestion()
+  const nextQuestion = useNextQuestion()
   const favorite = useToggleFavorite()
   const review = useToggleReview()
   const [selected, setSelected] = useState<number | null>(null)
   const [result, setResult] = useState<AnswerResult | null>(null)
-  const [startedAt] = useState(() => Date.now())
+  const [startedAt, setStartedAt] = useState(() => Date.now())
+  const [goingNext, setGoingNext] = useState(false)
 
   useEffect(() => {
     setSelected(null)
     setResult(null)
+    setStartedAt(Date.now())
     window.scrollTo(0, 0)
   }, [id])
 
@@ -39,6 +67,30 @@ export function QuestionSolvePage() {
     () => result?.alternativas || data?.alternativas || [],
     [result, data],
   )
+
+  const goNext = async (preferredId?: number | null) => {
+    setGoingNext(true)
+    try {
+      let nextId = preferredId
+      if (!nextId && data) {
+        const res = await nextQuestion.mutateAsync({
+          ...filters,
+          after: data.id,
+        })
+        nextId = res.id
+      }
+      if (!nextId) {
+        toast.message('Não há próxima questão com esses filtros.')
+        navigate('/questoes')
+        return
+      }
+      navigate(`/questoes/${nextId}`, { state: { filters } })
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Não foi possível carregar a próxima questão.'))
+    } finally {
+      setGoingNext(false)
+    }
+  }
 
   const onAnswer = async () => {
     if (!data || selected == null) {
@@ -50,6 +102,7 @@ export function QuestionSolvePage() {
         id: data.id,
         alternativa_id: selected,
         tempo_segundos: Math.round((Date.now() - startedAt) / 1000),
+        filters,
       })
       setResult(res)
       toast[res.correta ? 'success' : 'error'](
@@ -77,7 +130,6 @@ export function QuestionSolvePage() {
 
   return (
     <div className="animate-fade-up mx-auto w-full min-w-0 max-w-3xl">
-      {/* Cabeçalho compacto no mobile — evita cortar o enunciado */}
       <div className="mb-4 space-y-2">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
@@ -89,6 +141,7 @@ export function QuestionSolvePage() {
             </h1>
             <p className="mt-0.5 truncate text-sm text-muted-foreground">
               {formatStudyText(data.assunto_nome || 'Assunto')}
+              {data.banca ? ` · ${data.banca}` : ''}
             </p>
           </div>
           <div className="flex shrink-0 gap-1.5">
@@ -150,6 +203,7 @@ export function QuestionSolvePage() {
             <Badge variant={difficultyBadgeVariant(data.dificuldade)}>
               {difficultyLabel(data.dificuldade)}
             </Badge>
+            {data.banca ? <Badge variant="outline">{data.banca}</Badge> : null}
             {data.origem === 'ai_generated' ? (
               <Badge variant="secondary">
                 <Sparkles className="mr-1 h-3 w-3" aria-hidden /> IA
@@ -286,13 +340,22 @@ export function QuestionSolvePage() {
                 <p className="break-words text-xs font-medium text-muted-foreground [overflow-wrap:anywhere]">
                   Fonte: {result.fonte.documento || '—'}
                   {result.fonte.pagina ? ` · p. ${result.fonte.pagina}` : ''}
+                  {result.fonte.banca ? ` · ${result.fonte.banca}` : ''}
                   {result.fonte.assunto ? ` · ${formatStudyText(result.fonte.assunto)}` : ''}
                 </p>
               ) : null}
 
               <div className="flex flex-wrap gap-2">
-                <Button onClick={() => navigate('/questoes')}>Próximas questões</Button>
-                <Button variant="outline" onClick={() => navigate('/estudar')}>
+                <Button
+                  onClick={() => goNext(result.proxima_id)}
+                  disabled={goingNext || nextQuestion.isPending}
+                >
+                  {goingNext ? 'Carregando…' : 'Próxima questão'}
+                </Button>
+                <Button variant="outline" onClick={() => navigate('/questoes')}>
+                  Banco de questões
+                </Button>
+                <Button variant="ghost" onClick={() => navigate('/estudar')}>
                   Nova sessão
                 </Button>
               </div>

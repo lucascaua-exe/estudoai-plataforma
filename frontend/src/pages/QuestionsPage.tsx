@@ -1,8 +1,20 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Bookmark, ChevronLeft, ChevronRight, Flag } from 'lucide-react'
-import { useCatalog, useQuestions, useToggleFavorite, useToggleReview } from '@/hooks/use-api'
-import { truncate, getErrorMessage, difficultyBadgeVariant, difficultyLabel } from '@/lib/utils'
+import {
+  useCatalog,
+  useQuestionBancas,
+  useQuestions,
+  useToggleFavorite,
+  useToggleReview,
+} from '@/hooks/use-api'
+import {
+  truncate,
+  getErrorMessage,
+  difficultyBadgeVariant,
+  difficultyLabel,
+  formatStudyText,
+} from '@/lib/utils'
 import { PageHeader, ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -13,52 +25,100 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
 import { toast } from 'sonner'
 
+function buildSolveState(params: URLSearchParams) {
+  return {
+    filters: {
+      disciplina: params.get('disciplina') || undefined,
+      assunto: params.get('assunto') || undefined,
+      assuntos: params.get('assuntos') || undefined,
+      excluir_assuntos: params.get('excluir_assuntos') || undefined,
+      dificuldade: params.get('dificuldade') || undefined,
+      banca: params.get('banca') || undefined,
+      status: params.get('status') || 'nao_acertadas',
+    },
+  }
+}
+
 export function QuestionsPage() {
   const [params, setParams] = useSearchParams()
   const page = Number(params.get('page') || 1)
   const disciplina = params.get('disciplina') || ''
   const assunto = params.get('assunto') || ''
+  const assuntos = params.get('assuntos') || ''
+  const excluirAssuntos = params.get('excluir_assuntos') || ''
   const dificuldade = params.get('dificuldade') || ''
-  const status = params.get('status') || ''
+  const banca = params.get('banca') || ''
+  // Default: esconde questões já acertadas
+  const status = params.get('status') ?? 'nao_acertadas'
 
   const catalog = useCatalog()
+  const bancas = useQuestionBancas()
   const query = useQuestions({
     page,
     disciplina: disciplina || undefined,
     assunto: assunto || undefined,
+    assuntos: assuntos || undefined,
+    excluir_assuntos: excluirAssuntos || undefined,
     dificuldade: dificuldade || undefined,
-    status: status || undefined,
+    banca: banca || undefined,
+    status: status && status !== 'todas' ? status : undefined,
+    excluir_acertadas: status === 'todas' ? 'false' : undefined,
   })
   const favorite = useToggleFavorite()
   const review = useToggleReview()
 
-  const assuntos = useMemo(() => {
+  const assuntosList = useMemo(() => {
     const d = catalog.data?.find((x) => String(x.id) === disciplina)
     return d?.assuntos ?? []
   }, [catalog.data, disciplina])
+
+  const allAssuntos = useMemo(() => {
+    if (!catalog.data) return []
+    return catalog.data.flatMap((d) =>
+      d.assuntos.map((a) => ({ ...a, disciplinaNome: d.nome, disciplinaId: d.id })),
+    )
+  }, [catalog.data])
+
+  const excludedSet = useMemo(
+    () => new Set(excluirAssuntos.split(',').filter(Boolean)),
+    [excluirAssuntos],
+  )
 
   const update = (key: string, value: string) => {
     const next = new URLSearchParams(params)
     if (value) next.set(key, value)
     else next.delete(key)
     if (key !== 'page') next.delete('page')
-    if (key === 'disciplina') next.delete('assunto')
+    if (key === 'disciplina') {
+      next.delete('assunto')
+      next.delete('assuntos')
+    }
     setParams(next)
   }
+
+  const toggleExcluirAssunto = (id: string) => {
+    const set = new Set(excludedSet)
+    if (set.has(id)) set.delete(id)
+    else set.add(id)
+    update('excluir_assuntos', Array.from(set).join(','))
+  }
+
+  const solveHref = (id: number) => ({
+    pathname: `/questoes/${id}`,
+    state: buildSolveState(params),
+  })
 
   return (
     <div>
       <PageHeader
         title="Banco de Questões"
-        description="Filtre, pratique e revise o conteúdo do edital."
+        description="Filtre por banca e assuntos, pratique sem repetir o que você já acertou."
       />
 
       <Card className="mb-4">
-        <CardContent className="grid gap-3 pt-5 sm:grid-cols-2 lg:grid-cols-4">
+        <CardContent className="grid gap-3 pt-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           <div className="space-y-1.5">
-            <Label htmlFor="filtro-disciplina" className="sr-only">
-              Disciplina
-            </Label>
+            <Label htmlFor="filtro-disciplina">Disciplina</Label>
             <Select
               id="filtro-disciplina"
               value={disciplina}
@@ -68,15 +128,13 @@ export function QuestionsPage() {
               <option value="">Todas as disciplinas</option>
               {catalog.data?.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {d.nome}
+                  {formatStudyText(d.nome)}
                 </option>
               ))}
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="filtro-assunto" className="sr-only">
-              Assunto
-            </Label>
+            <Label htmlFor="filtro-assunto">Assunto (foco)</Label>
             <Select
               id="filtro-assunto"
               value={assunto}
@@ -85,17 +143,31 @@ export function QuestionsPage() {
               aria-label="Filtrar por assunto"
             >
               <option value="">Todos os assuntos</option>
-              {assuntos.map((a) => (
+              {assuntosList.map((a) => (
                 <option key={a.id} value={a.id}>
-                  {a.nome}
+                  {formatStudyText(a.nome)}
                 </option>
               ))}
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="filtro-dificuldade" className="sr-only">
-              Dificuldade
-            </Label>
+            <Label htmlFor="filtro-banca">Banca</Label>
+            <Select
+              id="filtro-banca"
+              value={banca}
+              onChange={(e) => update('banca', e.target.value)}
+              aria-label="Filtrar por banca"
+            >
+              <option value="">Todas as bancas</option>
+              {(bancas.data || []).map((b) => (
+                <option key={b} value={b}>
+                  {b}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-dificuldade">Dificuldade</Label>
             <Select
               id="filtro-dificuldade"
               value={dificuldade}
@@ -109,24 +181,70 @@ export function QuestionsPage() {
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="filtro-status" className="sr-only">
-              Status
-            </Label>
+            <Label htmlFor="filtro-status">Status</Label>
             <Select
               id="filtro-status"
               value={status}
               onChange={(e) => update('status', e.target.value)}
               aria-label="Filtrar por status"
             >
-              <option value="">Todos os status</option>
+              <option value="nao_acertadas">Pendentes (sem acerto)</option>
               <option value="nao_respondidas">Não respondidas</option>
-              <option value="respondidas">Respondidas</option>
-              <option value="erradas">Erradas</option>
+              <option value="erradas">Só erradas</option>
+              <option value="acertadas">Já acertadas</option>
+              <option value="respondidas">Todas respondidas</option>
               <option value="favoritas">Favoritas</option>
               <option value="revisao">Marcadas para revisão</option>
+              <option value="todas">Todas (inclui acertos)</option>
             </Select>
           </div>
         </CardContent>
+
+        {disciplina ? (
+          <CardContent className="border-t border-border/60 pt-4">
+            <Label className="mb-2 block">Assuntos que NÃO quero praticar</Label>
+            <p className="mb-3 text-xs text-muted-foreground">
+              Marque para excluir do banco nesta sessão. Assim você foca só no que importa.
+            </p>
+            <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
+              {assuntosList.map((a) => {
+                const id = String(a.id)
+                const excluded = excludedSet.has(id)
+                return (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => toggleExcluirAssunto(id)}
+                    className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                      excluded
+                        ? 'border-destructive/40 bg-destructive/10 text-destructive line-through'
+                        : 'border-border bg-muted/40 text-foreground hover:bg-muted'
+                    }`}
+                    aria-pressed={excluded}
+                  >
+                    {formatStudyText(a.nome)}
+                  </button>
+                )
+              })}
+            </div>
+            {excludedSet.size > 0 ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-2"
+                onClick={() => update('excluir_assuntos', '')}
+              >
+                Limpar exclusões ({excludedSet.size})
+              </Button>
+            ) : null}
+          </CardContent>
+        ) : allAssuntos.length > 0 ? (
+          <CardContent className="border-t border-border/60 pt-4">
+            <p className="text-xs text-muted-foreground">
+              Selecione uma disciplina para excluir assuntos específicos da prática.
+            </p>
+          </CardContent>
+        ) : null}
       </Card>
 
       {query.isLoading ? (
@@ -153,10 +271,13 @@ export function QuestionsPage() {
                 <CardContent className="flex flex-col gap-3 pt-5 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="mb-2 flex flex-wrap gap-2">
-                      <Badge variant="secondary">{q.disciplina_nome || 'Disciplina'}</Badge>
+                      <Badge variant="secondary">
+                        {formatStudyText(q.disciplina_nome || 'Disciplina')}
+                      </Badge>
                       <Badge variant={difficultyBadgeVariant(q.dificuldade)}>
                         {difficultyLabel(q.dificuldade)}
                       </Badge>
+                      {q.banca ? <Badge variant="outline">{q.banca}</Badge> : null}
                       {q.respondida ? (
                         <Badge variant={q.acertou ? 'success' : 'destructive'}>
                           {q.acertou ? 'Acertou' : 'Errou'}
@@ -166,13 +287,13 @@ export function QuestionsPage() {
                       )}
                     </div>
                     <Link
-                      to={`/questoes/${q.id}`}
+                      to={solveHref(q.id)}
                       className="font-medium leading-snug text-foreground hover:text-primary"
                     >
-                      {truncate(q.enunciado, 220)}
+                      {truncate(formatStudyText(q.enunciado), 220)}
                     </Link>
                     <p className="mt-1.5 text-xs text-muted-foreground">
-                      {q.assunto_nome}
+                      {formatStudyText(q.assunto_nome || '')}
                       {q.documento_nome ? ` · ${q.documento_nome}` : ''}
                     </p>
                   </div>
@@ -221,7 +342,7 @@ export function QuestionsPage() {
                         aria-hidden
                       />
                     </Button>
-                    <Link to={`/questoes/${q.id}`}>
+                    <Link to={solveHref(q.id)}>
                       <Button size="sm">Resolver</Button>
                     </Link>
                   </div>

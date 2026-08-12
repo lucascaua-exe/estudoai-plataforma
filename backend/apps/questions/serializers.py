@@ -46,6 +46,7 @@ class QuestaoListSerializer(serializers.ModelSerializer):
             "enunciado",
             "dificuldade",
             "origem",
+            "banca",
             "pagina",
             "disciplina",
             "disciplina_nome",
@@ -172,6 +173,7 @@ class QuestaoDetailSerializer(QuestaoListSerializer):
             "disciplina": obj.disciplina.nome if obj.disciplina else None,
             "assunto": obj.assunto.nome if obj.assunto else None,
             "origem": obj.origem,
+            "banca": obj.banca or None,
         }
 
 

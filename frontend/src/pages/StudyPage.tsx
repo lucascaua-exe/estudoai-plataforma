@@ -30,7 +30,7 @@ export function StudyPage() {
     disciplina: disciplina || undefined,
     assunto: assunto || undefined,
     dificuldade: dificuldade || undefined,
-    status: 'nao_respondidas',
+    status: 'nao_acertadas',
     page: 1,
   })
 
@@ -43,7 +43,7 @@ export function StudyPage() {
             disciplina,
             assunto,
             dificuldade,
-            status: 'nao_respondidas',
+            status: 'nao_acertadas',
           },
         },
       })
@@ -54,6 +54,7 @@ export function StudyPage() {
     if (disciplina) params.set('disciplina', disciplina)
     if (assunto) params.set('assunto', assunto)
     if (dificuldade) params.set('dificuldade', dificuldade)
+    params.set('status', 'nao_acertadas')
     navigate(`/questoes?${params.toString()}`)
   }
 

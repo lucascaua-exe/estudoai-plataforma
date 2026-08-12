@@ -47,6 +47,28 @@ export function useQuestions(params: Record<string, string | number | undefined>
   })
 }
 
+export function useQuestionBancas() {
+  return useQuery({
+    queryKey: ['question-bancas'],
+    queryFn: async () => (await api.get<string[]>('/questions/bancas/')).data,
+  })
+}
+
+export function useNextQuestion() {
+  return useMutation({
+    mutationFn: async (params: Record<string, string | number | undefined>) => {
+      const clean = Object.fromEntries(
+        Object.entries(params).filter(([, v]) => v !== undefined && v !== ''),
+      )
+      return (
+        await api.get<{ id: number | null; detail?: string }>('/questions/next/', {
+          params: clean,
+        })
+      ).data
+    },
+  })
+}
+
 export function useQuestion(id: string | number | undefined) {
   return useQuery({
     queryKey: ['question', id],
@@ -63,17 +85,20 @@ export function useAnswerQuestion() {
       alternativa_id,
       letra,
       tempo_segundos,
+      filters,
     }: {
       id: number
       alternativa_id?: number
       letra?: string
       tempo_segundos?: number
+      filters?: Record<string, string | number | string[] | undefined>
     }) =>
       (
         await api.post<AnswerResult>(`/questions/${id}/answer/`, {
           alternativa_id,
           letra,
           tempo_segundos,
+          filters,
         })
       ).data,
     onSuccess: () => {

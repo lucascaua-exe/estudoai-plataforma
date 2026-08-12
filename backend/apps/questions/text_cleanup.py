@@ -60,6 +60,17 @@ _PHRASE_FIXES = [
     (re.compile(r"WindowsServere", re.I), "Windows Server e"),
     (re.compile(r"TecnologiadaInforma[cç][aã]o", re.I), "Tecnologia da Informação"),
     (re.compile(r"LinguaPortuguesa|L[ií]nguaPortuguesa", re.I), "Língua Portuguesa"),
+    (re.compile(r"ACENTUA[CÇ][AÃ]OGR[AÁ]FICA", re.I), "Acentuação Gráfica"),
+    (re.compile(r"Acentua[cç][aã]oGr[aá]fica", re.I), "Acentuação Gráfica"),
+    (re.compile(r"ENDERE[CÇ]AMENTOIPEROTEAMENTO", re.I), "Endereçamento IP e Roteamento"),
+    (re.compile(r"Endere[cç]amentoIPeRoteamento", re.I), "Endereçamento IP e Roteamento"),
+    (re.compile(r"EQUIPAMENTOSDEREDE:?SWITCHESE?", re.I), "Equipamentos de Rede: Switches e"),
+    (re.compile(r"GOVERNAN[CÇ]ADETI:?ITILV3/?V4ECOBIT", re.I), "Governança de TI: ITIL v3/v4 e COBIT"),
+    (re.compile(r"NORMASNBRISO27001ENBRISO27002", re.I), "Normas NBR ISO 27001 e NBR ISO 27002"),
+    (re.compile(r"Desenvolvimentode\s*Sistemas", re.I), "Desenvolvimento de Sistemas"),
+    (re.compile(r"Linguagensde", re.I), "Linguagens de"),
+    (re.compile(r"Linguagem\s*Sqle\s*Sistemas", re.I), "Linguagem SQL e Sistemas"),
+    (re.compile(r"Gerenciadoresd[eo]", re.I), "Gerenciadores de"),
     (re.compile(r"GerenciamentodeCache", re.I), "Gerenciamento de Cache"),
     (re.compile(r"Reposit[oó]rioseChaves", re.I), "Repositórios e Chaves"),
     (re.compile(r"ComandosdeInforma[cç][aã]o", re.I), "Comandos de Informação"),
@@ -89,6 +100,9 @@ _PHRASE_FIXES = [
     (re.compile(r"Operador[eé]", re.I), "Operador é"),
     (re.compile(r"[eé]definido", re.I), "é definido"),
     (re.compile(r"LGPD,\s*", re.I), "LGPD, "),
+    # Espaços após numeração de sumário colada: "3.Língua" / "2.4.Desenvolvimento"
+    (re.compile(r"(\d+\.)([A-Za-zÀ-ú])"), r"\1 \2"),
+    (re.compile(r"(\d+\.\d+\.)([A-Za-zÀ-ú])"), r"\1 \2"),
 ]
 
 _BAD_SPACE_RE = re.compile(r"[\u00a0\u1680\u2000-\u200a\u202f\u205f\u3000]")
@@ -229,6 +243,10 @@ def _fix_glued_words(text: str) -> str:
     for pat, repl in _PHRASE_FIXES:
         text = pat.sub(repl, text)
     text = _CAMEL_RE.sub(r"\1 \2", text)
+    # Separar bloco MAIÚSCULO colado de palavra seguinte: "GRÁFICA 3." already ok;
+    # "Portuguesa·ACENTUAÇÃO" → "Portuguesa · ACENTUAÇÃO"
+    text = re.sub(r"([a-záéíóúãõâêôç])·([A-ZÁÉÍÓÚÃÕÂÊÔÇ])", r"\1 · \2", text)
+    text = re.sub(r"([A-ZÁÉÍÓÚÃÕÂÊÔÇ]{3,})([A-ZÁÉÍÓÚ][a-záéíóú]{2,})", r"\1 \2", text)
     text = _unglue_portuguese(text)
     text = re.sub(r"\bArt\.?\s*(\d)", r"Art. \1", text, flags=re.I)
     text = re.sub(r"\bN[º°]\s*", "Nº ", text)

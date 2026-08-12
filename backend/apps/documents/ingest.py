@@ -118,6 +118,8 @@ def persist_questions(documento: Documento, parsed_list) -> int:
             continue
 
         with transaction.atomic():
+            from apps.questions.banca import infer_banca
+
             q = Questao.objects.create(
                 disciplina=disciplina,
                 assunto=assunto,
@@ -129,6 +131,7 @@ def persist_questions(documento: Documento, parsed_list) -> int:
                 gabarito=pq.gabarito,
                 explicacao=pq.explicacao,
                 origem=Questao.Origem.PDF,
+                banca=infer_banca(getattr(documento, "nome", ""), pq.enunciado[:80]),
                 hash_conteudo=h,
             )
             seen_letters: set[str] = set()

@@ -34,6 +34,7 @@ export interface QuestaoFonte {
   disciplina: string | null
   assunto: string | null
   origem: string
+  banca?: string | null
 }
 
 export interface Questao {
@@ -42,6 +43,7 @@ export interface Questao {
   enunciado: string
   dificuldade: string
   origem: string
+  banca?: string
   pagina?: number
   disciplina?: number
   disciplina_nome?: string
@@ -70,6 +72,17 @@ export interface AnswerResult {
   alternativas: Alternativa[]
   fonte: QuestaoFonte
   tentativa_id?: number
+  proxima_id?: number | null
+}
+
+export interface QuestionFilters {
+  disciplina?: string
+  assunto?: string
+  assuntos?: string
+  excluir_assuntos?: string
+  dificuldade?: string
+  banca?: string
+  status?: string
 }
 
 export interface DashboardData {

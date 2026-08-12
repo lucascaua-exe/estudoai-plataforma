@@ -52,6 +52,13 @@ class Questao(models.Model):
     origem = models.CharField(
         max_length=20, choices=Origem.choices, default=Origem.PDF
     )
+    banca = models.CharField(
+        max_length=120,
+        blank=True,
+        default="",
+        db_index=True,
+        help_text="Banca organizadora da questão (ex.: CEBRASPE, IMPAR).",
+    )
     trecho_referencia = models.TextField(blank=True, default="")
     imagem = models.ImageField(
         upload_to="questoes/%Y/",
@@ -69,6 +76,7 @@ class Questao(models.Model):
         indexes = [
             models.Index(fields=["dificuldade"]),
             models.Index(fields=["origem"]),
+            models.Index(fields=["banca"]),
         ]
 
     def __str__(self):
