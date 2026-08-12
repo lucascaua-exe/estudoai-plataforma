@@ -9,6 +9,7 @@ import unicodedata
 DISCIPLINAS_ESPECIFICO = [
     "Legislação",
     "Tecnologia da Informação",
+    "Engenharia Elétrica",
 ]
 
 DISCIPLINAS_BASICO = [
@@ -35,6 +36,8 @@ _ALIAS_MAP: list[tuple[str, str]] = [
     ("lei13709", "Legislação"),
     ("tecnologiadainformacao", "Tecnologia da Informação"),
     ("tecnologiainformacao", "Tecnologia da Informação"),
+    ("engenhariaeletrica", "Engenharia Elétrica"),
+    ("eletrica", "Engenharia Elétrica"),
     ("informatica", "Informática"),
     ("linguaportuguesa", "Língua Portuguesa"),
     ("portuguesa", "Língua Portuguesa"),

@@ -1,0 +1,553 @@
+{
+  "fonte": "PROVA ANALISTA DPE.pdf",
+  "concurso": "DPE/RS 2023 — Analista Área de Apoio Especializado — Engenharia Elétrica",
+  "banca": "FGV",
+  "tipo": "1 — Branca",
+  "disciplina": "Engenharia Elétrica",
+  "faixa": "41-70",
+  "gabarito_oficial": {
+    "41": "D",
+    "42": "B",
+    "43": "B",
+    "44": "D",
+    "45": "A",
+    "46": "E",
+    "47": "D",
+    "48": "C",
+    "49": "B",
+    "50": "E",
+    "51": "D",
+    "52": "A",
+    "53": "C",
+    "54": "C",
+    "55": "B",
+    "56": "B",
+    "57": "D",
+    "58": "A",
+    "59": "E",
+    "60": "B",
+    "61": "A",
+    "62": "B",
+    "63": "B",
+    "64": "C",
+    "65": "E",
+    "66": "A",
+    "67": "E",
+    "68": "E",
+    "69": "C",
+    "70": "D"
+  },
+  "assuntos": [
+    "Análise de malhas e circuitos",
+    "Aterramento e proteção contra choques",
+    "Circuitos elétricos e leis de Kirchhoff",
+    "Combate a incêndio em subestações",
+    "Componentes simétricas",
+    "Coordenação de proteção",
+    "Correção do fator de potência",
+    "Curto-circuito e reatância em p.u.",
+    "Eficiência energética e centro de carga",
+    "Eficiência energética em edificações",
+    "Equipamentos de subestação",
+    "Faltas e componentes simétricas",
+    "Iluminação de interiores",
+    "Instalações elétricas e dimensionamento",
+    "Licitações — Lei nº 14.133/2021",
+    "NR-10 — segurança em eletricidade",
+    "Planejamento de obras — PERT/CPM",
+    "Potência em corrente alternada",
+    "Qualidade de energia e desbalanceamento",
+    "Queda de tensão em circuitos",
+    "SPDA e proteção contra descargas",
+    "Segurança e extinção de incêndio",
+    "Sistema por unidade (p.u.)",
+    "Sistemas UPS / nobreak",
+    "Sistemas de iluminação",
+    "Sistemas trifásicos desequilibrados",
+    "Sistemas trifásicos equilibrados",
+    "Tipos de manutenção",
+    "Transformadores e sistemas trifásicos"
+  ],
+  "questoes": [
+    {
+      "numero": 41,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Circuitos elétricos e leis de Kirchhoff",
+      "enunciado": "Um circuito elétrico apresenta um nó onde duas correntes elétricas têm o sentido em direção a este nó e outra em sentido contrário. O ramo onde uma das correntes que tem o sentido em direção ao nó apresenta um resistor de 5 Ω, e em sua extremidade (contrário ao nó), o ponto é denominado “Ponto A” e a corrente elétrica é de 4 A. O outro ramo, nesta mesma situação, apresenta um resistor de 4 Ω e o ponto em sua extremidade, também contrário ao nó, é denominado “Ponto B” e a corrente elétrica é de 6 A. O ramo onde a corrente flui em sentido contrário ao nó possui um resistor de 2 Ω e em sua extremidade o ponto é denominado “Ponto C”. A diferença de potencial entre o Ponto A em relação ao Ponto C e entre o Ponto B em relação ao Ponto C são iguais a, respectivamente:",
+      "alternativas": {
+        "A": "40 V e – 44 V",
+        "B": "– 40 V e – 44 V",
+        "C": "– 44 V e 4 V",
+        "D": "40 V e 44 V",
+        "E": "0 V e 44 V"
+      },
+      "gabarito": "D",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 42,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Análise de malhas e circuitos",
+      "enunciado": "Um circuito formado por duas malhas possui em seu ramo central uma bateria de 20 V em série com um resistor de 10 Ω. A malha da esquerda é formada por uma bateria de 20 V em série com um resistor de 40 Ω e a malha da direita é formada por uma bateria de 10 V em série com um resistor de 10 Ω. Todas as baterias estão orientadas com os polos positivos para cima. A corrente elétrica no ramo central é igual a:",
+      "alternativas": {
+        "A": "6/9 A",
+        "B": "4/9 A",
+        "C": "4/10 A",
+        "D": "6/10 A",
+        "E": "8/10 A"
+      },
+      "gabarito": "B",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 43,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Potência em corrente alternada",
+      "enunciado": "Uma fonte senoidal alimenta uma impedância composta por uma resistência de 400 Ω e uma reatância indutiva de 300 Ω. A potência aparente que essa impedância solicita da fonte é de 1 kVA. A potência ativa correspondente é de:",
+      "alternativas": {
+        "A": "900 W",
+        "B": "800 W",
+        "C": "600 W",
+        "D": "400 W",
+        "E": "300 W"
+      },
+      "gabarito": "B",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 44,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Sistemas trifásicos equilibrados",
+      "enunciado": "A respeito do sistema trifásico estrela-estrela equilibrado, analise as afirmativas a seguir. I. A potência complexa em cada umas das cargas monofásicas que compõem a carga trifásica é igual. II. As correntes nas fases da carga trifásica estão defasadas em 120° umas das outras. III. As tensões entre as linhas estão defasadas das tensões das fases em 60°. Está correto somente o que se afirma em:",
+      "alternativas": {
+        "A": "I",
+        "B": "II",
+        "C": "III",
+        "D": "I e II",
+        "E": "II e III"
+      },
+      "gabarito": "D",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 45,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Transformadores e sistemas trifásicos",
+      "enunciado": "Um equipamento elétrico indutivo trifásico na configuração estrela atrasa a corrente elétrica em 30° em relação à tensão. A sua alimentação se dá por meio de um transformador na configuração estrela-delta, estando suas conexões no lado delta. Sabe-se ainda que as tensões de fases VAB, VBC e VCA, que alimentam o transformador no lado estrela, possuem ângulos de 30°, −90° e +150°, respectivamente. As correntes nas fases do equipamento possuem ângulos iguais a:",
+      "alternativas": {
+        "A": "30°, −90° e +150°",
+        "B": "zero, −120° e +120°",
+        "C": "60°, −60° e +180°",
+        "D": "90°, −30° e −150°",
+        "E": "−90°, +30° e +150°"
+      },
+      "gabarito": "A",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 46,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Sistemas trifásicos desequilibrados",
+      "enunciado": "A respeito do sistema trifásico estrela-estrela desequilibrado com o neutro aberto, analise as afirmativas a seguir. I. A tensão entre os neutros da fonte e da carga é igual a zero. II. As correntes nas fases da carga se anulam. III. As tensões nas fases da carga são diferentes das tensões da fonte. Está correto somente o que se afirma em:",
+      "alternativas": {
+        "A": "I",
+        "B": "II",
+        "C": "III",
+        "D": "I e II",
+        "E": "II e III"
+      },
+      "gabarito": "E",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 47,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Instalações elétricas e dimensionamento",
+      "enunciado": "Um circuito elétrico bifásico alimenta um equipamento de 4.400 VA. O padrão dos níveis de tensão onde o circuito se encontra é de 220/127 V e a temperatura ambiente é de 30 oC. Sabe-se, ainda, que este circuito compartilha o eletroduto com outros dois circuitos. Tabela 1: Capacidade de condução de corrente (A) Seção nominal 2 condutores 3 condutores (mm2) carregados carregados 1,0 14 13 1,5 18,5 16,5 2,5 25 22 4 33 30 6 42 38 Tabela 2: Fatores de correção aplicáveis a condutores agrupados Número de 1 2 3 4 5 circuitos Fator de 1,00 0,80 0,70 0,65 0,60 agrupamento A seção desse circuito é de:",
+      "alternativas": {
+        "A": "1,0 mm2",
+        "B": "1,5 mm2",
+        "C": "2,5 mm2",
+        "D": "4,0 mm2",
+        "E": "6,0 mm2"
+      },
+      "gabarito": "D",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 48,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Aterramento e proteção contra choques",
+      "enunciado": "O operador de um equipamento foi submetido a um choque em decorrência de um contato da fase na estrutura metálica do equipamento. O esquema de aterramento da instalação é do tipo TN e a proteção desse equipamento se dá por meio de um disjuntor de 30 A. O tempo máximo de exposição a esse choque, indicado na curva desse disjuntor, corta a faixa de atuação no disjuntor nos valores correspondentes aos múltiplos de sua corrente nominal iguais a 5, 6, 7, 8, 9 e 10, sendo que 5 e 10 são os valores das extremidades da faixa de atuação. A corrente de falta, para que o disjuntor propicie a proteção do operador, deve ser:",
+      "alternativas": {
+        "A": "≥ 150 A",
+        "B": "≤ 150 A",
+        "C": "≥ 300 A",
+        "D": "≤ 300 A",
+        "E": "≥ 30 A"
+      },
+      "gabarito": "C",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 49,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Queda de tensão em circuitos",
+      "enunciado": "Um equipamento elétrico de 5.000 VA e 100 V é alimentado através de um circuito terminal de 15 m de comprimento. O condutor utilizado nesse circuito possui 15 V/(A.km) de queda de tensão unitária. A queda de tensão no circuito é de:",
+      "alternativas": {
+        "A": "5,63 %",
+        "B": "11,25 %",
+        "C": "22,50 %",
+        "D": "25,25 %",
+        "E": "31,50 %"
+      },
+      "gabarito": "B",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 50,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Sistema por unidade (p.u.)",
+      "enunciado": "Um equipamento possui reatância de 0,2 p.u.. e seus valores nominais de potência e tensão 10 MVA e 500 kV. Os valores de base no setor onde esse equipamento se encontra são 20 MVA e 250 kV. O novo valor de sua reatância é:",
+      "alternativas": {
+        "A": "0,05 p.u.",
+        "B": "0,10 p.u.",
+        "C": "0,40 p.u.",
+        "D": "0,80 p.u.",
+        "E": "1,60 p.u."
+      },
+      "gabarito": "E",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 51,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Qualidade de energia e desbalanceamento",
+      "enunciado": "Uma instalação elétrica apresentou um desbalanceamento nas tensões de fase do quadro de distribuição de circuitos terminais. Considere as opções abaixo sobre as prováveis causas desse problema: I. Desequilíbrio das cargas nas fases e rompimento do condutor do neutro do alimentador que chega ao quadro de distribuição dos circuitos terminais; II. Desequilíbrio das cargas, aumentando a queda de tensão no fio neutro do alimentador do quadro de distribuição dos circuitos; III. Potência de cargas trifásicas indutivas elevadas em relação à potência total. Está correto somente o que se afirma em:",
+      "alternativas": {
+        "A": "I",
+        "B": "II",
+        "C": "III",
+        "D": "I e II",
+        "E": "I e III"
+      },
+      "gabarito": "D",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 52,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "SPDA e proteção contra descargas",
+      "enunciado": "Uma edificação de comprimento e largura iguais a 16 e 6 metros, respectivamente, é protegida contra descargas atmosféricas por meio de para-raios do tipo Franklin com ângulo de proteção igual a 30°. A quantidade mínima de hastes necessárias para proteger a edificação, sabendo-se que a altura de cada haste é de 8,7 m, é igual a:",
+      "alternativas": {
+        "A": "duas hastes",
+        "B": "três hastes",
+        "C": "quatro hastes",
+        "D": "seis hastes",
+        "E": "oito hastes"
+      },
+      "gabarito": "A",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 53,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Iluminação de interiores",
+      "enunciado": "Um ambiente de 15 × 15 m e 4,75 m de pé-direito, destinado a escritórios, necessita de uma iluminância de 300 lux. O local possui teto branco, paredes claras e piso escuro. A iluminação é direta e as luminárias estão embutidas no teto. O plano de trabalho está a um metro de altura do piso. Considerando o fator de depreciação igual à unidade e que as luminárias utilizadas para o projeto possuem 2.000 lumens (com fatores de utilização da tabela da prova), o número de luminárias é igual a:",
+      "alternativas": {
+        "A": "26",
+        "B": "32",
+        "C": "48",
+        "D": "54",
+        "E": "60"
+      },
+      "gabarito": "C",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 54,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Equipamentos de subestação",
+      "enunciado": "Em uma subestação, os equipamentos responsáveis por atuar diante de picos de tensão, na medição de corrente elétrica e na segregação de partes da subestação, são, respectivamente:",
+      "alternativas": {
+        "A": "para-raios, TP e chave seccionadora",
+        "B": "bucha de passagem, TP e chave seccionadora",
+        "C": "para-raios, TC e chave seccionadora",
+        "D": "para-raios, TC e chave fusível",
+        "E": "bucha de passagem, TC e chave fusível"
+      },
+      "gabarito": "C",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 55,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Curto-circuito e reatância em p.u.",
+      "enunciado": "Uma subestação abaixadora possui um transformador na configuração delta-estrela de 300√3 kVA e tensão primária de 15 kV. A corrente de curto-circuito na sua entrada é de 1 kA. Considerando como bases os valores nominais do transformador, a reatância reduzida do sistema ligada à entrada da subestação é de:",
+      "alternativas": {
+        "A": "0,01 p.u.",
+        "B": "0,02 p.u.",
+        "C": "0,03 p.u.",
+        "D": "0,04 p.u.",
+        "E": "0,05 p.u."
+      },
+      "gabarito": "B",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 56,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Faltas e componentes simétricas",
+      "enunciado": "Em um sistema elétrico radial de potência, em que uma carga é alimentada por meio de um transformador na configuração Delta-Delta, ocorre o contato de uma das fases do secundário desse transformador com o terra. A corrente elétrica de sequência positiva relativa a essa falta é igual a:",
+      "alternativas": {
+        "A": "Ia1 = (1/2) Ia",
+        "B": "Ia1 = 0",
+        "C": "Ia1 = Ia",
+        "D": "Ia1 = (1/3) Ia",
+        "E": "Ia1 = 3 Ia"
+      },
+      "gabarito": "B",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 57,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Componentes simétricas",
+      "enunciado": "As tensões de fase de um sistema trifásico podem ser representadas por suas componentes simétricas, juntamente com o número complexo 1∠120°, definido como operador α. Com base no exposto, a tensão VB, em função de suas componentes simétricas, é igual a:",
+      "alternativas": {
+        "A": "α·V0 + α²·V1 + α·V2",
+        "B": "V0 + α·V1 + α²·V2",
+        "C": "α·V0 + V1 + V2",
+        "D": "V0 + α²·V1 + α·V2",
+        "E": "α·V0 + α²·V1 + V2"
+      },
+      "gabarito": "D",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 58,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Coordenação de proteção",
+      "enunciado": "A respeito da coordenação entre relé e elo fusível, analise as afirmativas a seguir. I. Critério 1: O elo fusível deverá suportar a corrente máxima de curto-circuito no local, durante o tempo de operação dos elementos instantâneos dos relés (50 ou 50N) somados ao tempo de desligamento do disjuntor. II. Critério 2: Permanecendo o curto-circuito, após o religamento automático, o elo fusível não deverá fundir antes da atuação dos elementos temporizados dos relés (51 ou 51N) sobre o disjuntor. III. Critério 3: Não sendo possível atender ao Critério 1, deverá ser considerado apenas o Critério 2. Está correto somente o que se afirma em:",
+      "alternativas": {
+        "A": "I",
+        "B": "II",
+        "C": "III",
+        "D": "I e II",
+        "E": "I e III"
+      },
+      "gabarito": "A",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 59,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Correção do fator de potência",
+      "enunciado": "Um equipamento trifásico de 9 kVA possui fator de potência indutivo igual a 0,5. O banco de capacitores necessário para elevar o fator de potência para 0,866 indutivo é de:",
+      "alternativas": {
+        "A": "(4,5√3)/6 kVAr",
+        "B": "(4,5√3)/2 kVAr",
+        "C": "4,5√3 kVAr",
+        "D": "(3√3)/2 kVAr",
+        "E": "3√3 kVAr"
+      },
+      "gabarito": "E",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 60,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Sistemas UPS / nobreak",
+      "enunciado": "O UPS que desvincula completamente a energia na carga da energia da rede, conferindo melhor qualidade de energia aos equipamentos, é:",
+      "alternativas": {
+        "A": "backup por baterias",
+        "B": "on-line dupla conversão",
+        "C": "stand-by",
+        "D": "off-line",
+        "E": "linha interativa"
+      },
+      "gabarito": "B",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 61,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Eficiência energética em edificações",
+      "enunciado": "Considerando os shopping centers como o tipo de edificação comercial de grande porte observada, os requisitos mínimos a serem estabelecidos para a avaliação de eficiência energética devem abordar os sistemas:",
+      "alternativas": {
+        "A": "envoltória, condicionamento de ar e iluminação",
+        "B": "aquecimento de água, condicionamento de ar e iluminação",
+        "C": "envoltória, condicionamento de ar e aquecimento de água",
+        "D": "bombeamento de água, condicionamento de ar e iluminação",
+        "E": "bombeamento de água, condicionamento de ar e aquecimento de água"
+      },
+      "gabarito": "A",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 62,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Planejamento de obras — PERT/CPM",
+      "enunciado": "O método PERT/CPM é uma ferramenta que permite o controle de uma obra ou projeto sob o ponto de vista do tempo utilizado na execução de diversas atividades. Considere uma atividade de uma obra que possui seus tempos de execução otimista, pessimista e mais provável iguais a 5, 14 e 8 unidades de tempo (u.t.), respectivamente. Para essa atividade, o tempo esperado de execução e a sua variância, em unidades de tempo, são iguais a:",
+      "alternativas": {
+        "A": "8,5 u.t. e 1,50 u.t",
+        "B": "8,5 u.t. e 2,25 u.t",
+        "C": "8,7 u.t. e 1,50 u.t",
+        "D": "8,7 u.t. e 2,25 u.t",
+        "E": "9,0 u.t. e 2,25 u.t"
+      },
+      "gabarito": "B",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 63,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Planejamento de obras — PERT/CPM",
+      "enunciado": "Um diagrama de rede PERT/CPM, que representa a evolução das execuções das atividades de uma obra de construção, possui sete eventos (de 1 até 7) e oito atividades (de A até H). Os tempos das atividades, em unidades de tempo (u.t.), estão apresentados na tabela. Observação: Eventos indicam o início e o fim de uma atividade. Tempo Atividade u.t. A 4 B 6 C 5 D 8 E 4 F 6 G 3 H 1 As atividades estão assim dispostas: Atividade A: entre os eventos 1 e 2; Atividade B: entre os eventos 1 e 4; Atividade C: entre os eventos 2 e 3; Atividade D: entre os eventos 2 e 5; Atividade E: entre os eventos 3 e 6; Atividade F: entre os eventos 4 e 6; Atividade G: entre os eventos 5 e 7; Atividade H: entre os eventos 6 e 7. O tempo para a execução da obra é:",
+      "alternativas": {
+        "A": "10 u.t",
+        "B": "15 u.t",
+        "C": "26 u.t",
+        "D": "30 u.t",
+        "E": "37 u.t"
+      },
+      "gabarito": "B",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 64,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Combate a incêndio em subestações",
+      "enunciado": "No transformador de uma subestação ocorre um incêndio. A classe desse incêndio e o tipo de extintor que deve ser utilizado em seu combate são:",
+      "alternativas": {
+        "A": "classe D e extintor tipo pó químico",
+        "B": "classe B e extintor tipo gás carbônico",
+        "C": "classe C e extintor tipo pó químico",
+        "D": "classe A e extintor tipo gás carbônico",
+        "E": "classe K e extintor tipo solução de acetato de potássio"
+      },
+      "gabarito": "C",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 65,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Segurança e extinção de incêndio",
+      "enunciado": "A respeito do fogo, analise as afirmativas a seguir. I. Para que ocorra o fogo, é suficiente que exista combustível, oxigênio e calor. II. O nitrogênio é um gás inerte. III. O abafamento é uma forma de extinção do fogo em que se retira o comburente. Está correto somente o que se afirma em:",
+      "alternativas": {
+        "A": "I",
+        "B": "II",
+        "C": "III",
+        "D": "I e II",
+        "E": "II e III"
+      },
+      "gabarito": "E",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 66,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Sistemas de iluminação",
+      "enunciado": "A respeito de Sistemas de Iluminação, analise as afirmativas a seguir. I. Para se definir um sistema de iluminação, deve-se atentar para distribuição da luz no ambiente; objetivo das luminárias na distribuição da luz e ambientação pretendida para o espaço. II. A principal desvantagem da iluminação geral é a perda da flexibilidade do ambiente em termos de layout. III. A principal vantagem da iluminação para tarefas específicas é que o ambiente onde essas tarefas estão localizadas não necessita de complemento de iluminação geral. Está correto somente o que se afirma em:",
+      "alternativas": {
+        "A": "I",
+        "B": "II",
+        "C": "III",
+        "D": "I e II",
+        "E": "I e III"
+      },
+      "gabarito": "A",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 67,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Eficiência energética e centro de carga",
+      "enunciado": "Uma fábrica possui três quadros de cargas: QC 01, QC 02 e QC 03, com consumos de energia iguais a, respectivamente, 120 kWh, 80 kWh e 180 kWh. As posições relativas desses quadros seguem respectivamente os seguintes pares de coordenadas (1,2), (3,1) e (5,3). Com a finalidade de se ter a melhor performance com relação à eficiência energética, o transformador que alimenta esses quadros deve estar localizado nas coordenadas:",
+      "alternativas": {
+        "A": "X = 1,0 metro e Y = 2,0 metros",
+        "B": "X = 2,4 metros e Y = 3,3 metros",
+        "C": "X = 2,5 metros e Y = 1,5 metro",
+        "D": "X = 3,0 metros e Y = 5,0 metros",
+        "E": "X = 3,3 metros e Y = 2,3 metros"
+      },
+      "gabarito": "E",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 68,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "NR-10 — segurança em eletricidade",
+      "enunciado": "A respeito da NR-10, analise as afirmativas a seguir. I. Nas atividades profissionais em instalações elétricas devem ser previstas e adotadas, prioritariamente, medidas de proteção de caráter individual. II. As medidas de proteção coletiva devem ser planejadas e desenvolvidas com a análise de risco e aplicadas mediante procedimentos padronizados. III. Os procedimentos adotados na proteção coletiva devem ser cumpridos por todos os trabalhadores e demais pessoas envolvidas. Está correto somente o que se afirma em:",
+      "alternativas": {
+        "A": "I",
+        "B": "II",
+        "C": "III",
+        "D": "I e II",
+        "E": "II e III"
+      },
+      "gabarito": "E",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 69,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Tipos de manutenção",
+      "enunciado": "O tipo de manutenção que ocorre por meio de inspeções e análises de uma equipe especialista que detecta falhas que poderiam não ser observadas em análises tradicionais é definido como:",
+      "alternativas": {
+        "A": "corretiva programada",
+        "B": "preventiva",
+        "C": "detectiva",
+        "D": "preditiva",
+        "E": "preditiva baseada no tempo"
+      },
+      "gabarito": "C",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    },
+    {
+      "numero": 70,
+      "disciplina": "Engenharia Elétrica",
+      "assunto": "Licitações — Lei nº 14.133/2021",
+      "enunciado": "O Estado Alfa almeja solicitar auxílio da iniciativa privada para a realização de estudos e projetos, a fim de contribuir com soluções tecnológicas inovadoras com viabilidade de causar alto impacto em questão de relevância pública, para o que visa a implementar um procedimento aberto de manifestação de interesse, com o escopo de instrumentalizar eventual licitação futura que possa atender às necessidades da Administração. Considerando o disposto na Lei no 14.133/2021, é correto afirmar que o Estado Alfa:",
+      "alternativas": {
+        "A": "não pode efetuar o procedimento de manifestação de interesse almejado, na medida em que se impõe a realização de licitação na modalidade diálogo competitivo para a finalidade pretendida",
+        "B": "deverá arcar com os valores relacionados aos dispêndios da iniciativa privada para a realização dos estudos e projetos atinentes ao procedimento de manifestação de interesse em análise",
+        "C": "após a efetivação dos estudos e projetos atinentes ao procedimento de manifestação de interesse em questão, ficará obrigado a realizar a licitação para promover a contratação caso haja a aceitação de uma solução proposta nos termos da lei",
+        "D": "poderá restringir o procedimento de manifestação de interesse pretendido para as startups que se dediquem à pesquisa, à implementação e ao desenvolvimento de novos produtos ou serviços baseados em soluções tecnológicas inovadoras",
+        "E": "deve garantir o direito de preferência ao realizador da solução inovadora que preencha os requisitos legais no processo de licitação que venha a ser realizado para a respectiva contratação"
+      },
+      "gabarito": "D",
+      "origem": "DPE/RS 2023 — FGV — Analista Engenharia Elétrica — Tipo 1",
+      "pagina": null
+    }
+  ]
+}
