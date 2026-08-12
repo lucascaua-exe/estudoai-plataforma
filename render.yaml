@@ -1,0 +1,51 @@
+# Blueprint Render — API Django + Postgres gratuito
+# Docs: https://render.com/docs/blueprint-spec
+
+databases:
+  - name: estudoai-db
+    plan: free
+    databaseName: estudoai
+    user: estudoai
+
+services:
+  - type: web
+    name: estudoai-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: bash build.sh
+    startCommand: bash start.sh
+    healthCheckPath: /api/health/
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: estudoai-db
+          property: connectionString
+      - key: DB_SSL_REQUIRE
+        value: "true"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: SECURE_SSL_REDIRECT
+        value: "false"
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NAME
+        value: Administrador
+      - key: ADMIN_RESET_PASSWORD
+        value: "false"
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: WEB_CONCURRENCY
+        value: "1"
