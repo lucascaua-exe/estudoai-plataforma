@@ -153,7 +153,26 @@ CORS_ALLOWED_ORIGINS = [
     for o in os.getenv("CORS_ALLOWED_ORIGINS", _default_cors).split(",")
     if o.strip()
 ]
+# Netlify (site principal + previews)
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://[a-z0-9-]+(\.netlify\.app)?$",
+    r"^https://[a-z0-9-]+\.netlify\.app$",
+]
+_extra_cors_regex = os.getenv("CORS_ALLOWED_ORIGIN_REGEXES", "").strip()
+if _extra_cors_regex:
+    CORS_ALLOWED_ORIGIN_REGEXES.extend(
+        [r.strip() for r in _extra_cors_regex.split(",") if r.strip()]
+    )
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "authorization",
+    "content-type",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
 
 _csrf = os.getenv("CSRF_TRUSTED_ORIGINS", "")
 CSRF_TRUSTED_ORIGINS = [o.strip().rstrip("/") for o in _csrf.split(",") if o.strip()]
