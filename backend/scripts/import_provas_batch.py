@@ -266,7 +266,14 @@ def extract_tj_pa() -> list[dict]:
 
     out: list[dict] = []
     # itens 51–120 em linhas próprias após coluna
-    matches = list(re.finditer(r"(?m)(?<![\d.])(\d{2,3})\s+([A-ZÁÉÍÓÚÀÂÊÔÃÕÇ0-9].+?)(?=(?m)(?<![\d.])\d{2,3}\s+[A-ZÁÉÍÓÚÀÂÊÔÃÕÇ0-9]|\Z)", full, re.S))
+    # (?m) só no início — Python 3.11+ rejeita flags globais no meio do padrão
+    matches = list(
+        re.finditer(
+            r"(?<![\d.])(\d{2,3})\s+([A-ZÁÉÍÓÚÀÂÊÔÃÕÇ0-9].+?)(?=(?<![\d.])\d{2,3}\s+[A-ZÁÉÍÓÚÀÂÊÔÃÕÇ0-9]|\Z)",
+            full,
+            re.M | re.S,
+        )
+    )
     for m in matches:
         num = int(m.group(1))
         if num < 51 or num > 120:
