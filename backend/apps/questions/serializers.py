@@ -61,7 +61,7 @@ class QuestaoListSerializer(serializers.ModelSerializer):
     def get_enunciado(self, obj):
         return clean_enunciado(obj.enunciado)
 
-    def _meta(self, obj):
+    def _user_meta(self, obj):
         request = self.context.get("request")
         if not request or not request.user.is_authenticated:
             return None
@@ -93,11 +93,11 @@ class QuestaoListSerializer(serializers.ModelSerializer):
         return t.correta if t else None
 
     def get_favorita(self, obj):
-        m = self._meta(obj)
+        m = self._user_meta(obj)
         return bool(m and m.favorita)
 
     def get_marcar_revisao(self, obj):
-        m = self._meta(obj)
+        m = self._user_meta(obj)
         return bool(m and m.marcar_revisao)
 
 
