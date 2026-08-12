@@ -36,6 +36,7 @@ class QuestaoListSerializer(serializers.ModelSerializer):
     favorita = serializers.SerializerMethodField()
     marcar_revisao = serializers.SerializerMethodField()
     enunciado = serializers.SerializerMethodField()
+    imagem_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Questao
@@ -56,10 +57,23 @@ class QuestaoListSerializer(serializers.ModelSerializer):
             "favorita",
             "marcar_revisao",
             "gabarito",
+            "imagem_url",
         ]
 
     def get_enunciado(self, obj):
         return clean_enunciado(obj.enunciado)
+
+    def get_imagem_url(self, obj):
+        if not getattr(obj, "imagem", None):
+            return None
+        try:
+            url = obj.imagem.url
+        except ValueError:
+            return None
+        request = self.context.get("request")
+        if request is not None:
+            return request.build_absolute_uri(url)
+        return url
 
     def _user_meta(self, obj):
         request = self.context.get("request")

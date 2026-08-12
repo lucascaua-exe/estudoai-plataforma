@@ -57,6 +57,7 @@ export interface Questao {
   trecho_referencia?: string
   alternativas?: Alternativa[]
   fonte?: QuestaoFonte
+  imagem_url?: string | null
   vezes_erro?: number
   ponto_atencao?: boolean
 }

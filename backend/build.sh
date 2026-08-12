@@ -21,5 +21,8 @@ python manage.py load_banco_if_empty
 echo "[build] import_dpe_eletrica…"
 python manage.py import_dpe_eletrica --from-json || true
 
+echo "[build] import_eaoear_eletrica…"
+python manage.py import_eaoear_eletrica --from-json || true
+
 echo "[build] clean_question_texts…"
 python manage.py clean_question_texts

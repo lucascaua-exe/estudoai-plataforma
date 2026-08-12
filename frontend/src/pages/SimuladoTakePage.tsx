@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { QuestionFigure } from '@/components/questions/QuestionFigure'
 
 export function SimuladoTakePage() {
   const { id } = useParams()
@@ -137,6 +138,12 @@ export function SimuladoTakePage() {
           <p className="text-pretty break-words text-base leading-relaxed [overflow-wrap:anywhere]">
             {formatStudyText(current.questao.enunciado)}
           </p>
+          {current.questao.imagem_url ? (
+            <QuestionFigure
+              src={current.questao.imagem_url}
+              alt={`Figura da questão ${current.questao.numero_origem || current.questao.id}`}
+            />
+          ) : null}
           <div className="min-w-0 space-y-2" role="group" aria-label="Alternativas">
             {(current.questao.alternativas || []).map((alt) => (
               <button

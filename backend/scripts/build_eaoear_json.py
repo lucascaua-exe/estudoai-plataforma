@@ -1,0 +1,467 @@
+"""Gera JSON EAOEAR Q31-60 + recorta figuras (sem OCR Gemini)."""
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+PAGES = ROOT / "data/questoes_images/eaoear_2026/pages"
+FIGS = ROOT / "data/questoes_images/eaoear_2026/figuras"
+JSON_PATH = ROOT / "data/pdfs/eaoear_2026_eletrica_q31_60.json"
+
+FIGS.mkdir(parents=True, exist_ok=True)
+
+# bbox [x0,y0,x1,y1] fração da página
+CROPS: dict[int, tuple[int, list[float]]] = {
+    32: (1, [0.18, 0.20, 0.82, 0.38]),
+    34: (1, [0.18, 0.68, 0.82, 0.84]),
+    35: (2, [0.10, 0.09, 0.92, 0.36]),
+    43: (3, [0.18, 0.42, 0.82, 0.58]),
+    46: (4, [0.18, 0.36, 0.82, 0.55]),
+    48: (5, [0.12, 0.08, 0.88, 0.36]),
+    49: (5, [0.10, 0.40, 0.90, 0.66]),
+    51: (6, [0.12, 0.10, 0.88, 0.42]),
+    52: (6, [0.12, 0.52, 0.88, 0.82]),
+    53: (7, [0.16, 0.12, 0.84, 0.34]),
+    60: (8, [0.14, 0.50, 0.86, 0.68]),
+}
+
+QUESTOES = [
+    {
+        "numero": 31,
+        "assunto": "Resistência e coeficiente de temperatura",
+        "enunciado": "Uma bobina de cobre apresenta resistência de 100 Ω na temperatura de 0 °C. Adotando-se para o cobre o coeficiente de temperatura de 0,0043 / °C, a resistência da bobina em 100 °C é",
+        "alternativas": {"A": "143 Ω", "B": "100 Ω", "C": "200 Ω", "D": "243 Ω"},
+        "gabarito": "A",
+        "pagina": 1,
+    },
+    {
+        "numero": 32,
+        "assunto": "Capacitores em série",
+        "enunciado": "Considere o circuito mostrado no esquema abaixo. A capacitância equivalente, a carga total armazenada nos capacitores e a tensão desenvolvida no capacitor de 3 μF são, respectivamente:",
+        "alternativas": {
+            "A": "21 μF; 7 mC e 116 V",
+            "B": "1,71 μF; 1050 μC e 116 V",
+            "C": "1,71 μF; 598 μC e 200 V",
+            "D": "0,58 μF; 203 μC e 67,7 V",
+        },
+        "gabarito": "C",
+        "pagina": 1,
+        "tem_figura": True,
+    },
+    {
+        "numero": 33,
+        "assunto": "Autotransformadores",
+        "enunciado": "Um autotransformador ideal de 320 V : 250 V está alimentando uma carga de 20 kVA. O valor da corrente circulante na parte comum do enrolamento é",
+        "alternativas": {
+            "A": "I = 62,5 A",
+            "B": "I = 48,8 A",
+            "C": "I = 17,5 A",
+            "D": "I = 80 A",
+        },
+        "gabarito": "C",
+        "pagina": 1,
+    },
+    {
+        "numero": 34,
+        "assunto": "Circuitos RL em corrente alternada",
+        "enunciado": "Um circuito RL está sendo alimentado por uma fonte de corrente alternada, conforme mostrado abaixo. A corrente no circuito e a sua defasagem são, respectivamente,",
+        "alternativas": {
+            "A": "1 A e 45°",
+            "B": "1,4 A e 26°",
+            "C": "2 A e 26°",
+            "D": "2 A e 63°",
+        },
+        "gabarito": "A",
+        "pagina": 1,
+        "tem_figura": True,
+    },
+    {
+        "numero": 35,
+        "assunto": "Diodos e curvas I x V",
+        "enunciado": "Os gráficos mostrados abaixo representam características I x V de componentes elétricos. O gráfico que representa as características I x V de um diodo retificador de silício ideal é:",
+        "alternativas": {
+            "A": "Gráfico 1",
+            "B": "Gráfico 2",
+            "C": "Gráfico 3",
+            "D": "Gráfico 4",
+        },
+        "gabarito": "B",
+        "pagina": 2,
+        "tem_figura": True,
+    },
+    {
+        "numero": 36,
+        "assunto": "Ressonância em circuitos RLC",
+        "enunciado": "Uma bobina com resistência de 5 Ω e indutância de 117 mH está ligada em série com um capacitor de 60 μF. O circuito está sendo alimentado por uma fonte monofásica de 120 V. A frequência na qual vai ocorrer ressonância no circuito e a corrente nesta frequência são, respectivamente:",
+        "alternativas": {
+            "A": "188 Hz e 35,9 A",
+            "B": "142 Hz e 25,4 A",
+            "C": "60 Hz e 24 A",
+            "D": "50 Hz e 22 A",
+        },
+        "gabarito": "C",
+        "pagina": 2,
+    },
+    {
+        "numero": 37,
+        "assunto": "Potência e fator de potência",
+        "enunciado": "Uma carga industrial consiste em um circuito RL ligado em série, alimentado por uma fonte monofásica de 120 V / 60 Hz. A potência consumida é de 400 W e a corrente é de 8 A. A reatância da carga e seu Fator de Potência são, respectivamente:",
+        "alternativas": {
+            "A": "15 Ω e 0,6",
+            "B": "13,6 Ω e 0,4",
+            "C": "15 Ω e 0,4",
+            "D": "16 Ω e 0,6",
+        },
+        "gabarito": "B",
+        "pagina": 2,
+    },
+    {
+        "numero": 38,
+        "assunto": "Máquinas CC — dínamo",
+        "enunciado": "Um dínamo que usa excitação separada está ligado em uma carga de 60 Ω. A corrente circulante na carga é de 8 A e a resistência da armadura da máquina é de 1 Ω. A força eletromotriz gerada é",
+        "alternativas": {"A": "400 V", "B": "480 V", "C": "488 V", "D": "520 V"},
+        "gabarito": "C",
+        "pagina": 2,
+    },
+    {
+        "numero": 39,
+        "assunto": "Motores de indução",
+        "enunciado": "Um motor de indução trifásico de 1 HP opera com 220 V / 60 Hz e possui velocidade síncrona de 1200 RPM. O número de polos magnéticos e a velocidade de rotação do motor para escorregamento de 4% são, respectivamente:",
+        "alternativas": {
+            "A": "8 e 630 RPM",
+            "B": "2 e 1200 RPM",
+            "C": "4 e 1728 RPM",
+            "D": "6 e 1152 RPM",
+        },
+        "gabarito": "D",
+        "pagina": 2,
+    },
+    {
+        "numero": 40,
+        "assunto": "Potência em motores",
+        "enunciado": "Um motor de indução síncrono está operando com alimentação de 120 V / 60 Hz. A corrente medida na linha de alimentação é de 7,1 A. Se a eficiência do motor for de 88%, a potência desenvolvida será de",
+        "alternativas": {"A": "1/2 HP", "B": "3/4 HP", "C": "1 HP", "D": "2 HP"},
+        "gabarito": "C",
+        "pagina": 2,
+    },
+    {
+        "numero": 41,
+        "assunto": "Sistemas trifásicos e fator de potência",
+        "enunciado": "Um grupo motor-gerador usado para alimentação de emergência está ligado em estrela e fornecendo tensão fase-neutro de 220 V / 60 Hz. O grupo alimenta uma carga trifásica equilibrada, ligada em triângulo, consistindo de uma resistência de 30 Ω ligada em série com uma reatância indutiva de 40 Ω. A corrente fornecida pelo grupo motor-gerador, a potência aparente e o Fator de Potência da carga são, respectivamente:",
+        "alternativas": {
+            "A": "4,4 A; 1,7 kVA e 0,7",
+            "B": "5,4 A; 3,5 kVA e 0,4",
+            "C": "13,15 A; 8,6 kVA e 0,6",
+            "D": "7,6 A; 5 kVA e 0,8",
+        },
+        "gabarito": "C",
+        "pagina": 3,
+    },
+    {
+        "numero": 42,
+        "assunto": "Resistência de condutores",
+        "enunciado": "Uma rede aérea para distribuição de energia elétrica usa cabos de alumínio com seção reta de 100 mm², apresentando resistividade de 0,03 × 10⁻⁶ Ω·m. Se um circuito de rua usar este tipo de cabo e o comprimento for de 2 km, sua resistência será de",
+        "alternativas": {"A": "1,2 Ω", "B": "0,6 Ω", "C": "1,8 Ω", "D": "0,9 Ω"},
+        "gabarito": "B",
+        "pagina": 3,
+    },
+    {
+        "numero": 43,
+        "assunto": "Sistemas de controle — erro em regime",
+        "enunciado": "Em um sistema de controle, a exatidão pode ser avaliada em termos do erro em estado estável. Considerar então o sistema mostrado abaixo. O erro em estado estável pode ser computado diretamente por",
+        "alternativas": {
+            "A": "E(s) = G(s) / (1 + G(s))",
+            "B": "E(s) = Y(s) / (R(s) · G(s))",
+            "C": "E(s) = Y(s) / (1 + G(s) · R(s))",
+            "D": "E(s) = R(s) / (1 + G(s))",
+        },
+        "gabarito": "D",
+        "pagina": 3,
+        "tem_figura": True,
+    },
+    {
+        "numero": 44,
+        "assunto": "Medição de potência — dois wattímetros",
+        "enunciado": "A potência consumida por um motor trifásico está sendo medida pelo método de dois wattímetros, denominados W1 e W2, que indicam uma potência total de 10 kW. O Fator de Potência é de 0,5. A leitura de cada wattímetro é, respectivamente:",
+        "alternativas": {
+            "A": "W1 = 10 kW e W2 = 0 kW",
+            "B": "W1 = 5 kW e W2 = 5 kW",
+            "C": "W1 = 6 kW e W2 = 4 kW",
+            "D": "W1 = 2 kW e W2 = 8 kW",
+        },
+        "gabarito": "A",
+        "pagina": 3,
+    },
+    {
+        "numero": 45,
+        "assunto": "NBR 5410 — aterramento",
+        "enunciado": (
+            "Conforme a NBR 5410, instalações elétricas devem possuir uma infraestrutura "
+            "para aterramento de proteção contra choques elétricos. Analise as seguintes "
+            "afirmativas. I. Qualquer que seja o esquema de aterramento adotado, o percurso "
+            "de uma corrente resultante de uma falta fase-massa deve ocorrer exclusivamente "
+            "por condutores metálicos. II. A proteção passiva contra choques elétricos leva "
+            "em conta o uso de dispositivos para interrupção de circuitos com falhas. "
+            "III. A NBR 5410 não permite adotar um dispositivo DR nos esquemas de aterramento "
+            "TN-C, assim como o uso de cabos flexíveis. IV. O esquema de aterramento TN-S "
+            "permite o uso de um dispositivo DR para contatos diretos e indiretos de pessoas "
+            "e economizar o condutor de neutro. Estão corretas apenas as afirmativas"
+        ),
+        "alternativas": {
+            "A": "I e II",
+            "B": "III e IV",
+            "C": "II e IV",
+            "D": "I e III",
+        },
+        "gabarito": "D",
+        "pagina": 4,
+    },
+    {
+        "numero": 46,
+        "assunto": "Circuitos lógicos digitais",
+        "enunciado": "Considere o circuito digital mostrado na figura abaixo. A expressão lógica que estabelece o relacionamento da saída C com as entradas A e B é",
+        "alternativas": {
+            "A": "C = Ā · B̄",
+            "B": "C = A · B + Ā · B̄",
+            "C": "C = A · B̄ + Ā · B",
+            "D": "C = ¬(A · B)",
+        },
+        "gabarito": "B",
+        "pagina": 4,
+        "tem_figura": True,
+    },
+    {
+        "numero": 47,
+        "assunto": "Proteção contra surtos — DPS",
+        "enunciado": "Dispositivos DPS são instalados em um QDC e em circuitos terminais para a alimentação de cargas ligadas na rede CA, visando oferecer proteção contra surtos de tensão provenientes da rede de distribuição de energia. Um DPS é basicamente constituído por um",
+        "alternativas": {
+            "A": "SCR",
+            "B": "IGBT",
+            "C": "Diodo de Potência",
+            "D": "Varistor",
+        },
+        "gabarito": "D",
+        "pagina": 4,
+    },
+    {
+        "numero": 48,
+        "assunto": "Análise de circuitos resistivos",
+        "enunciado": "Considere o circuito elétrico esquematizado abaixo. A corrente fornecida pela fonte e a potência desenvolvida no resistor de 10 Ω são, respectivamente:",
+        "alternativas": {
+            "A": "15 A e 250 W",
+            "B": "5 A e 75 W",
+            "C": "10 A e 100 W",
+            "D": "11 A e 125 W",
+        },
+        "gabarito": "A",
+        "pagina": 5,
+        "tem_figura": True,
+    },
+    {
+        "numero": 49,
+        "assunto": "Amplificadores operacionais",
+        "enunciado": "O esquema elétrico mostra parte de um computador analógico processando os sinais de entrada V1 = −2 V e V2 = 1 V. Considerando componentes ideais, o sinal de saída Vo é",
+        "alternativas": {"A": "−0,5 V", "B": "2 V", "C": "1 V", "D": "−1 V"},
+        "gabarito": "B",
+        "pagina": 5,
+        "tem_figura": True,
+    },
+    {
+        "numero": 50,
+        "assunto": "NBR 5419 — SPDA",
+        "enunciado": (
+            "A ABNT NBR 5419 define métodos e níveis de proteção para estruturas e "
+            "instalações elétricas contra a ocorrência de descargas atmosféricas, "
+            "usando-se um SPDA. Analisar as afirmativas a seguir. I. Um SPDA protege a "
+            "instalação elétrica e seus componentes contra danos causados por surtos de "
+            "tensão. II. Um SPDA passa a maior parte de sua vida útil sem conduzir corrente, "
+            "mas deve por definição estar ligado à instalação elétrica através do barramento "
+            "de equipotencialização principal. III. Com SPDA instalado, os níveis de corrente "
+            "e a tensão dos surtos não aumentam sem controle na ocorrência de uma descarga "
+            "atmosférica. IV. No SPDA, a corrente de uma descarga atmosférica, ao chegar no "
+            "solo, metade dela se dispersa e a outra metade retorna para a instalação, em "
+            "função da diferença de potencial entre os aterramentos da edificação e da fonte "
+            "de alimentação de energia. Estão corretas apenas as afirmativas"
+        ),
+        "alternativas": {
+            "A": "I e III",
+            "B": "II e IV",
+            "C": "II e III",
+            "D": "I e IV",
+        },
+        "gabarito": "C",
+        "pagina": 5,
+    },
+    {
+        "numero": 51,
+        "assunto": "Circuitos RLC em CA",
+        "enunciado": "O esquema abaixo mostra um circuito elétrico do tipo RLC alimentado por uma fonte de corrente alternada. A corrente fornecida pela fonte é",
+        "alternativas": {
+            "A": "4 ∠ 0° A",
+            "B": "6 ∠ 60° A",
+            "C": "3 ∠ −45° A",
+            "D": "2 ∠ 30° A",
+        },
+        "gabarito": "A",
+        "pagina": 6,
+        "tem_figura": True,
+    },
+    {
+        "numero": 52,
+        "assunto": "Sistemas fotovoltaicos",
+        "enunciado": "Uma usina solar foi instalada conforme mostrado no esquema abaixo. Se cada módulo fotovoltaico for capaz de fornecer 100 V / 7 A sob máximo iluminamento, assumindo condições ideais, a potência disponibilizada pela usina solar será de",
+        "alternativas": {
+            "A": "2,8 kW",
+            "B": "8,4 kW",
+            "C": "11,2 kW",
+            "D": "5,6 kW",
+        },
+        "gabarito": "C",
+        "pagina": 6,
+        "tem_figura": True,
+    },
+    {
+        "numero": 53,
+        "assunto": "Ponte de Wheatstone",
+        "enunciado": "Uma ponte de Wheatstone está sendo usada para medir a resistência desconhecida Rx, conforme mostrado abaixo. Com a ponte em equilíbrio e considerando como sendo desprezível o erro na leitura do miliamperímetro, o valor de Rx e a tolerância da medição realizada serão, respectivamente:",
+        "alternativas": {
+            "A": "43 Ω; ± 1,3 Ω",
+            "B": "232 Ω; ± 7 Ω",
+            "C": "43 Ω; ± 3 Ω",
+            "D": "232 Ω; ± 1,3 Ω",
+        },
+        "gabarito": "C",
+        "pagina": 7,
+        "tem_figura": True,
+    },
+    {
+        "numero": 54,
+        "assunto": "Consumo e custo de energia",
+        "enunciado": "Um hangar para aeronaves de combate está sendo iluminado por 10 luminárias de 1.200 W. A iluminação permanece ligada durante 10 horas por dia. O custo mensal da energia consumida, considerando-se que o preço do kWh é de R$ 0,50, será de",
+        "alternativas": {
+            "A": "R$ 6.000,00",
+            "B": "R$ 3.600,00",
+            "C": "R$ 1.800,00",
+            "D": "R$ 1.200,00",
+        },
+        "gabarito": "C",
+        "pagina": 7,
+    },
+    {
+        "numero": 55,
+        "assunto": "Correção do fator de potência",
+        "enunciado": "Um motor trifásico para 220 V / 60 Hz consome 2 kW com Fator de Potência de 80%. A potência reativa que deve ser inserida localmente no circuito do motor para corrigir o Fator de Potência para 95% é",
+        "alternativas": {
+            "A": "0,64 kVAr",
+            "B": "0,86 kVAr",
+            "C": "1,50 kVAr",
+            "D": "2,40 kVAr",
+        },
+        "gabarito": "B",
+        "pagina": 7,
+    },
+    {
+        "numero": 56,
+        "assunto": "Harmônicas e dimensionamento",
+        "enunciado": "Um analisador de qualidade de energia foi usado para monitorar um sistema no-brake trifásico de 380 V / 60 Hz, com neutro instalado, usado para alimentação de emergência de cargas seletivas em um hospital. Os seguintes resultados foram obtidos nas medições de corrente realizadas nos condutores de fase da carga: Fundamental: 84 A; 3ª harmônica: 45 A; 5ª harmônica: 28 A; 7ª harmônica: 15 A. A corrente a ser considerada no dimensionamento das bitolas dos condutores de fase é",
+        "alternativas": {"A": "129 A", "B": "172 A", "C": "142 A", "D": "100 A"},
+        "gabarito": "D",
+        "pagina": 7,
+    },
+    {
+        "numero": 57,
+        "assunto": "Correntes de falta — hipóteses",
+        "enunciado": "A complexidade das instalações elétricas faz com que os cálculos de correntes de falta sejam muitas vezes realizados por aproximações. Algumas hipóteses simplificadoras usadas nos cálculos estão listadas abaixo. I. A falta é admitida próxima da fonte geradora. II. A rede de distribuição de baixa tensão não é radial. III. Os valores de tensão de alimentação e as impedâncias dos diferentes componentes são supostos constantes. IV. As resistências de contato e as impedâncias de falta não são levadas em consideração. Marque a opção que apresenta apenas as hipóteses incorretas.",
+        "alternativas": {
+            "A": "II e III",
+            "B": "III e IV",
+            "C": "I e IV",
+            "D": "I e II",
+        },
+        "gabarito": "D",
+        "pagina": 8,
+    },
+    {
+        "numero": 58,
+        "assunto": "Indutância e FEM induzida",
+        "enunciado": "Um fluxo de 25 mWb envolve uma bobina de 1500 espiras quando percorrida por uma corrente de 3 A. Se a corrente circulante cair para zero em 150 ms, a indutância da bobina e a força eletromotriz induzida serão, respectivamente:",
+        "alternativas": {
+            "A": "4,2 H e 200 V",
+            "B": "12,5 H e 250 V",
+            "C": "9 H e 140 V",
+            "D": "10 H e 150 V",
+        },
+        "gabarito": "B",
+        "pagina": 8,
+    },
+    {
+        "numero": 59,
+        "assunto": "Regulação de velocidade — motor CC",
+        "enunciado": "Um motor de corrente contínua com excitação do tipo shunt gira sem carga com velocidade de 1200 RPM. Quando a carga nominal é aplicada no motor, sua velocidade cai para 1140 RPM. Nesse caso, marque a opção que apresenta a regulação de velocidade do motor.",
+        "alternativas": {"A": "5,2%", "B": "3,4%", "C": "6%", "D": "2%"},
+        "gabarito": "A",
+        "pagina": 8,
+    },
+    {
+        "numero": 60,
+        "assunto": "Transformadores — impedância equivalente",
+        "enunciado": "Um transformador apresenta resistências e reatâncias nos enrolamentos primário e secundário conforme mostrado na figura abaixo. A impedância equivalente do transformador vista no lado da fonte é",
+        "alternativas": {
+            "A": "4 Ω + j4 Ω",
+            "B": "40 Ω + j40 Ω",
+            "C": "8 Ω + j8 Ω",
+            "D": "0,4 Ω + j0,4 Ω",
+        },
+        "gabarito": "C",
+        "pagina": 8,
+        "tem_figura": True,
+    },
+]
+
+
+def crop(page_no: int, bbox: list[float], dest: Path) -> None:
+    im = Image.open(PAGES / f"page_{page_no:02d}.jpg").convert("RGB")
+    w, h = im.size
+    x0, y0, x1, y1 = bbox
+    box = (int(x0 * w), int(y0 * h), int(x1 * w), int(y1 * h))
+    im.crop(box).save(dest, quality=92, optimize=True)
+    print("crop", dest.name, box)
+
+
+def main() -> None:
+    for num, (pg, bbox) in CROPS.items():
+        crop(pg, bbox, FIGS / f"q{num:02d}.jpg")
+
+    for q in QUESTOES:
+        q["disciplina"] = "Engenharia Elétrica"
+        q["origem"] = "EAOEAR 2026 — Versão A — Especialidade Engenharia Elétrica"
+        q.setdefault("tem_figura", False)
+        fig = FIGS / f"q{q['numero']:02d}.jpg"
+        if fig.exists():
+            q["tem_figura"] = True
+            q["imagem_relpath"] = str(fig.relative_to(ROOT)).replace("\\", "/")
+        else:
+            q["imagem_relpath"] = None
+
+    payload = {
+        "fonte": "EAOEAR 2026.pdf",
+        "concurso": "EAOEAR 2026 — Versão A — Especialidade Engenharia Elétrica",
+        "banca": "CIAAR / FAB",
+        "disciplina": "Engenharia Elétrica",
+        "faixa": "31-60",
+        "nota_gabarito": (
+            "Gabaritos calculados analiticamente a partir do enunciado/figura; "
+            "validar com gabarito oficial FAB quando disponível."
+        ),
+        "questoes": QUESTOES,
+    }
+    JSON_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    figs = sum(1 for q in QUESTOES if q.get("imagem_relpath"))
+    print(f"JSON {JSON_PATH} questoes={len(QUESTOES)} figuras={figs}")
+
+
+if __name__ == "__main__":
+    main()

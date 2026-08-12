@@ -15,5 +15,6 @@ Pillow>=10.0
 # Ingestão local de PDFs / exportações (não obrigatório no boot da API)
 pdfplumber>=0.11
 pypdf>=5.0
+pymupdf>=1.24
 reportlab>=4.2
 openpyxl>=3.1

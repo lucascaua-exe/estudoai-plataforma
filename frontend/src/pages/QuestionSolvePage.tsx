@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ExplanationContent } from '@/components/questions/ExplanationContent'
+import { QuestionFigure } from '@/components/questions/QuestionFigure'
 
 export function QuestionSolvePage() {
   const { id } = useParams()
@@ -159,6 +160,13 @@ export function QuestionSolvePage() {
           <p className="text-pretty break-words text-[1.02rem] font-medium leading-[1.65] text-foreground [overflow-wrap:anywhere] md:text-lg">
             {enunciado}
           </p>
+
+          {data.imagem_url ? (
+            <QuestionFigure
+              src={data.imagem_url}
+              alt={`Figura da questão ${data.numero_origem || data.id}`}
+            />
+          ) : null}
 
           <div className="min-w-0 space-y-2.5" role="group" aria-label="Alternativas">
             {alternativas.map((alt) => {

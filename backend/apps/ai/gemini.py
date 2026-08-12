@@ -1,10 +1,12 @@
 """Cliente Google Gemini (Generative Language API)."""
 from __future__ import annotations
 
+import base64
 import json
 import logging
 import urllib.error
 import urllib.request
+from pathlib import Path
 from typing import Any
 
 from django.conf import settings
@@ -35,6 +37,88 @@ def _extract_text(payload: dict[str, Any]) -> str:
     except (KeyError, IndexError, TypeError):
         logger.warning("Gemini response unexpected: %s", str(payload)[:400])
         return ""
+
+
+def generate_with_images(
+    prompt: str,
+    image_paths: list[str | Path],
+    *,
+    system: str | None = None,
+    temperature: float = 0.2,
+    json_mode: bool = True,
+    max_output_tokens: int = 8192,
+) -> str:
+    """
+    Gemini multimodal: texto + imagens locais (JPEG/PNG).
+    """
+    api_key = (getattr(settings, "GEMINI_API_KEY", "") or "").strip()
+    if not api_key:
+        return ""
+
+    parts: list[dict[str, Any]] = [{"text": prompt.strip()}]
+    for raw in image_paths:
+        path = Path(raw)
+        if not path.exists():
+            continue
+        mime = "image/jpeg"
+        suf = path.suffix.lower()
+        if suf == ".png":
+            mime = "image/png"
+        elif suf == ".webp":
+            mime = "image/webp"
+        b64 = base64.b64encode(path.read_bytes()).decode("ascii")
+        parts.append({"inline_data": {"mime_type": mime, "data": b64}})
+
+    body: dict[str, Any] = {
+        "contents": [{"role": "user", "parts": parts}],
+        "generationConfig": {
+            "temperature": temperature,
+            "topP": 0.9,
+            "maxOutputTokens": max_output_tokens,
+        },
+    }
+    if system:
+        body["systemInstruction"] = {"parts": [{"text": system.strip()}]}
+    if json_mode:
+        body["generationConfig"]["responseMimeType"] = "application/json"
+
+    models = [
+        getattr(settings, "GEMINI_MODEL", DEFAULT_GEMINI_MODEL) or DEFAULT_GEMINI_MODEL,
+        "gemini-3.6-flash",
+        "gemini-flash-latest",
+        "gemini-2.5-flash",
+    ]
+    tried: list[str] = []
+    for model in models:
+        if model in tried:
+            continue
+        tried.append(model)
+        data = json.dumps(body).encode("utf-8")
+        req = urllib.request.Request(
+            _endpoint(model),
+            data=data,
+            method="POST",
+            headers={
+                "Content-Type": "application/json",
+                "X-goog-api-key": api_key,
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=180) as resp:
+                payload = json.loads(resp.read().decode("utf-8"))
+            text = _extract_text(payload)
+            if text:
+                return text
+        except urllib.error.HTTPError as exc:
+            err_body = exc.read().decode("utf-8", errors="replace")
+            logger.warning("Gemini vision HTTP %s (%s): %s", exc.code, model, err_body[:500])
+            if exc.code in (404, 429):
+                continue
+            return ""
+        except Exception:
+            logger.exception("Gemini vision failed (%s)", model)
+            continue
+    return ""
 
 
 def generate_text(
@@ -124,11 +208,29 @@ def generate_json(
     *,
     system: str | None = None,
     temperature: float = 0.25,
+    image_paths: list[str | Path] | None = None,
 ) -> dict[str, Any]:
-    raw = generate_text(prompt, system=system, temperature=temperature, json_mode=True)
-    if not raw:
-        # Fallback sem json_mode (alguns modelos falham no mime type)
-        raw = generate_text(prompt, system=system, temperature=temperature, json_mode=False)
+    if image_paths:
+        raw = generate_with_images(
+            prompt,
+            image_paths,
+            system=system,
+            temperature=temperature,
+            json_mode=True,
+        )
+        if not raw:
+            raw = generate_with_images(
+                prompt,
+                image_paths,
+                system=system,
+                temperature=temperature,
+                json_mode=False,
+            )
+    else:
+        raw = generate_text(prompt, system=system, temperature=temperature, json_mode=True)
+        if not raw:
+            # Fallback sem json_mode (alguns modelos falham no mime type)
+            raw = generate_text(prompt, system=system, temperature=temperature, json_mode=False)
     if not raw:
         return {}
     cleaned = raw.strip()

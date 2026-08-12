@@ -33,5 +33,7 @@ lighthouse-*.json
 backend/_tmp_*.py
 backend/_sanitize_fixture.py
 backend/_count.txt
+backend/data/pdfs/_eaoear_preview/
+backend/data/questoes_images/**/pages/
 *.pyc
 .Python

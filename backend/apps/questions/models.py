@@ -53,6 +53,12 @@ class Questao(models.Model):
         max_length=20, choices=Origem.choices, default=Origem.PDF
     )
     trecho_referencia = models.TextField(blank=True, default="")
+    imagem = models.ImageField(
+        upload_to="questoes/%Y/",
+        blank=True,
+        null=True,
+        help_text="Figura/esquema associado ao enunciado (quando houver).",
+    )
     hash_conteudo = models.CharField(max_length=64, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
