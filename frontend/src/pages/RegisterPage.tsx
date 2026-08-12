@@ -85,7 +85,7 @@ export function RegisterPage() {
           </p>
           <Link
             to={{ pathname: '/', hash: 'planos' }}
-            className="mt-1 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
+            className="mt-1 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             Trocar plano
           </Link>
@@ -158,7 +158,10 @@ export function RegisterPage() {
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Já tem conta?{' '}
-          <Link to="/login" className="font-medium text-primary hover:underline">
+          <Link
+            to="/login"
+            className="font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
             Entrar
           </Link>
         </p>

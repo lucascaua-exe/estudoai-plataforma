@@ -55,7 +55,7 @@ export function AppLayout() {
         <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-2 border-b border-border bg-card/95 px-2.5 py-2 backdrop-blur-md sm:gap-3 sm:px-3 lg:hidden">
           <button
             type="button"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex h-11 w-11 min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => setOpen(true)}
             aria-label="Abrir menu"
             aria-expanded={open}

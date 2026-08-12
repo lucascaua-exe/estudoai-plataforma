@@ -97,8 +97,9 @@ export function StudyPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>Disciplina</Label>
+                <Label htmlFor="estudo-disciplina">Disciplina</Label>
                 <Select
+                  id="estudo-disciplina"
                   value={disciplina}
                   onChange={(e) => {
                     setDisciplina(e.target.value)
@@ -114,8 +115,9 @@ export function StudyPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Assunto</Label>
+                <Label htmlFor="estudo-assunto">Assunto</Label>
                 <Select
+                  id="estudo-assunto"
                   value={assunto}
                   onChange={(e) => setAssunto(e.target.value)}
                   disabled={!disciplina}
@@ -129,8 +131,12 @@ export function StudyPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Dificuldade</Label>
-                <Select value={dificuldade} onChange={(e) => setDificuldade(e.target.value)}>
+                <Label htmlFor="estudo-dificuldade">Dificuldade</Label>
+                <Select
+                  id="estudo-dificuldade"
+                  value={dificuldade}
+                  onChange={(e) => setDificuldade(e.target.value)}
+                >
                   <option value="">Todas</option>
                   <option value="facil">Fácil</option>
                   <option value="medio">Médio</option>
@@ -158,8 +164,9 @@ export function StudyPage() {
                 Gere questões extras com base no material do assunto selecionado.
               </p>
               <div className="space-y-2">
-                <Label>Quantidade</Label>
+                <Label htmlFor="estudo-quantidade">Quantidade</Label>
                 <Input
+                  id="estudo-quantidade"
                   type="number"
                   min={1}
                   max={10}

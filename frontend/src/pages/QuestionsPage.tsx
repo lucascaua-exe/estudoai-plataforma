@@ -7,6 +7,7 @@ import { PageHeader, ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -62,40 +63,77 @@ export function QuestionsPage() {
 
       <Card className="mb-4">
         <CardContent className="grid gap-3 pt-5 sm:grid-cols-2 lg:grid-cols-4">
-          <Select value={disciplina} onChange={(e) => update('disciplina', e.target.value)}>
-            <option value="">Todas as disciplinas</option>
-            {catalog.data?.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.nome}
-              </option>
-            ))}
-          </Select>
-          <Select
-            value={assunto}
-            onChange={(e) => update('assunto', e.target.value)}
-            disabled={!disciplina}
-          >
-            <option value="">Todos os assuntos</option>
-            {assuntos.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.nome}
-              </option>
-            ))}
-          </Select>
-          <Select value={dificuldade} onChange={(e) => update('dificuldade', e.target.value)}>
-            <option value="">Todas as dificuldades</option>
-            <option value="facil">Fácil</option>
-            <option value="medio">Médio</option>
-            <option value="dificil">Difícil</option>
-          </Select>
-          <Select value={status} onChange={(e) => update('status', e.target.value)}>
-            <option value="">Todos os status</option>
-            <option value="nao_respondidas">Não respondidas</option>
-            <option value="respondidas">Respondidas</option>
-            <option value="erradas">Erradas</option>
-            <option value="favoritas">Favoritas</option>
-            <option value="revisao">Marcadas para revisão</option>
-          </Select>
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-disciplina" className="sr-only">
+              Disciplina
+            </Label>
+            <Select
+              id="filtro-disciplina"
+              value={disciplina}
+              onChange={(e) => update('disciplina', e.target.value)}
+              aria-label="Filtrar por disciplina"
+            >
+              <option value="">Todas as disciplinas</option>
+              {catalog.data?.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.nome}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-assunto" className="sr-only">
+              Assunto
+            </Label>
+            <Select
+              id="filtro-assunto"
+              value={assunto}
+              onChange={(e) => update('assunto', e.target.value)}
+              disabled={!disciplina}
+              aria-label="Filtrar por assunto"
+            >
+              <option value="">Todos os assuntos</option>
+              {assuntos.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.nome}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-dificuldade" className="sr-only">
+              Dificuldade
+            </Label>
+            <Select
+              id="filtro-dificuldade"
+              value={dificuldade}
+              onChange={(e) => update('dificuldade', e.target.value)}
+              aria-label="Filtrar por dificuldade"
+            >
+              <option value="">Todas as dificuldades</option>
+              <option value="facil">Fácil</option>
+              <option value="medio">Médio</option>
+              <option value="dificil">Difícil</option>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="filtro-status" className="sr-only">
+              Status
+            </Label>
+            <Select
+              id="filtro-status"
+              value={status}
+              onChange={(e) => update('status', e.target.value)}
+              aria-label="Filtrar por status"
+            >
+              <option value="">Todos os status</option>
+              <option value="nao_respondidas">Não respondidas</option>
+              <option value="respondidas">Respondidas</option>
+              <option value="erradas">Erradas</option>
+              <option value="favoritas">Favoritas</option>
+              <option value="revisao">Marcadas para revisão</option>
+            </Select>
+          </div>
         </CardContent>
       </Card>
 
@@ -152,6 +190,7 @@ export function QuestionsPage() {
                       size="icon"
                       title="Favoritar"
                       aria-label={q.favorita ? 'Remover dos favoritos' : 'Favoritar questão'}
+                      aria-pressed={!!q.favorita}
                       onClick={async () => {
                         try {
                           const r = await favorite.mutateAsync(q.id)
@@ -173,6 +212,7 @@ export function QuestionsPage() {
                       aria-label={
                         q.marcar_revisao ? 'Remover da revisão' : 'Marcar para revisão'
                       }
+                      aria-pressed={!!q.marcar_revisao}
                       onClick={async () => {
                         try {
                           const r = await review.mutateAsync(q.id)

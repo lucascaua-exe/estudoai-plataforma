@@ -118,7 +118,7 @@ export function AssistantPage() {
                   key={s}
                   type="button"
                   onClick={() => void send(s)}
-                  className="cursor-pointer rounded-full border border-border bg-card px-3 py-1.5 text-left text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+                  className="min-h-11 cursor-pointer rounded-full border border-border bg-card px-3 py-2 text-left text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   {s}
                 </button>

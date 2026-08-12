@@ -69,23 +69,26 @@ export function SettingsPage() {
             ) : (
               <form onSubmit={onSave} className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Nome do concurso</Label>
+                  <Label htmlFor="cfg-concurso-nome">Nome do concurso</Label>
                   <Input
+                    id="cfg-concurso-nome"
                     value={form.nome}
                     onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))}
                     placeholder="Prefeitura de Araguaína/TO 2026"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Órgão</Label>
+                  <Label htmlFor="cfg-orgao">Órgão</Label>
                   <Input
+                    id="cfg-orgao"
                     value={form.orgao}
                     onChange={(e) => setForm((f) => ({ ...f, orgao: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Cargo</Label>
+                  <Label htmlFor="cfg-cargo">Cargo</Label>
                   <Input
+                    id="cfg-cargo"
                     value={form.cargo}
                     onChange={(e) => setForm((f) => ({ ...f, cargo: e.target.value }))}
                     placeholder="Analista de Tecnologia da Informação"
@@ -93,24 +96,27 @@ export function SettingsPage() {
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>Data da prova</Label>
+                    <Label htmlFor="cfg-data-prova">Data da prova</Label>
                     <Input
+                      id="cfg-data-prova"
                       type="date"
                       value={form.data_prova}
                       onChange={(e) => setForm((f) => ({ ...f, data_prova: e.target.value }))}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Banca</Label>
+                    <Label htmlFor="cfg-banca">Banca</Label>
                     <Input
+                      id="cfg-banca"
                       value={form.banca}
                       onChange={(e) => setForm((f) => ({ ...f, banca: e.target.value }))}
                     />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label>Observações</Label>
+                  <Label htmlFor="cfg-obs">Observações</Label>
                   <Textarea
+                    id="cfg-obs"
                     value={form.observacoes}
                     onChange={(e) => setForm((f) => ({ ...f, observacoes: e.target.value }))}
                   />
@@ -131,10 +137,11 @@ export function SettingsPage() {
             <p className="text-sm text-muted-foreground">
               Escolha entre tema claro e escuro. A preferência é salva neste dispositivo.
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2" role="group" aria-label="Tema">
               <Button
                 type="button"
                 variant={theme === 'light' ? 'default' : 'outline'}
+                aria-pressed={theme === 'light'}
                 onClick={() => setTheme('light')}
               >
                 Claro
@@ -142,6 +149,7 @@ export function SettingsPage() {
               <Button
                 type="button"
                 variant={theme === 'dark' ? 'default' : 'outline'}
+                aria-pressed={theme === 'dark'}
                 onClick={() => setTheme('dark')}
               >
                 Escuro

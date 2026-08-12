@@ -36,12 +36,13 @@ export function EvolutionPage() {
         title="Evolução"
         description="Acompanhe a curva de acertos ao longo do tempo."
         actions={
-          <div className="flex gap-2">
+          <div className="flex gap-2" role="group" aria-label="Período">
             {[7, 30, 90].map((p) => (
               <Button
                 key={p}
                 size="sm"
                 variant={periodo === p ? 'default' : 'outline'}
+                aria-pressed={periodo === p}
                 onClick={() => setPeriodo(p)}
               >
                 {p}d

@@ -81,13 +81,20 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
   return (
     <>
       <div
+        role="presentation"
         className={cn(
           'fixed inset-0 z-40 bg-foreground/30 transition-opacity duration-200 lg:hidden',
           open ? 'opacity-100' : 'pointer-events-none opacity-0',
         )}
-        onClick={onClose}
-        aria-hidden
-      />
+      >
+        <button
+          type="button"
+          className="absolute inset-0 cursor-default"
+          onClick={onClose}
+          aria-label="Fechar menu"
+          tabIndex={open ? 0 : -1}
+        />
+      </div>
       <aside
         id="app-sidebar"
         className={cn(
@@ -124,7 +131,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
             {!collapsed ? <ThemeToggle /> : null}
             <button
               type="button"
-              className="hidden h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-muted-foreground transition hover:bg-sidebar-accent lg:inline-flex"
+              className="hidden min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-xl text-muted-foreground transition hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex"
               onClick={onToggleCollapse}
               aria-label={collapsed ? 'Expandir menu' : 'Retrair menu'}
               aria-expanded={!collapsed}
@@ -138,7 +145,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
             <button
               ref={closeRef}
               type="button"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-sidebar-accent lg:hidden"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
               onClick={onClose}
               aria-label="Fechar menu"
             >
@@ -229,9 +236,10 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
             onClick={handleLogout}
             title="Sair"
             className={cn(
-              'flex min-h-11 w-full cursor-pointer items-center rounded-xl text-sm font-medium text-sidebar-foreground transition hover:bg-destructive/10 hover:text-destructive',
+              'flex min-h-11 w-full cursor-pointer items-center rounded-xl text-sm font-medium text-sidebar-foreground transition hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
               collapsed ? 'justify-center px-0' : 'gap-3 px-3 py-2',
             )}
+            aria-label="Sair"
           >
             <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden />
             {!collapsed ? <span>Sair</span> : <span className="sr-only">Sair</span>}

@@ -97,7 +97,7 @@ export function Dialog({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 shrink-0"
+            className="shrink-0"
             onClick={() => onOpenChange(false)}
             aria-label="Fechar"
           >

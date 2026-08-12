@@ -137,7 +137,7 @@ export function SimuladoTakePage() {
           <p className="text-pretty break-words text-base leading-relaxed [overflow-wrap:anywhere]">
             {formatStudyText(current.questao.enunciado)}
           </p>
-          <div className="min-w-0 space-y-2">
+          <div className="min-w-0 space-y-2" role="group" aria-label="Alternativas">
             {(current.questao.alternativas || []).map((alt) => (
               <button
                 key={alt.id}
@@ -145,7 +145,8 @@ export function SimuladoTakePage() {
                 onClick={() => selectLetter(alt.letra)}
                 aria-pressed={selected === alt.letra}
                 className={cn(
-                  'flex w-full min-w-0 max-w-full items-start gap-3 overflow-hidden rounded-2xl border-2 px-3.5 py-3 text-left transition-all',
+                  'flex min-h-12 w-full min-w-0 max-w-full items-start gap-3 overflow-hidden rounded-2xl border-2 px-3.5 py-3 text-left transition-all',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                   selected === alt.letra
                     ? 'border-primary bg-primary/12 ring-2 ring-primary/25'
                     : 'border-border hover:border-primary/35 hover:bg-muted/40',
@@ -176,22 +177,29 @@ export function SimuladoTakePage() {
             >
               Anterior
             </Button>
-            <div className="flex flex-wrap justify-center gap-1">
-              {session.itens.map((item, i) => (
-                <button
-                  key={item.questao.id}
-                  type="button"
-                  onClick={() => setIndex(i)}
-                  className={cn(
-                    'h-8 w-8 rounded-md text-xs font-medium',
-                    i === index && 'bg-primary text-primary-foreground',
-                    i !== index && answers[item.questao.id] && 'bg-success/15 text-success',
-                    i !== index && !answers[item.questao.id] && 'bg-muted text-muted-foreground',
-                  )}
-                >
-                  {i + 1}
-                </button>
-              ))}
+            <div className="flex flex-wrap justify-center gap-1" role="navigation" aria-label="Navegação das questões">
+              {session.itens.map((item, i) => {
+                const answered = !!answers[item.questao.id]
+                const currentQ = i === index
+                return (
+                  <button
+                    key={item.questao.id}
+                    type="button"
+                    onClick={() => setIndex(i)}
+                    aria-current={currentQ ? 'true' : undefined}
+                    aria-label={`Questão ${i + 1}${answered ? ', respondida' : ', pendente'}${currentQ ? ', atual' : ''}`}
+                    className={cn(
+                      'inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-xs font-semibold transition-colors',
+                      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                      currentQ && 'bg-primary text-primary-foreground',
+                      !currentQ && answered && 'bg-success/15 text-success',
+                      !currentQ && !answered && 'bg-muted text-muted-foreground',
+                    )}
+                  >
+                    {i + 1}
+                  </button>
+                )
+              })}
             </div>
             <Button
               variant="outline"

@@ -77,37 +77,43 @@ export function ProfilePage() {
           <CardContent>
             <form onSubmit={saveProfile} className="space-y-4">
               <div className="space-y-2">
-                <Label>Nome</Label>
+                <Label htmlFor="perfil-nome">Nome</Label>
                 <Input
+                  id="perfil-nome"
                   value={profile.name}
                   onChange={(e) => setProfile((p) => ({ ...p, name: e.target.value }))}
+                  autoComplete="name"
                 />
               </div>
               <div className="space-y-2">
-                <Label>Concurso alvo</Label>
+                <Label htmlFor="perfil-concurso">Concurso alvo</Label>
                 <Input
+                  id="perfil-concurso"
                   value={profile.concurso_alvo}
                   onChange={(e) => setProfile((p) => ({ ...p, concurso_alvo: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Cargo alvo</Label>
+                <Label htmlFor="perfil-cargo">Cargo alvo</Label>
                 <Input
+                  id="perfil-cargo"
                   value={profile.cargo_alvo}
                   onChange={(e) => setProfile((p) => ({ ...p, cargo_alvo: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Data da prova</Label>
+                <Label htmlFor="perfil-data-prova">Data da prova</Label>
                 <Input
+                  id="perfil-data-prova"
                   type="date"
                   value={profile.data_prova || ''}
                   onChange={(e) => setProfile((p) => ({ ...p, data_prova: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Meta diária de questões</Label>
+                <Label htmlFor="perfil-meta">Meta diária de questões</Label>
                 <Input
+                  id="perfil-meta"
                   type="number"
                   min={1}
                   value={profile.meta_questoes_dia}
@@ -131,9 +137,11 @@ export function ProfilePage() {
             <CardContent>
               <form onSubmit={savePassword} className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Senha atual</Label>
+                  <Label htmlFor="senha-atual">Senha atual</Label>
                   <Input
+                    id="senha-atual"
                     type="password"
+                    autoComplete="current-password"
                     value={passwords.current_password}
                     onChange={(e) =>
                       setPasswords((p) => ({ ...p, current_password: e.target.value }))
@@ -142,9 +150,11 @@ export function ProfilePage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Nova senha</Label>
+                  <Label htmlFor="senha-nova">Nova senha</Label>
                   <Input
+                    id="senha-nova"
                     type="password"
+                    autoComplete="new-password"
                     minLength={8}
                     value={passwords.new_password}
                     onChange={(e) =>

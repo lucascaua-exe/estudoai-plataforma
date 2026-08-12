@@ -94,8 +94,9 @@ export function GoalsPage() {
             <CardContent>
               <form onSubmit={onSave} className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Questões por dia</Label>
+                  <Label htmlFor="meta-dia">Questões por dia</Label>
                   <Input
+                    id="meta-dia"
                     type="number"
                     min={1}
                     value={form.questoes_dia}
@@ -105,8 +106,9 @@ export function GoalsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Questões por semana</Label>
+                  <Label htmlFor="meta-semana">Questões por semana</Label>
                   <Input
+                    id="meta-semana"
                     type="number"
                     min={1}
                     value={form.questoes_semana}
@@ -116,15 +118,17 @@ export function GoalsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Horas de estudo / dia</Label>
+                  <Label htmlFor="meta-horas">Horas de estudo / dia</Label>
                   <Input
+                    id="meta-horas"
                     value={form.horas_estudo}
                     onChange={(e) => setForm((f) => ({ ...f, horas_estudo: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Percentual de acerto desejado</Label>
+                  <Label htmlFor="meta-acerto">Percentual de acerto desejado</Label>
                   <Input
+                    id="meta-acerto"
                     type="number"
                     min={1}
                     max={100}

@@ -95,6 +95,7 @@ export function QuestionSolvePage() {
               variant="outline"
               size="icon"
               aria-label={data.favorita ? 'Remover dos favoritos' : 'Favoritar questão'}
+              aria-pressed={!!data.favorita}
               onClick={async () => {
                 try {
                   const r = await favorite.mutateAsync(data.id)
@@ -114,6 +115,7 @@ export function QuestionSolvePage() {
               variant="outline"
               size="icon"
               aria-label={data.marcar_revisao ? 'Remover da revisão' : 'Marcar para revisão'}
+              aria-pressed={!!data.marcar_revisao}
               onClick={async () => {
                 try {
                   const r = await review.mutateAsync(data.id)
@@ -158,7 +160,7 @@ export function QuestionSolvePage() {
             {enunciado}
           </p>
 
-          <div className="min-w-0 space-y-2.5" role="radiogroup" aria-label="Alternativas">
+          <div className="min-w-0 space-y-2.5" role="group" aria-label="Alternativas">
             {alternativas.map((alt) => {
               const isSelected = selected === alt.id
               const showFeedback = !!result
