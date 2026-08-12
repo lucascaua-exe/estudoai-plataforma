@@ -254,9 +254,9 @@ def iniciar_sala(sala: SalaCompeticao) -> SalaCompeticao:
     if sala.modo == SalaCompeticao.Modo.X1 and ativos != 2:
         raise ValueError("No modo 1x1 é preciso exatamente 2 jogadores.")
 
-    qtd = max(5, min(int(sala.quantidade or 10), 30))
+    qtd = max(3, min(int(sala.quantidade or 10), 50))
     selected = filtrar_questoes(sala.filtros or {}, qtd)
-    if len(selected) < min(5, qtd):
+    if len(selected) < min(3, qtd):
         raise ValueError(
             f"Poucas questões no filtro ({len(selected)}). Ajuste temas ou quantidade."
         )

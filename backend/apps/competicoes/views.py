@@ -18,18 +18,23 @@ from .services import (
 
 
 class CriarSalaSerializer(serializers.Serializer):
+    TEMPOS_VALIDOS = (15, 30, 45, 60, 90, 120, 180, 240, 300)
+
     modo = serializers.ChoiceField(
         choices=SalaCompeticao.Modo.choices, default=SalaCompeticao.Modo.TODOS
     )
-    quantidade = serializers.IntegerField(min_value=5, max_value=30, default=10)
-    tempo_por_questao = serializers.IntegerField(min_value=10, max_value=60, default=20)
-
-    def validate_tempo_por_questao(self, value):
-        if value not in (10, 15, 20, 30):
-            raise serializers.ValidationError("Use 10, 15, 20 ou 30 segundos.")
-        return value
+    quantidade = serializers.IntegerField(min_value=3, max_value=50, default=10)
+    tempo_por_questao = serializers.IntegerField(min_value=15, max_value=300, default=60)
     apelido = serializers.CharField(max_length=32, required=False, allow_blank=True)
     filtros = serializers.DictField(required=False)
+
+    def validate_tempo_por_questao(self, value):
+        # Aceita valores intermediários entre 15 e 300 (até 5 minutos)
+        value = int(value)
+        if value < 15 or value > 300:
+            raise serializers.ValidationError("Tempo deve ser entre 15 e 300 segundos.")
+        return value
+
 
 
 class EntrarSalaSerializer(serializers.Serializer):
@@ -71,27 +76,46 @@ class SalaCompeticaoViewSet(viewsets.GenericViewSet):
         data = ser.validated_data
 
         user = request.user
-        apelido = _normalizar_apelido(
-            data.get("apelido") or getattr(user, "name", None) or user.email.split("@")[0]
-        )
+        try:
+            apelido = _normalizar_apelido(
+                data.get("apelido")
+                or getattr(user, "name", None)
+                or (user.email.split("@")[0] if getattr(user, "email", None) else "Jogador")
+            )
+        except serializers.ValidationError as e:
+            msg = e.detail[0] if isinstance(e.detail, list) else e.detail
+            return Response({"detail": str(msg)}, status=400)
+
         tempo = int(data["tempo_por_questao"])
         filtros = data.get("filtros") or {}
 
-        sala = SalaCompeticao.objects.create(
-            host=user,
-            modo=data["modo"],
-            quantidade=data["quantidade"],
-            tempo_por_questao=tempo,
-            filtros=filtros,
-            status=SalaCompeticao.Status.LOBBY,
-            expires_at=timezone.now() + timedelta(hours=2),
-        )
-        part = Participante.objects.create(
-            sala=sala,
-            user=user,
-            apelido=apelido,
-            is_host=True,
-        )
+        try:
+            sala = SalaCompeticao.objects.create(
+                host=user,
+                modo=data["modo"],
+                quantidade=data["quantidade"],
+                tempo_por_questao=tempo,
+                filtros=filtros,
+                status=SalaCompeticao.Status.LOBBY,
+                expires_at=timezone.now() + timedelta(hours=2),
+            )
+            part = Participante.objects.create(
+                sala=sala,
+                user=user,
+                apelido=apelido,
+                is_host=True,
+            )
+        except IntegrityError:
+            return Response(
+                {"detail": "Não foi possível criar a sala (conflito). Tente de novo."},
+                status=400,
+            )
+        except Exception as exc:
+            return Response(
+                {"detail": f"Erro ao criar sala: {exc}"},
+                status=500,
+            )
+
         return Response(
             {
                 "id": sala.id,

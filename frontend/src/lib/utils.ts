@@ -75,6 +75,15 @@ export function getErrorMessage(error: unknown, fallback = 'Ocorreu um erro.') {
   if (typeof data === 'string') return data
   if (data && typeof data === 'object') {
     if (typeof data.detail === 'string') return data.detail
+    // DRF field errors: { campo: ["msg"] } ou { campo: "msg" }
+    for (const [key, val] of Object.entries(data)) {
+      if (typeof val === 'string' && val.trim()) {
+        return key === 'detail' ? val : `${key}: ${val}`
+      }
+      if (Array.isArray(val) && typeof val[0] === 'string') {
+        return key === 'non_field_errors' ? val[0] : `${key}: ${val[0]}`
+      }
+    }
     const first = Object.values(data)[0]
     if (typeof first === 'string') return first
     if (Array.isArray(first) && typeof first[0] === 'string') return first[0]

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Swords, Users } from 'lucide-react'
 import { toast } from 'sonner'
@@ -19,6 +19,18 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 
+const TEMPO_OPTIONS = [
+  { value: '15', label: '15 segundos' },
+  { value: '30', label: '30 segundos' },
+  { value: '45', label: '45 segundos' },
+  { value: '60', label: '1 minuto' },
+  { value: '90', label: '1 min 30 s' },
+  { value: '120', label: '2 minutos' },
+  { value: '180', label: '3 minutos' },
+  { value: '240', label: '4 minutos' },
+  { value: '300', label: '5 minutos' },
+]
+
 export function CompeticaoHubPage() {
   const navigate = useNavigate()
   const user = useAuthStore((s) => s.user)
@@ -32,17 +44,54 @@ export function CompeticaoHubPage() {
   const [apelido, setApelido] = useState(defaultApelido)
   const [modo, setModo] = useState<'1x1' | 'todos'>('todos')
   const [quantidade, setQuantidade] = useState('10')
-  const [tempo, setTempo] = useState('20')
+  const [tempo, setTempo] = useState('60')
   const [disciplina, setDisciplina] = useState('')
   const [assunto, setAssunto] = useState('')
   const [banca, setBanca] = useState('')
   const [codigo, setCodigo] = useState('')
   const [apelidoEntrar, setApelidoEntrar] = useState(defaultApelido)
 
-  const assuntos = useMemo(() => {
-    const d = catalog.data?.find((x) => String(x.id) === disciplina)
-    return d?.assuntos ?? []
-  }, [catalog.data, disciplina])
+  useEffect(() => {
+    if (defaultApelido) {
+      setApelido((prev) => (prev === 'Jogador' || !prev ? defaultApelido : prev))
+      setApelidoEntrar((prev) => (prev === 'Jogador' || !prev ? defaultApelido : prev))
+    }
+  }, [defaultApelido])
+
+  const allAssuntos = useMemo(() => {
+    if (!catalog.data) return []
+    return catalog.data.flatMap((d) =>
+      (d.assuntos || []).map((a) => ({
+        id: a.id,
+        nome: a.nome,
+        disciplinaId: d.id,
+        disciplinaNome: d.nome,
+      })),
+    )
+  }, [catalog.data])
+
+  const assuntosFiltrados = useMemo(() => {
+    if (!disciplina) return allAssuntos
+    return allAssuntos.filter((a) => String(a.disciplinaId) === disciplina)
+  }, [allAssuntos, disciplina])
+
+  const onDisciplinaChange = (value: string) => {
+    setDisciplina(value)
+    if (value && assunto) {
+      const still = allAssuntos.find(
+        (a) => String(a.id) === assunto && String(a.disciplinaId) === value,
+      )
+      if (!still) setAssunto('')
+    }
+  }
+
+  const onAssuntoChange = (value: string) => {
+    setAssunto(value)
+    if (value) {
+      const found = allAssuntos.find((a) => String(a.id) === value)
+      if (found) setDisciplina(String(found.disciplinaId))
+    }
+  }
 
   const onCreate = async () => {
     const nick = apelido.trim()
@@ -51,10 +100,16 @@ export function CompeticaoHubPage() {
       return
     }
     const qtd = Number(quantidade)
-    if (!Number.isFinite(qtd) || qtd < 5 || qtd > 30) {
-      toast.error('Quantidade deve ser entre 5 e 30.')
+    if (!Number.isFinite(qtd) || qtd < 3 || qtd > 50) {
+      toast.error('Quantidade deve ser entre 3 e 50.')
       return
     }
+    const tempoNum = Number(tempo)
+    if (!Number.isFinite(tempoNum) || tempoNum < 15 || tempoNum > 300) {
+      toast.error('Tempo deve ser entre 15 segundos e 5 minutos.')
+      return
+    }
+
     const filtros: Record<string, unknown> = {}
     if (disciplina) filtros.disciplinas = [Number(disciplina)]
     if (assunto) filtros.assuntos = [Number(assunto)]
@@ -64,10 +119,14 @@ export function CompeticaoHubPage() {
       const res = await create.mutateAsync({
         modo,
         quantidade: qtd,
-        tempo_por_questao: Number(tempo) || 20,
+        tempo_por_questao: tempoNum,
         apelido: nick,
         filtros,
       })
+      if (!res?.id || !res?.token) {
+        toast.error('Resposta inválida do servidor ao criar a sala.')
+        return
+      }
       saveCompeticaoToken(res.id, res.token)
       toast.success(`Sala ${res.codigo} criada`)
       navigate(`/competicao/${res.id}`)
@@ -143,19 +202,20 @@ export function CompeticaoHubPage() {
                 <div className="space-y-2">
                   <Label htmlFor="comp-tempo">Tempo por questão</Label>
                   <Select id="comp-tempo" value={tempo} onChange={(e) => setTempo(e.target.value)}>
-                    <option value="10">10 segundos</option>
-                    <option value="15">15 segundos</option>
-                    <option value="20">20 segundos</option>
-                    <option value="30">30 segundos</option>
+                    {TEMPO_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="comp-qtd">Quantidade</Label>
+                  <Label htmlFor="comp-qtd">Quantidade de questões</Label>
                   <Input
                     id="comp-qtd"
                     type="number"
-                    min={5}
-                    max={30}
+                    min={3}
+                    max={50}
                     value={quantidade}
                     onChange={(e) => setQuantidade(e.target.value)}
                   />
@@ -176,10 +236,7 @@ export function CompeticaoHubPage() {
                   <Select
                     id="comp-disc"
                     value={disciplina}
-                    onChange={(e) => {
-                      setDisciplina(e.target.value)
-                      setAssunto('')
-                    }}
+                    onChange={(e) => onDisciplinaChange(e.target.value)}
                   >
                     <option value="">Todas</option>
                     {catalog.data?.map((d) => (
@@ -189,21 +246,38 @@ export function CompeticaoHubPage() {
                     ))}
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="comp-ass">Assunto</Label>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="comp-ass">
+                    Assunto
+                    <span className="ml-1 font-normal text-muted-foreground">
+                      ({assuntosFiltrados.length} disponíveis)
+                    </span>
+                  </Label>
                   <Select
                     id="comp-ass"
                     value={assunto}
-                    onChange={(e) => setAssunto(e.target.value)}
-                    disabled={!disciplina}
+                    onChange={(e) => onAssuntoChange(e.target.value)}
                   >
-                    <option value="">Todos</option>
-                    {assuntos.map((a) => (
+                    <option value="">
+                      {disciplina ? 'Todos da disciplina' : 'Todos os assuntos'}
+                    </option>
+                    {assuntosFiltrados.map((a) => (
                       <option key={a.id} value={a.id}>
-                        {formatStudyText(a.nome)}
+                        {disciplina
+                          ? formatStudyText(a.nome)
+                          : `${formatStudyText(a.disciplinaNome)} — ${formatStudyText(a.nome)}`}
                       </option>
                     ))}
                   </Select>
+                  {assuntosFiltrados.length === 0 ? (
+                    <p className="text-xs text-destructive">
+                      Nenhum assunto encontrado. Verifique o catálogo ou escolha outra disciplina.
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">
+                      Você pode escolher o assunto direto — a disciplina é preenchida automaticamente.
+                    </p>
+                  )}
                 </div>
               </div>
               <Button
@@ -215,7 +289,7 @@ export function CompeticaoHubPage() {
                 {create.isPending ? 'Criando…' : 'Criar e ir ao lobby'}
               </Button>
               <p className="text-xs text-muted-foreground">
-                Pontuação: acerto rápido vale mais (até 1000 pts). Erro ou timeout = 0.
+                Tempo de até 5 minutos por questão. Acertos rápidos valem mais pontos.
               </p>
             </CardContent>
           </Card>
