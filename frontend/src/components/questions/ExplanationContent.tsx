@@ -54,7 +54,7 @@ function normalizeSource(raw: string): string {
     '$1\n\n$2:\n',
   )
   // Quebra alternativas coladas no mesmo parágrafo: (A) ... (B) ...
-  text = text.replace(/(?<!\n)\s*[\(•\-]?\s*([A-Ea-e])\)\s+/g, '\n• $1) ')
+  text = text.replace(/\s*[\(•\-]?\s*([A-Ea-e])\)\s+/g, '\n• $1) ')
   text = text.replace(/(^|\n)\s*(#{1,3})\s*/g, '$1$2 ')
   return text.replace(/\n{3,}/g, '\n\n').trim()
 }

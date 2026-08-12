@@ -8,12 +8,10 @@ import { DocumentTitle } from '@/components/DocumentTitle'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { Skeleton } from '@/components/ui/skeleton'
+import { LoginPage } from '@/pages/LoginPage'
 
 const MaintenancePage = lazy(() =>
   import('@/pages/MaintenancePage').then((m) => ({ default: m.MaintenancePage })),
-)
-const LoginPage = lazy(() =>
-  import('@/pages/LoginPage').then((m) => ({ default: m.LoginPage })),
 )
 const RegisterPage = lazy(() =>
   import('@/pages/RegisterPage').then((m) => ({ default: m.RegisterPage })),
