@@ -51,13 +51,13 @@ class ParseContext:
 
 
 def normalize_spaces(text: str) -> str:
-    """Insere espaços em colagens típicas da extração PDF."""
+    """Insere espaços em colagens típicas da extração PDF e remove lixo de UI."""
     if not text:
         return ""
-    # Separar letra maiúscula colada após minúscula: questoesFaceis -> questoes Faceis (parcial)
-    text = text.replace("\u00a0", " ")
-    text = re.sub(r"[ \t]+", " ", text)
-    # Corrigir padrões conhecidos
+    from apps.questions.text_cleanup import clean_study_text
+
+    text = clean_study_text(text)
+    # Corrigir padrões conhecidos adicionais do edital
     replacements = [
         (r"QuestõesFáceis", "Questões Fáceis"),
         (r"QuestoesFaceis", "Questões Fáceis"),
@@ -70,7 +70,6 @@ def normalize_spaces(text: str) -> str:
         (r"ResoluçãodaQuestão", "Resolução da Questão"),
         (r"ResolucaodaQuestao", "Resolução da Questão"),
         (r"Aalternativacorretaéa", "A alternativa correta é a"),
-        (r"A alternativa correta é a", "A alternativa correta é a"),
         (r"TecnologiadaInformacao", "Tecnologia da Informação"),
         (r"LinguaPortuguesa", "Língua Portuguesa"),
         (r"Legislacao", "Legislação"),

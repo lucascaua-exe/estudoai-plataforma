@@ -2,18 +2,29 @@ from django.db.models import Count, Q
 from rest_framework import serializers
 
 from .models import Alternativa, Questao, QuestaoUsuarioMeta, Tentativa
+from .text_cleanup import clean_alternativa, clean_enunciado, clean_explicacao
 
 
 class AlternativaSerializer(serializers.ModelSerializer):
+    texto = serializers.SerializerMethodField()
+
     class Meta:
         model = Alternativa
         fields = ["id", "letra", "texto"]
 
+    def get_texto(self, obj):
+        return clean_alternativa(obj.texto)
+
 
 class AlternativaReveladaSerializer(serializers.ModelSerializer):
+    texto = serializers.SerializerMethodField()
+
     class Meta:
         model = Alternativa
         fields = ["id", "letra", "texto", "correta"]
+
+    def get_texto(self, obj):
+        return clean_alternativa(obj.texto)
 
 
 class QuestaoListSerializer(serializers.ModelSerializer):
@@ -24,6 +35,7 @@ class QuestaoListSerializer(serializers.ModelSerializer):
     acertou = serializers.SerializerMethodField()
     favorita = serializers.SerializerMethodField()
     marcar_revisao = serializers.SerializerMethodField()
+    enunciado = serializers.SerializerMethodField()
 
     class Meta:
         model = Questao
@@ -45,6 +57,9 @@ class QuestaoListSerializer(serializers.ModelSerializer):
             "marcar_revisao",
             "gabarito",
         ]
+
+    def get_enunciado(self, obj):
+        return clean_enunciado(obj.enunciado)
 
     def _meta(self, obj):
         request = self.context.get("request")
@@ -89,6 +104,8 @@ class QuestaoListSerializer(serializers.ModelSerializer):
 class QuestaoDetailSerializer(QuestaoListSerializer):
     alternativas = serializers.SerializerMethodField()
     fonte = serializers.SerializerMethodField()
+    explicacao = serializers.SerializerMethodField()
+    trecho_referencia = serializers.SerializerMethodField()
 
     class Meta(QuestaoListSerializer.Meta):
         fields = QuestaoListSerializer.Meta.fields + [
@@ -97,6 +114,14 @@ class QuestaoDetailSerializer(QuestaoListSerializer):
             "alternativas",
             "fonte",
         ]
+
+    def get_explicacao(self, obj):
+        return clean_explicacao(obj.explicacao)
+
+    def get_trecho_referencia(self, obj):
+        from .text_cleanup import clean_study_text
+
+        return clean_study_text(obj.trecho_referencia or "")
 
     def get_alternativas(self, obj):
         request = self.context.get("request")

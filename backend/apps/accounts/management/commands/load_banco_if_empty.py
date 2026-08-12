@@ -34,3 +34,4 @@ class Command(BaseCommand):
         self.stdout.write(f"Carregando {fixture}…")
         call_command("loaddata", "banco", verbosity=1)
         self.stdout.write(self.style.SUCCESS(f"OK — {Questao.objects.count()} questões."))
+        call_command("clean_question_texts")
