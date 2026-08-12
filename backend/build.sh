@@ -28,4 +28,4 @@ echo "[build] import_provas_batch…"
 python manage.py import_provas_batch || true
 
 echo "[build] clean_question_texts…"
-python manage.py clean_question_texts
+python manage.py clean_question_texts || true
