@@ -337,6 +337,7 @@ export interface CompeticaoRankingItem {
   acertos: number
   is_host: boolean
   tempo_total_ms: number
+  pontos_rodada?: number | null
 }
 
 export interface CompeticaoAlternativa {
@@ -377,6 +378,8 @@ export interface CompeticaoEstado {
     apelido: string
     is_host: boolean
     pontos: number
+    acertos?: number
+    streak?: number
     token: string
   } | null
   minha_resposta: {
@@ -384,8 +387,14 @@ export interface CompeticaoEstado {
     correta: boolean | null
     pontos: number | null
     tempo_ms: number
+    respondida?: boolean
   } | null
   vencedor: CompeticaoRankingItem | null
+  pontuacao?: {
+    max_por_questao: number
+    min_acerto: number
+    descricao: string
+  }
   respondidos: number
   total_ativos: number
   expires_at: string | null

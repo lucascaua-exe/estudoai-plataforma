@@ -25,10 +25,12 @@ function RankingList({
   ranking,
   highlightId,
   animate,
+  showRound,
 }: {
   ranking: CompeticaoRankingItem[]
   highlightId?: number
   animate?: boolean
+  showRound?: boolean
 }) {
   return (
     <ol className="space-y-2">
@@ -67,9 +69,21 @@ function RankingList({
               ) : null}
             </span>
           </div>
-          <span className="shrink-0 font-display text-sm font-semibold tabular-nums">
-            {r.pontos} pts
-          </span>
+          <div className="shrink-0 text-right">
+            <span className="font-display text-sm font-semibold tabular-nums">
+              {r.pontos} pts
+            </span>
+            {showRound && r.pontos_rodada != null ? (
+              <p
+                className={cn(
+                  'text-xs tabular-nums',
+                  r.pontos_rodada > 0 ? 'text-success' : 'text-muted-foreground',
+                )}
+              >
+                {r.pontos_rodada > 0 ? `+${r.pontos_rodada}` : '0'} nesta
+              </p>
+            ) : null}
+          </div>
         </li>
       ))}
     </ol>
@@ -158,7 +172,9 @@ export function CompeticaoRoomPage() {
     return () => window.clearTimeout(t)
   }, [data?.status, data?.indice_atual, data?.me?.is_host, salaId, token])
 
-  const alreadyAnswered = !!data?.minha_resposta?.letra
+  const alreadyAnswered = !!(
+    data?.minha_resposta?.letra || data?.minha_resposta?.respondida
+  )
   const locked = alreadyAnswered || responder.isPending || data?.status !== 'question'
 
   const onAnswer = async (letra: string) => {
@@ -295,6 +311,10 @@ export function CompeticaoRoomPage() {
                 {data.participantes.length}/{data.modo === '1x1' ? 2 : 20} jogadores
               </Badge>
             </div>
+            <p className="rounded-xl bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+              {data.pontuacao?.descricao ||
+                'Acerto rápido: até 1000 pts. Streak: +100 a +500. Erro/timeout: 0.'}
+            </p>
 
             <div>
               <p className="mb-2 text-sm font-medium">Na sala</p>
@@ -364,9 +384,17 @@ export function CompeticaoRoomPage() {
               {q.assunto ? ` · ${formatStudyText(q.assunto)}` : ''}
             </p>
           </div>
-          <Badge variant="secondary">
-            {data.respondidos}/{data.total_ativos} responderam
-          </Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            {data.me ? (
+              <Badge variant="outline">{data.me.pontos} pts</Badge>
+            ) : null}
+            {(data.me?.streak ?? 0) > 0 ? (
+              <Badge variant="warning">🔥 {data.me?.streak}x</Badge>
+            ) : null}
+            <Badge variant="secondary">
+              {data.respondidos}/{data.total_ativos} responderam
+            </Badge>
+          </div>
         </div>
 
         <TimerBar
@@ -444,7 +472,14 @@ export function CompeticaoRoomPage() {
             {data.minha_resposta?.correta ? 'Você acertou!' : 'Resposta revelada'}
           </h2>
           {data.minha_resposta?.correta && data.minha_resposta.pontos != null ? (
-            <p className="mt-1 text-sm text-success">+{data.minha_resposta.pontos} pontos</p>
+            <p className="mt-1 text-sm text-success">
+              +{data.minha_resposta.pontos} pontos
+              {data.minha_resposta.tempo_ms != null
+                ? ` · ${(data.minha_resposta.tempo_ms / 1000).toFixed(1)}s`
+                : ''}
+            </p>
+          ) : data.minha_resposta && data.minha_resposta.correta === false ? (
+            <p className="mt-1 text-sm text-destructive">+0 pontos</p>
           ) : null}
         </div>
 
@@ -488,7 +523,7 @@ export function CompeticaoRoomPage() {
               <Trophy className="h-3.5 w-3.5" aria-hidden />
               Ranking
             </p>
-            <RankingList ranking={data.ranking} highlightId={data.me?.id} animate />
+            <RankingList ranking={data.ranking} highlightId={data.me?.id} animate showRound />
             {data.me?.is_host ? (
               <Button
                 className="mt-4 w-full"

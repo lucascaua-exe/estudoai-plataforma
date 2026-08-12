@@ -288,9 +288,9 @@ export function CompeticaoHubPage() {
               >
                 {create.isPending ? 'Criando…' : 'Criar e ir ao lobby'}
               </Button>
-              <p className="text-xs text-muted-foreground">
-                Tempo de até 5 minutos por questão. Acertos rápidos valem mais pontos.
-              </p>
+      <p className="text-xs text-muted-foreground">
+        Pontuação: acerto rápido até 1000 pts + bônus de sequência. Erro ou timeout = 0.
+      </p>
             </CardContent>
           </Card>
 
