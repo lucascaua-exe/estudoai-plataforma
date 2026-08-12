@@ -89,3 +89,26 @@ export function resolveMediaUrl(url?: string | null): string | null {
   if (apiRoot) return `${apiRoot}${path}`
   return path
 }
+
+const DIFF_LABEL: Record<string, string> = {
+  facil: 'Fácil',
+  medio: 'Médio',
+  dificil: 'Difícil',
+  nao_informado: 'N/I',
+}
+
+/** Variante de Badge para dificuldade: fácil=verde, médio=amarelo, difícil=vermelho */
+export function difficultyBadgeVariant(
+  dificuldade?: string | null,
+): 'easy' | 'medium' | 'hard' | 'outline' {
+  const key = (dificuldade || '').toLowerCase()
+  if (key === 'facil' || key === 'fácil') return 'easy'
+  if (key === 'medio' || key === 'médio') return 'medium'
+  if (key === 'dificil' || key === 'difícil') return 'hard'
+  return 'outline'
+}
+
+export function difficultyLabel(dificuldade?: string | null) {
+  if (!dificuldade) return 'N/I'
+  return DIFF_LABEL[dificuldade] || DIFF_LABEL[dificuldade.toLowerCase()] || dificuldade
+}

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Bookmark, ChevronLeft, ChevronRight, Flag } from 'lucide-react'
 import { useCatalog, useQuestions, useToggleFavorite, useToggleReview } from '@/hooks/use-api'
-import { truncate } from '@/lib/utils'
+import { truncate, getErrorMessage, difficultyBadgeVariant, difficultyLabel } from '@/lib/utils'
 import { PageHeader, ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -12,14 +12,6 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
 import { toast } from 'sonner'
-import { getErrorMessage } from '@/lib/utils'
-
-const dificuldadeLabel: Record<string, string> = {
-  facil: 'Fácil',
-  medio: 'Médio',
-  dificil: 'Difícil',
-  nao_informado: 'N/I',
-}
 
 export function QuestionsPage() {
   const [params, setParams] = useSearchParams()
@@ -162,8 +154,8 @@ export function QuestionsPage() {
                   <div className="min-w-0 flex-1">
                     <div className="mb-2 flex flex-wrap gap-2">
                       <Badge variant="secondary">{q.disciplina_nome || 'Disciplina'}</Badge>
-                      <Badge variant="outline">
-                        {dificuldadeLabel[q.dificuldade] || q.dificuldade}
+                      <Badge variant={difficultyBadgeVariant(q.dificuldade)}>
+                        {difficultyLabel(q.dificuldade)}
                       </Badge>
                       {q.respondida ? (
                         <Badge variant={q.acertou ? 'success' : 'destructive'}>

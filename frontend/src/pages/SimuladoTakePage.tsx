@@ -7,6 +7,7 @@ import {
   useStartSimulado,
 } from '@/hooks/use-api'
 import { cn, formatStudyText, getErrorMessage } from '@/lib/utils'
+import { difficultyBadgeVariant, difficultyLabel } from '@/lib/utils'
 import type { SimuladoStartResponse } from '@/lib/types'
 import { PageHeader, ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
@@ -132,9 +133,16 @@ export function SimuladoTakePage() {
 
       <Card>
         <CardContent className="space-y-5 pt-5">
-          <Badge variant="secondary">
-            {current.questao.disciplina_nome || 'Disciplina'}
-          </Badge>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="secondary">
+              {current.questao.disciplina_nome || 'Disciplina'}
+            </Badge>
+            {current.questao.dificuldade ? (
+              <Badge variant={difficultyBadgeVariant(current.questao.dificuldade)}>
+                {difficultyLabel(current.questao.dificuldade)}
+              </Badge>
+            ) : null}
+          </div>
           <p className="text-pretty break-words text-base leading-relaxed [overflow-wrap:anywhere]">
             {formatStudyText(current.questao.enunciado)}
           </p>

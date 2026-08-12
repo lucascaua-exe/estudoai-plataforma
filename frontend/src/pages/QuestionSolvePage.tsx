@@ -8,7 +8,7 @@ import {
   useToggleFavorite,
   useToggleReview,
 } from '@/hooks/use-api'
-import { cn, formatStudyText, getErrorMessage } from '@/lib/utils'
+import { cn, formatStudyText, getErrorMessage, difficultyBadgeVariant, difficultyLabel } from '@/lib/utils'
 import type { AnswerResult } from '@/lib/types'
 import { ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
@@ -147,7 +147,9 @@ export function QuestionSolvePage() {
             Questão #{data.numero_origem || data.id}
           </p>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="outline">{data.dificuldade}</Badge>
+            <Badge variant={difficultyBadgeVariant(data.dificuldade)}>
+              {difficultyLabel(data.dificuldade)}
+            </Badge>
             {data.origem === 'ai_generated' ? (
               <Badge variant="secondary">
                 <Sparkles className="mr-1 h-3 w-3" aria-hidden /> IA

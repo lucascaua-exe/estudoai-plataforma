@@ -15,17 +15,17 @@ FIGS.mkdir(parents=True, exist_ok=True)
 
 # bbox [x0,y0,x1,y1] fração da página
 CROPS: dict[int, tuple[int, list[float]]] = {
-    32: (1, [0.18, 0.20, 0.82, 0.38]),
-    34: (1, [0.18, 0.68, 0.82, 0.84]),
-    35: (2, [0.10, 0.09, 0.92, 0.36]),
-    43: (3, [0.18, 0.42, 0.82, 0.58]),
-    46: (4, [0.18, 0.36, 0.82, 0.55]),
-    48: (5, [0.12, 0.08, 0.88, 0.36]),
-    49: (5, [0.10, 0.40, 0.90, 0.66]),
-    51: (6, [0.12, 0.10, 0.88, 0.42]),
-    52: (6, [0.12, 0.52, 0.88, 0.82]),
-    53: (7, [0.16, 0.12, 0.84, 0.34]),
-    60: (8, [0.14, 0.50, 0.86, 0.68]),
+    32: (1, [0.20, 0.205, 0.80, 0.345]),
+    34: (1, [0.20, 0.685, 0.80, 0.795]),
+    35: (2, [0.10, 0.095, 0.90, 0.345]),
+    43: (3, [0.22, 0.43, 0.78, 0.535]),
+    46: (4, [0.20, 0.365, 0.80, 0.515]),
+    48: (5, [0.14, 0.09, 0.86, 0.295]),
+    49: (5, [0.10, 0.405, 0.90, 0.575]),
+    51: (6, [0.14, 0.105, 0.86, 0.345]),
+    52: (6, [0.14, 0.53, 0.86, 0.745]),
+    53: (7, [0.18, 0.125, 0.82, 0.295]),
+    60: (8, [0.16, 0.505, 0.84, 0.645]),
 }
 
 QUESTOES = [
@@ -427,8 +427,23 @@ def crop(page_no: int, bbox: list[float], dest: Path) -> None:
     w, h = im.size
     x0, y0, x1, y1 = bbox
     box = (int(x0 * w), int(y0 * h), int(x1 * w), int(y1 * h))
-    im.crop(box).save(dest, quality=92, optimize=True)
-    print("crop", dest.name, box)
+    cropped = im.crop(box)
+    cropped = _trim_bottom_text(cropped)
+    cropped.save(dest, quality=92, optimize=True)
+    print("crop", dest.name, cropped.size)
+
+
+def _trim_bottom_text(im: Image.Image, white_thresh: int = 245, min_ink: float = 0.01) -> Image.Image:
+    """Remove faixa inferior com 'Fonte:' / enunciado repetido."""
+    gray = im.convert("L")
+    w, h = gray.size
+    pixels = gray.load()
+    last = int(h * 0.2)
+    for y in range(int(h * 0.15), int(h * 0.92)):
+        ink = sum(1 for x in range(0, w, 2) if pixels[x, y] < white_thresh)
+        if ink / (w / 2) > min_ink:
+            last = y
+    return im.crop((0, 0, w, min(h, last + 6)))
 
 
 def main() -> None:
