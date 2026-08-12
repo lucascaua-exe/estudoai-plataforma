@@ -1,0 +1,2 @@
+# Opcional — RAG com embeddings locais (NÃO instalar no Render free: estoura memória/build)
+chromadb>=0.5

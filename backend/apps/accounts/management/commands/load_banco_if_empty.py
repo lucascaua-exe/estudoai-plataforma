@@ -32,5 +32,5 @@ class Command(BaseCommand):
             return
 
         self.stdout.write(f"Carregando {fixture}…")
-        call_command("loaddata", str(fixture))
+        call_command("loaddata", "banco", verbosity=1)
         self.stdout.write(self.style.SUCCESS(f"OK — {Questao.objects.count()} questões."))

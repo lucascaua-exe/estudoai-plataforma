@@ -63,7 +63,10 @@ def search_chunks(query: str, k: int = 6) -> list[dict]:
 
 
 def _chroma_search(query: str, k: int = 6) -> list[dict]:
-    import chromadb
+    try:
+        import chromadb
+    except ImportError:
+        return []
     from openai import OpenAI
 
     client = OpenAI(api_key=settings.OPENAI_API_KEY)

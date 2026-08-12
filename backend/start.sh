@@ -1,15 +1,9 @@
 #!/usr/bin/env bash
-# Boot do Render (plano gratuito — sem Shell interativo).
+# Start no Render — sobe rápido para passar no health check.
 set -euo pipefail
 
-echo "[start] migrate…"
+echo "[start] migrate (safety)…"
 python manage.py migrate --noinput
-
-echo "[start] ensure_admin…"
-python manage.py ensure_admin
-
-echo "[start] load_banco_if_empty…"
-python manage.py load_banco_if_empty
 
 PORT="${PORT:-8000}"
 echo "[start] gunicorn :${PORT}"
