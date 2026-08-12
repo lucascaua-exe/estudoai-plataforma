@@ -1,9 +1,19 @@
 /* EstudoAI PWA — cache estático leve */
-const CACHE = 'estudoai-v1'
+const CACHE = 'estudoai-v2'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE).then((cache) => cache.addAll(['/', '/favicon.svg', '/manifest.webmanifest'])),
+    caches.open(CACHE).then((cache) =>
+      cache.addAll([
+        '/',
+        '/login',
+        '/favicon.svg',
+        '/manifest.webmanifest',
+        '/pwa-192.png',
+        '/pwa-512.png',
+        '/apple-touch-icon.png',
+      ]),
+    ),
   )
   self.skipWaiting()
 })
@@ -22,14 +32,19 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return
   const url = new URL(request.url)
   if (url.origin !== self.location.origin) return
-  // Não cachear API
   if (url.pathname.startsWith('/api')) return
 
   event.respondWith(
     caches.match(request).then((cached) => {
       const fetched = fetch(request)
         .then((response) => {
-          if (response.ok && (url.pathname.startsWith('/assets') || url.pathname.endsWith('.svg'))) {
+          if (
+            response.ok &&
+            (url.pathname.startsWith('/assets') ||
+              url.pathname.endsWith('.svg') ||
+              url.pathname.endsWith('.png') ||
+              url.pathname.endsWith('.webmanifest'))
+          ) {
             const clone = response.clone()
             caches.open(CACHE).then((cache) => cache.put(request, clone))
           }

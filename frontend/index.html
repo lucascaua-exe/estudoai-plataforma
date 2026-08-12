@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta
@@ -24,6 +24,26 @@
     />
     <meta property="og:locale" content="pt_BR" />
     <title>EstudoAI — Estudo gamificado</title>
+    <script>
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('estudoai-theme')
+          var mobile =
+            window.matchMedia('(max-width: 1023px)').matches ||
+            window.matchMedia('(pointer: coarse)').matches
+          var theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : mobile
+                ? 'light'
+                : window.matchMedia('(prefers-color-scheme: dark)').matches
+                  ? 'dark'
+                  : 'light'
+          if (theme === 'dark') document.documentElement.classList.add('dark')
+          else document.documentElement.classList.remove('dark')
+        } catch (e) {}
+      })()
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

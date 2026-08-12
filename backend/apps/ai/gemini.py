@@ -122,21 +122,40 @@ def generate_json(
 ) -> dict[str, Any]:
     raw = generate_text(prompt, system=system, temperature=temperature, json_mode=True)
     if not raw:
+        # Fallback sem json_mode (alguns modelos falham no mime type)
+        raw = generate_text(prompt, system=system, temperature=temperature, json_mode=False)
+    if not raw:
         return {}
     cleaned = raw.strip()
     if cleaned.startswith("```"):
         cleaned = cleaned.strip("`")
-        if cleaned.startswith("json"):
+        if cleaned.lower().startswith("json"):
             cleaned = cleaned[4:].strip()
     try:
         data = json.loads(cleaned)
-        return data if isinstance(data, dict) else {}
+        if isinstance(data, dict):
+            return data
+        if isinstance(data, list):
+            return {"questoes": data}
+        return {}
     except json.JSONDecodeError:
-        start, end = cleaned.find("{"), cleaned.rfind("}")
-        if start >= 0 and end > start:
+        start_obj, end_obj = cleaned.find("{"), cleaned.rfind("}")
+        start_arr, end_arr = cleaned.find("["), cleaned.rfind("]")
+        # Prefere objeto; se só houver array, encapsula
+        if start_obj >= 0 and end_obj > start_obj:
             try:
-                data = json.loads(cleaned[start : end + 1])
-                return data if isinstance(data, dict) else {}
+                data = json.loads(cleaned[start_obj : end_obj + 1])
+                if isinstance(data, dict):
+                    return data
+                if isinstance(data, list):
+                    return {"questoes": data}
+            except json.JSONDecodeError:
+                pass
+        if start_arr >= 0 and end_arr > start_arr:
+            try:
+                data = json.loads(cleaned[start_arr : end_arr + 1])
+                if isinstance(data, list):
+                    return {"questoes": data}
             except json.JSONDecodeError:
                 return {}
         return {}

@@ -3,13 +3,14 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner'
 import { ThemeProvider } from '@/components/theme-provider'
+import { BootSplash } from '@/components/BootSplash'
 import { DocumentTitle } from '@/components/DocumentTitle'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { Skeleton } from '@/components/ui/skeleton'
 
-const LandingPage = lazy(() =>
-  import('@/pages/LandingPage').then((m) => ({ default: m.LandingPage })),
+const MaintenancePage = lazy(() =>
+  import('@/pages/MaintenancePage').then((m) => ({ default: m.MaintenancePage })),
 )
 const LoginPage = lazy(() =>
   import('@/pages/LoginPage').then((m) => ({ default: m.LoginPage })),
@@ -104,10 +105,12 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <BrowserRouter>
+          <BootSplash />
           <DocumentTitle />
           <Suspense fallback={<RouteFallback />}>
             <Routes>
-              <Route path="/" element={<LandingPage />} />
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="/landing" element={<MaintenancePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/privacidade" element={<PrivacyPage />} />
@@ -134,7 +137,7 @@ export default function App() {
                   <Route path="configuracoes" element={<SettingsPage />} />
                 </Route>
               </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
           </Suspense>
         </BrowserRouter>

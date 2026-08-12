@@ -67,8 +67,18 @@ class GenerateQuestionsView(APIView):
         if not assunto:
             return Response({"detail": "Assunto não encontrado."}, status=400)
 
+        if not ai_available():
+            return Response(
+                {
+                    "detail": "Configure GEMINI_API_KEY (ou OPENAI_API_KEY) para gerar questões com IA.",
+                    "questoes": [],
+                },
+                status=503,
+            )
+
         raw = generate_questions(assunto.nome, assunto.disciplina.nome, quantidade)
         created = []
+        skipped_dupes = 0
         for item in raw:
             enunciado = normalize_spaces(item.get("enunciado") or "")
             if not enunciado:
@@ -85,11 +95,14 @@ class GenerateQuestionsView(APIView):
                 alt_map = {str(k).upper(): v for k, v in alts.items()}
 
             gabarito = (item.get("gabarito") or "").upper()[:1]
+            if gabarito not in "ABCDE" or not any(alt_map.get(l) for l in "ABCDE"):
+                continue
             trecho = item.get("trecho_referencia") or ""
             h = hashlib.sha256(
                 f"ai|{enunciado}|{assunto.id}".encode()
             ).hexdigest()
             if Questao.objects.filter(hash_conteudo=h).exists():
+                skipped_dupes += 1
                 continue
             q = Questao.objects.create(
                 disciplina=assunto.disciplina,
@@ -111,30 +124,35 @@ class GenerateQuestionsView(APIView):
                         texto=str(texto),
                         correta=letra == gabarito,
                     )
+            # Garante ao menos a alternativa gabarito
+            if not q.alternativas.filter(letra=gabarito).exists():
+                Alternativa.objects.create(
+                    questao=q,
+                    letra=gabarito,
+                    texto=str(alt_map.get(gabarito) or "Alternativa correta"),
+                    correta=True,
+                )
             created.append(
                 {
                     "id": q.id,
                     "enunciado": q.enunciado,
                     "origem": q.origem,
-                    "badge": "Questão gerada com base na sua base de estudos.",
+                    "badge": "Questão gerada com IA.",
                 }
             )
 
-        if not created and not ai_available():
-            return Response(
-                {
-                    "detail": "Configure GEMINI_API_KEY (ou OPENAI_API_KEY) para gerar questões com IA.",
-                    "questoes": [],
-                },
-                status=503,
-            )
         if not created:
-            return Response(
-                {
-                    "detail": "Não encontrei informações suficientes sobre este assunto na sua base de estudos.",
-                    "questoes": [],
-                }
-            )
+            if skipped_dupes:
+                detail = (
+                    "As questões geradas já existiam. Tente novamente para obter variações novas."
+                )
+            elif not raw:
+                detail = (
+                    "A IA não retornou questões válidas agora. Tente de novo em alguns segundos."
+                )
+            else:
+                detail = "Não foi possível salvar as questões geradas. Tente novamente."
+            return Response({"detail": detail, "questoes": []})
         return Response({"questoes": created})
 
 

@@ -36,7 +36,7 @@ function LegalShell({ title, children }: { title: string; children: ReactNode })
     <div className="landing min-h-dvh bg-white px-6 py-16 text-black [font-family:var(--font-landing)]">
       <div className="mx-auto max-w-2xl">
         <Link
-          to="/"
+          to="/login"
           className="text-sm font-semibold text-black/60 transition-colors hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black"
         >
           Voltar

@@ -12,9 +12,9 @@ import { Badge } from '@/components/ui/badge'
 import { ChatBubbleContent } from '@/components/ai/ChatBubbleContent'
 
 const SUGGESTIONS = [
+  'Oi! Como você pode me ajudar hoje?',
   'O que é controlador e operador na LGPD?',
-  'Explique Scrum e o papel das sprints.',
-  'Quais os princípios da LGPD mais cobrados em prova?',
+  'Me dá uma dica rápida de ITIL cobrada em prova.',
 ]
 
 export function AssistantPage() {
@@ -26,7 +26,7 @@ export function AssistantPage() {
     {
       role: 'assistant',
       conteudo:
-        'Olá! Sou o assistente do EstudoAI. Posso explicar o edital, tirar dúvidas e conectar a resposta ao material do concurso de Analista de TI — Araguaína/TO 2026.',
+        'Oi! Eu sou o tutor do EstudoAI. Pode mandar desde um “bom dia” até uma dúvida pesada do edital — eu respondo com linguagem clara, uso meu conhecimento de concurso e, quando fizer sentido, cruzo com o material da sua base. Bora estudar?',
     },
   ])
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -64,7 +64,7 @@ export function AssistantPage() {
     <div className="flex h-[calc(100dvh-8rem)] flex-col">
       <PageHeader
         title="Assistente IA"
-        description="Tire dúvidas com base no material do concurso."
+        description="Tutor humano: conhecimento de concurso + sua base de estudos."
         actions={
           aiEnabled == null ? null : (
             <Badge variant={aiEnabled ? 'success' : 'warning'}>
