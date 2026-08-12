@@ -70,6 +70,20 @@ class QuestaoListSerializer(serializers.ModelSerializer):
             url = obj.imagem.url
         except ValueError:
             return None
+        if not url:
+            return None
+
+        # Base pública da API (Render / env) — evita URL apontar para o front (Netlify/Vite)
+        from django.conf import settings
+
+        public = (getattr(settings, "PUBLIC_API_URL", "") or "").strip().rstrip("/")
+        if not public:
+            host = (getattr(settings, "RENDER_EXTERNAL_HOSTNAME", "") or "").strip()
+            if host:
+                public = f"https://{host}"
+        if public:
+            return f"{public}{url if url.startswith('/') else '/' + url}"
+
         request = self.context.get("request")
         if request is not None:
             return request.build_absolute_uri(url)

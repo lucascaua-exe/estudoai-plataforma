@@ -218,6 +218,10 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@estudos.local")
 # Proxy HTTPS (Render)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = True
+# URL pública da API (ex.: https://estudoai-api.onrender.com) — usada em imagem_url
+PUBLIC_API_URL = os.getenv("PUBLIC_API_URL", "").strip().rstrip("/")
+if not PUBLIC_API_URL and RENDER_EXTERNAL_HOSTNAME:
+    PUBLIC_API_URL = f"https://{RENDER_EXTERNAL_HOSTNAME}"
 
 if not DEBUG:
     # TLS já é terminado no proxy do Render — redirect SSL interno quebra o health check

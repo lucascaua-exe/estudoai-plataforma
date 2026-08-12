@@ -1,6 +1,6 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { X, ZoomIn } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn, resolveMediaUrl } from '@/lib/utils'
 
 interface QuestionFigureProps {
   src: string
@@ -14,7 +14,13 @@ export function QuestionFigure({
   className,
 }: QuestionFigureProps) {
   const [open, setOpen] = useState(false)
+  const [failed, setFailed] = useState(false)
   const titleId = useId()
+  const resolved = useMemo(() => resolveMediaUrl(src), [src])
+
+  useEffect(() => {
+    setFailed(false)
+  }, [resolved])
 
   useEffect(() => {
     if (!open) return
@@ -30,6 +36,8 @@ export function QuestionFigure({
     }
   }, [open])
 
+  if (!resolved || failed) return null
+
   return (
     <>
       <button
@@ -43,9 +51,12 @@ export function QuestionFigure({
         aria-label="Ampliar figura da questão"
       >
         <img
-          src={src}
+          src={resolved}
           alt={alt}
           loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onError={() => setFailed(true)}
           className="mx-auto max-h-72 w-full object-contain p-2 transition duration-200 group-hover:scale-[1.01] sm:max-h-80"
         />
         <span className="pointer-events-none absolute right-3 bottom-3 inline-flex items-center gap-1 rounded-lg bg-background/90 px-2 py-1 text-[11px] font-medium text-muted-foreground shadow-sm ring-1 ring-border">
@@ -74,8 +85,9 @@ export function QuestionFigure({
             <X className="h-5 w-5" aria-hidden />
           </button>
           <img
-            src={src}
+            src={resolved}
             alt={alt}
+            referrerPolicy="no-referrer"
             className="max-h-[92vh] max-w-[96vw] cursor-zoom-out rounded-lg object-contain shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />

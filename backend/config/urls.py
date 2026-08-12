@@ -1,8 +1,9 @@
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
+from django.views.static import serve as media_serve
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -71,7 +72,13 @@ urlpatterns = [
     path("api/", include(router.urls)),
 ]
 
-# Media em produção (disco efêmero no Render free — ok para uploads pequenos)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Media sempre disponível (DEBUG=false no Render; static() do Django só ativa em DEBUG)
+urlpatterns += [
+    re_path(
+        r"^media/(?P<path>.*)$",
+        media_serve,
+        {"document_root": str(settings.MEDIA_ROOT)},
+    ),
+]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

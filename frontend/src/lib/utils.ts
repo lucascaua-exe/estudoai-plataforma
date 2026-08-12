@@ -63,3 +63,29 @@ export function getErrorMessage(error: unknown, fallback = 'Ocorreu um erro.') {
   }
   return err.message || fallback
 }
+
+/** Resolve URL de mídia da API (evita apontar para Netlify/Vite em vez do backend). */
+export function resolveMediaUrl(url?: string | null): string | null {
+  if (!url) return null
+  const apiRoot = (import.meta.env.VITE_API_URL as string | undefined)
+    ?.trim()
+    .replace(/\/$/, '')
+
+  let path = url
+  if (/^https?:\/\//i.test(url)) {
+    try {
+      const parsed = new URL(url)
+      if (parsed.pathname.startsWith('/media/')) {
+        path = `${parsed.pathname}${parsed.search}`
+      } else {
+        return url
+      }
+    } catch {
+      return url
+    }
+  }
+
+  if (!path.startsWith('/')) path = `/${path}`
+  if (apiRoot) return `${apiRoot}${path}`
+  return path
+}
