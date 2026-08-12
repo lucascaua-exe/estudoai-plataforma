@@ -16,8 +16,11 @@ def gemini_available() -> bool:
     return bool((getattr(settings, "GEMINI_API_KEY", "") or "").strip())
 
 
+DEFAULT_GEMINI_MODEL = "gemini-3.6-flash"
+
+
 def _endpoint(model: str | None = None) -> str:
-    model = model or getattr(settings, "GEMINI_MODEL", "gemini-flash-latest") or "gemini-flash-latest"
+    model = model or getattr(settings, "GEMINI_MODEL", DEFAULT_GEMINI_MODEL) or DEFAULT_GEMINI_MODEL
     return (
         "https://generativelanguage.googleapis.com/v1beta/models/"
         f"{model}:generateContent"
@@ -75,9 +78,11 @@ def generate_text(
         body["generationConfig"]["responseMimeType"] = "application/json"
 
     models = [
-        getattr(settings, "GEMINI_MODEL", "gemini-flash-latest") or "gemini-flash-latest",
-        "gemini-2.0-flash",
-        "gemini-1.5-flash",
+        getattr(settings, "GEMINI_MODEL", DEFAULT_GEMINI_MODEL) or DEFAULT_GEMINI_MODEL,
+        "gemini-3.6-flash",
+        "gemini-flash-latest",
+        "gemini-3-flash-preview",
+        "gemini-2.5-flash",
     ]
     # unique preserve order
     tried: list[str] = []

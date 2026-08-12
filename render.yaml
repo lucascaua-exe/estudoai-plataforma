@@ -48,7 +48,7 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODEL
-        value: "gemini-flash-latest"
+        value: "gemini-3.6-flash"
       - key: OPENAI_API_KEY
         sync: false
       - key: WEB_CONCURRENCY

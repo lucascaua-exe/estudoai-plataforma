@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Send, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAiChat } from '@/hooks/use-api'
@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
-import { ChatBubbleContent } from '@/components/ai/ChatBubbleContent'
+import { ChatBubbleContent, TypingIndicator } from '@/components/ai/ChatBubbleContent'
 
 const SUGGESTIONS = [
   'Oi! Como você pode me ajudar hoje?',
@@ -31,6 +31,10 @@ export function AssistantPage() {
   ])
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, chat.isPending])
+
   const send = async (textRaw?: string) => {
     const text = (textRaw ?? message).trim()
     if (!text || chat.isPending) return
@@ -47,7 +51,6 @@ export function AssistantPage() {
       if (!res.ai_enabled) {
         toast.message('IA em modo limitado — configure GEMINI_API_KEY no servidor.')
       }
-      setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
     } catch (err) {
       toast.error(getErrorMessage(err, 'Falha ao enviar mensagem.'))
       setMessages((prev) => [
@@ -82,10 +85,10 @@ export function AssistantPage() {
               <div
                 key={`${m.role}-${i}`}
                 className={cn(
-                  'max-w-[90%] rounded-2xl px-4 py-3',
+                  'max-w-[92%] rounded-2xl px-4 py-3 shadow-sm',
                   m.role === 'user'
                     ? 'ml-auto bg-primary text-primary-foreground'
-                    : 'bg-muted text-foreground',
+                    : 'border border-border/70 bg-card text-foreground',
                 )}
               >
                 {m.role === 'assistant' ? (
@@ -104,11 +107,7 @@ export function AssistantPage() {
                 ) : null}
               </div>
             ))}
-            {chat.isPending ? (
-              <div className="w-fit rounded-2xl bg-muted px-4 py-3 text-sm text-muted-foreground">
-                Pensando com o material do edital…
-              </div>
-            ) : null}
+            {chat.isPending ? <TypingIndicator /> : null}
             <div ref={bottomRef} />
           </div>
 
