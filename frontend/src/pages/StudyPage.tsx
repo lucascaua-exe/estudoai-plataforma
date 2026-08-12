@@ -2,8 +2,14 @@ import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Play, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
-import { useCatalog, useGenerateQuestions, useQuestions } from '@/hooks/use-api'
-import { getErrorMessage } from '@/lib/utils'
+import {
+  useCatalog,
+  useGenerateQuestions,
+  useQuestionBancas,
+  useQuestions,
+} from '@/hooks/use-api'
+import { formatStudyText, getErrorMessage } from '@/lib/utils'
+import { solvePath } from '@/lib/question-filters'
 import { PageHeader, ErrorState } from '@/components/ui/page'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -15,9 +21,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 export function StudyPage() {
   const navigate = useNavigate()
   const catalog = useCatalog()
+  const bancas = useQuestionBancas()
   const [disciplina, setDisciplina] = useState('')
   const [assunto, setAssunto] = useState('')
   const [dificuldade, setDificuldade] = useState('')
+  const [banca, setBanca] = useState('')
   const [quantidade, setQuantidade] = useState('5')
   const generate = useGenerateQuestions()
 
@@ -26,27 +34,26 @@ export function StudyPage() {
     return d?.assuntos ?? []
   }, [catalog.data, disciplina])
 
+  const filters = useMemo(
+    () => ({
+      disciplina: disciplina || undefined,
+      assunto: assunto || undefined,
+      dificuldade: dificuldade || undefined,
+      banca: banca || undefined,
+      status: 'nao_acertadas',
+    }),
+    [disciplina, assunto, dificuldade, banca],
+  )
+
   const preview = useQuestions({
-    disciplina: disciplina || undefined,
-    assunto: assunto || undefined,
-    dificuldade: dificuldade || undefined,
-    status: 'nao_acertadas',
+    ...filters,
     page: 1,
   })
 
   const start = () => {
     const first = preview.data?.results?.[0]
     if (first) {
-      navigate(`/questoes/${first.id}`, {
-        state: {
-          filters: {
-            disciplina,
-            assunto,
-            dificuldade,
-            status: 'nao_acertadas',
-          },
-        },
-      })
+      navigate(solvePath(first.id, filters), { state: { filters } })
       return
     }
     toast.message('Nenhuma questão disponível com esses filtros. Abrindo o banco…')
@@ -54,6 +61,7 @@ export function StudyPage() {
     if (disciplina) params.set('disciplina', disciplina)
     if (assunto) params.set('assunto', assunto)
     if (dificuldade) params.set('dificuldade', dificuldade)
+    if (banca) params.set('banca', banca)
     params.set('status', 'nao_acertadas')
     navigate(`/questoes?${params.toString()}`)
   }
@@ -70,7 +78,9 @@ export function StudyPage() {
       })
       if (result.questoes?.length) {
         toast.success(`${result.questoes.length} questão(ões) gerada(s).`)
-        navigate(`/questoes/${result.questoes[0].id}`)
+        navigate(solvePath(result.questoes[0].id, { status: 'nao_acertadas' }), {
+          state: { filters: { status: 'nao_acertadas' } },
+        })
       } else {
         toast.message(result.detail || 'Nenhuma questão gerada.')
       }
@@ -83,7 +93,7 @@ export function StudyPage() {
     <div>
       <PageHeader
         title="Estudar"
-        description="Inicie uma sessão rápida com filtros do edital."
+        description="Sessão rápida sem repetir questões que você já acertou."
       />
 
       {catalog.isLoading ? (
@@ -110,7 +120,7 @@ export function StudyPage() {
                   <option value="">Todas</option>
                   {catalog.data?.map((d) => (
                     <option key={d.id} value={d.id}>
-                      {d.nome}
+                      {formatStudyText(d.nome)}
                     </option>
                   ))}
                 </Select>
@@ -126,7 +136,22 @@ export function StudyPage() {
                   <option value="">Todos</option>
                   {assuntos.map((a) => (
                     <option key={a.id} value={a.id}>
-                      {a.nome}
+                      {formatStudyText(a.nome)}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="estudo-banca">Banca</Label>
+                <Select
+                  id="estudo-banca"
+                  value={banca}
+                  onChange={(e) => setBanca(e.target.value)}
+                >
+                  <option value="">Todas</option>
+                  {(bancas.data || []).map((b) => (
+                    <option key={b} value={b}>
+                      {b}
                     </option>
                   ))}
                 </Select>
@@ -150,7 +175,7 @@ export function StudyPage() {
               </Button>
               <p className="text-xs text-muted-foreground">
                 {preview.data
-                  ? `${preview.data.count} questões disponíveis com esses filtros.`
+                  ? `${preview.data.count} questões pendentes com esses filtros.`
                   : 'Carregando disponibilidade…'}
               </p>
             </CardContent>

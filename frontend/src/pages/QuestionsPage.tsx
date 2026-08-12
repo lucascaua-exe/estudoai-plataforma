@@ -15,6 +15,7 @@ import {
   difficultyLabel,
   formatStudyText,
 } from '@/lib/utils'
+import { filtersFromSearchParams, solvePath } from '@/lib/question-filters'
 import { PageHeader, ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -25,18 +26,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
 import { toast } from 'sonner'
 
-function buildSolveState(params: URLSearchParams) {
-  return {
-    filters: {
-      disciplina: params.get('disciplina') || undefined,
-      assunto: params.get('assunto') || undefined,
-      assuntos: params.get('assuntos') || undefined,
-      excluir_assuntos: params.get('excluir_assuntos') || undefined,
-      dificuldade: params.get('dificuldade') || undefined,
-      banca: params.get('banca') || undefined,
-      status: params.get('status') || 'nao_acertadas',
-    },
-  }
+function currentFilters(params: URLSearchParams) {
+  return filtersFromSearchParams(params)
 }
 
 export function QuestionsPage() {
@@ -103,10 +94,16 @@ export function QuestionsPage() {
     update('excluir_assuntos', Array.from(set).join(','))
   }
 
-  const solveHref = (id: number) => ({
-    pathname: `/questoes/${id}`,
-    state: buildSolveState(params),
-  })
+  const solveHref = (id: number) => {
+    const filters = currentFilters(params)
+    const full = solvePath(id, filters)
+    const q = full.indexOf('?')
+    return {
+      pathname: q >= 0 ? full.slice(0, q) : full,
+      search: q >= 0 ? full.slice(q) : '',
+      state: { filters },
+    }
+  }
 
   return (
     <div>

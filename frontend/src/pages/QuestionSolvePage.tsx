@@ -16,6 +16,11 @@ import {
   difficultyBadgeVariant,
   difficultyLabel,
 } from '@/lib/utils'
+import {
+  cleanApiFilters,
+  resolveQuestionFilters,
+  solvePath,
+} from '@/lib/question-filters'
 import type { AnswerResult, QuestionFilters } from '@/lib/types'
 import { ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
@@ -25,27 +30,20 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ExplanationContent } from '@/components/questions/ExplanationContent'
 import { QuestionFigure } from '@/components/questions/QuestionFigure'
 
-type SolveLocationState = {
-  filters?: QuestionFilters
-}
-
-function cleanFilters(filters: QuestionFilters | undefined) {
-  if (!filters) {
-    return { status: 'nao_acertadas' as const }
-  }
-  const out: Record<string, string> = {}
-  for (const [k, v] of Object.entries(filters)) {
-    if (v != null && String(v).trim() !== '') out[k] = String(v)
-  }
-  if (!out.status) out.status = 'nao_acertadas'
-  return out
-}
-
 export function QuestionSolvePage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
-  const filters = cleanFilters((location.state as SolveLocationState | null)?.filters)
+  const filters = useMemo(
+    () =>
+      resolveQuestionFilters(
+        location.state as { filters?: QuestionFilters } | null,
+        location.search,
+      ),
+    [location.state, location.search],
+  )
+  const apiFilters = useMemo(() => cleanApiFilters(filters), [filters])
+
   const { data, isLoading, isError, refetch } = useQuestion(id)
   const answer = useAnswerQuestion()
   const nextQuestion = useNextQuestion()
@@ -74,7 +72,7 @@ export function QuestionSolvePage() {
       let nextId = preferredId
       if (!nextId && data) {
         const res = await nextQuestion.mutateAsync({
-          ...filters,
+          ...apiFilters,
           after: data.id,
         })
         nextId = res.id
@@ -84,7 +82,7 @@ export function QuestionSolvePage() {
         navigate('/questoes')
         return
       }
-      navigate(`/questoes/${nextId}`, { state: { filters } })
+      navigate(solvePath(nextId, filters), { state: { filters } })
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível carregar a próxima questão.'))
     } finally {
@@ -102,7 +100,7 @@ export function QuestionSolvePage() {
         id: data.id,
         alternativa_id: selected,
         tempo_segundos: Math.round((Date.now() - startedAt) / 1000),
-        filters,
+        filters: apiFilters,
       })
       setResult(res)
       toast[res.correta ? 'success' : 'error'](
