@@ -159,7 +159,10 @@ Para regenerar a fixture após um novo ingest local:
 ```bash
 cd backend
 # Windows: $env:PYTHONUTF8=1
-python manage.py dumpdata catalog documents questions concurso \
+python manage.py dumpdata \
+  catalog.Disciplina catalog.Assunto catalog.Subassunto \
+  documents.Documento documents.PaginaDocumento documents.DocumentoChunk \
+  questions.Questao questions.Alternativa \
   --natural-foreign --natural-primary --indent 1 \
   -o fixtures/banco.json
 ```
