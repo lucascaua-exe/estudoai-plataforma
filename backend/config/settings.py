@@ -198,6 +198,9 @@ if not _pdf_default.exists():
     _pdf_default = ROOT_DIR
 PDF_SOURCE_DIR = Path(os.getenv("PDF_SOURCE_DIR", str(_pdf_default)))
 CHROMA_DIR = Path(os.getenv("CHROMA_DIR", str(BASE_DIR / "chroma_db")))
+# IA — Gemini (principal) e OpenAI (opcional / embeddings)
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")

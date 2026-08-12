@@ -93,21 +93,40 @@ class QuestaoViewSet(viewsets.ReadOnlyModelViewSet):
         if questao.assunto_id:
             update_dominio_for_assunto(request.user, questao.assunto_id)
 
+        alts_payload = [
+            {
+                "id": a.id,
+                "letra": a.letra,
+                "texto": a.texto,
+                "correta": a.correta or a.letra == questao.gabarito,
+            }
+            for a in questao.alternativas.all()
+        ]
+
+        from apps.ai.rag import explain_question_answer
+
+        explicacao = explain_question_answer(
+            enunciado=questao.enunciado,
+            alternativas=alts_payload,
+            gabarito=questao.gabarito or "",
+            letra_escolhida=alt.letra,
+            correta=bool(correta),
+            explicacao_existente=questao.explicacao or "",
+            disciplina=questao.disciplina.nome if questao.disciplina else "",
+            assunto=questao.assunto.nome if questao.assunto else "",
+        )
+        # Persiste explicação gerada se a questão não tinha
+        if explicacao and (not questao.explicacao or len(questao.explicacao) < 80):
+            questao.explicacao = explicacao
+            questao.save(update_fields=["explicacao"])
+
         return Response(
             {
                 "correta": correta,
                 "letra_escolhida": alt.letra,
                 "gabarito": questao.gabarito,
-                "explicacao": questao.explicacao,
-                "alternativas": [
-                    {
-                        "id": a.id,
-                        "letra": a.letra,
-                        "texto": a.texto,
-                        "correta": a.correta or a.letra == questao.gabarito,
-                    }
-                    for a in questao.alternativas.all()
-                ],
+                "explicacao": explicacao,
+                "alternativas": alts_payload,
                 "fonte": {
                     "documento": questao.documento.nome if questao.documento else None,
                     "pagina": questao.pagina,

@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.ai.models import ConversaIA, MensagemIA
-from apps.ai.rag import chat, generate_questions, openai_available
+from apps.ai.rag import chat, generate_questions, ai_available
 from apps.catalog.models import Assunto, Disciplina
 from apps.documents.parser import normalize_spaces
 from apps.questions.models import Alternativa, Questao
@@ -50,7 +50,7 @@ class ChatView(APIView):
                     "conteudo": msg.conteudo,
                     "fontes": msg.fontes,
                 },
-                "ai_enabled": openai_available(),
+                "ai_enabled": ai_available(),
             }
         )
 
@@ -74,11 +74,11 @@ class GenerateQuestionsView(APIView):
                 alt_map = {}
                 for a in alts:
                     if isinstance(a, dict):
-                        alt_map[a.get("letra", "").upper()] = a.get("texto", "")
+                        alt_map[str(a.get("letra", "")).upper()] = a.get("texto", "")
                     else:
                         continue
             else:
-                alt_map = {k.upper(): v for k, v in alts.items()}
+                alt_map = {str(k).upper(): v for k, v in alts.items()}
 
             gabarito = (item.get("gabarito") or "").upper()[:1]
             trecho = item.get("trecho_referencia") or ""
@@ -100,8 +100,6 @@ class GenerateQuestionsView(APIView):
             )
             for letra in "ABCDE":
                 texto = alt_map.get(letra) or ""
-                if not texto and isinstance(item.get("alternativas"), list):
-                    continue
                 if texto:
                     Alternativa.objects.create(
                         questao=q,
@@ -118,10 +116,10 @@ class GenerateQuestionsView(APIView):
                 }
             )
 
-        if not created and not openai_available():
+        if not created and not ai_available():
             return Response(
                 {
-                    "detail": "Configure OPENAI_API_KEY para gerar questões inéditas.",
+                    "detail": "Configure GEMINI_API_KEY (ou OPENAI_API_KEY) para gerar questões com IA.",
                     "questoes": [],
                 },
                 status=503,

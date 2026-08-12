@@ -17,7 +17,7 @@ export function AssistantPage() {
     {
       role: 'assistant',
       conteudo:
-        'Olá! Sou o assistente do EstudoAI. Posso explicar conteúdos, tirar dúvidas do edital e ajudar na sua preparação para Analista de TI — Araguaína/TO 2026.',
+        'Olá! Sou o assistente do EstudoAI (Gemini). Posso explicar conteúdos do edital, tirar dúvidas e ajudar na preparação para Analista de TI — Araguaína/TO 2026.',
     },
   ])
   const bottomRef = useRef<HTMLDivElement>(null)
