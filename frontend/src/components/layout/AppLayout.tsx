@@ -1,18 +1,36 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
-import { Flame, LogOut, Menu, Zap } from 'lucide-react'
+import { LogOut, Menu } from 'lucide-react'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { Button } from '@/components/ui/button'
+import { XpPill, StreakPill } from '@/components/gamification/StatPills'
 import { useAuthStore } from '@/lib/auth-store'
 import { useGamification } from '@/hooks/use-api'
 
+const COLLAPSE_KEY = 'estudoai.sidebar.collapsed'
+
 export function AppLayout() {
   const [open, setOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(COLLAPSE_KEY) === '1'
+    } catch {
+      return false
+    }
+  })
   const logout = useAuthStore((s) => s.logout)
   const user = useAuthStore((s) => s.user)
   const navigate = useNavigate()
   const { data: gamification } = useGamification()
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0')
+    } catch {
+      /* ignore */
+    }
+  }, [collapsed])
 
   const handleLogout = () => {
     logout()
@@ -27,7 +45,12 @@ export function AppLayout() {
       <a href="#conteudo-principal" className="skip-link">
         Ir para o conteúdo principal
       </a>
-      <Sidebar open={open} onClose={() => setOpen(false)} />
+      <Sidebar
+        open={open}
+        onClose={() => setOpen(false)}
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed((v) => !v)}
+      />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-card/90 px-3 backdrop-blur-md lg:hidden">
           <button
@@ -46,14 +69,13 @@ export function AppLayout() {
           </span>
 
           <div className="flex items-center gap-1.5">
-            <div className="inline-flex items-center gap-1 rounded-md bg-xp/10 px-2 py-1 text-xs font-semibold text-xp-foreground">
-              <Zap className="h-3.5 w-3.5 text-xp" aria-hidden />
-              <span className="tabular-nums">{pontos}</span>
-            </div>
-            <div className="inline-flex items-center gap-1 rounded-md bg-primary/8 px-2 py-1 text-xs font-semibold text-primary">
-              <Flame className="h-3.5 w-3.5 text-streak" aria-hidden />
-              <span className="tabular-nums">{streak}</span>
-            </div>
+            <XpPill value={pontos} compact centered={false} className="!gap-1.5 !px-2 !py-1" />
+            <StreakPill
+              value={streak}
+              compact
+              centered={false}
+              className="!gap-1.5 !px-2 !py-1"
+            />
             <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Sair">
               <LogOut className="h-4 w-4" aria-hidden />
             </Button>

@@ -3,13 +3,12 @@ import {
   AlertTriangle,
   BookOpen,
   CheckCircle2,
-  Flame,
   Library,
   Target,
   TrendingUp,
-  Trophy,
   XCircle,
 } from 'lucide-react'
+import { Fire, Lightning } from '@phosphor-icons/react'
 import {
   Area,
   AreaChart,
@@ -93,10 +92,11 @@ export function DashboardPage() {
   return (
     <div className="animate-fade-up">
       <PageHeader
+        align="center"
         title={`Oi, ${firstName}! Pronto para subir de nível?`}
         description="Missões do dia · Analista de TI — Araguaína/TO 2026"
         actions={
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             <Link to="/estudar">
               <Button size="lg">Continuar estudando</Button>
             </Link>
@@ -152,13 +152,14 @@ export function DashboardPage() {
               hint={`${data.evolucao_semana >= 0 ? '+' : ''}${data.evolucao_semana}% vs. semana`}
             />
             <KpiCard
-              icon={Flame}
+              icon={({ className }) => <Fire weight="fill" className={className} />}
               label="Sequência"
               value={`${data.sequencia_atual} dias`}
               hint={`${data.dias_estudo} dias de estudo`}
+              tone="brand"
             />
             <KpiCard
-              icon={Trophy}
+              icon={({ className }) => <Lightning weight="fill" className={className} />}
               label="Pontos"
               value={String(data.pontuacao_total || gamification.data?.pontos || 0)}
               hint={`${data.dominios_confirmados} domínios confirmados`}
@@ -171,12 +172,12 @@ export function DashboardPage() {
             />
           </div>
 
-          <div className="mt-4">
+          <div className="mx-auto mt-5 max-w-xl text-center">
             <Progress
               value={metaPct}
               indicatorClassName={metaPct >= 100 ? 'bg-success' : undefined}
             />
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-2 text-xs text-muted-foreground">
               Progresso da meta diária · {formatPercent(metaPct, 0)}
             </p>
           </div>
@@ -438,24 +439,24 @@ function KpiCard({
       : tone === 'danger'
         ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200'
         : tone === 'brand'
-          ? 'bg-blue-50 text-primary dark:bg-blue-950 dark:text-blue-100'
+          ? 'bg-primary/10 text-primary dark:bg-primary/20'
           : 'bg-secondary text-primary'
 
   return (
     <Card className="transition-shadow hover:shadow-md">
-      <CardContent className="pt-5">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">{label}</p>
-            <p className="mt-1 font-display text-2xl font-semibold tracking-tight tabular-nums">
-              {value}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
-          </div>
-          <div className={`rounded-md p-2 ${toneClass}`}>
-            <Icon className="h-4 w-4" strokeWidth={1.75} />
-          </div>
+      <CardContent className="flex flex-col items-center px-4 pt-5 pb-5 text-center">
+        <div className={`mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl ${toneClass}`}>
+          <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
         </div>
+        <p className="text-[11px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+          {label}
+        </p>
+        <p className="mt-1.5 font-display text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+          {value}
+        </p>
+        <p className="mt-1.5 max-w-[14rem] text-xs leading-relaxed text-muted-foreground">
+          {hint}
+        </p>
       </CardContent>
     </Card>
   )

@@ -7,22 +7,23 @@ import {
   CreditCard,
   FileText,
   Flag,
-  Flame,
   GraduationCap,
   LayoutDashboard,
   LineChart,
   LogOut,
   Map,
   MessageSquare,
+  PanelLeftClose,
+  PanelLeftOpen,
   Settings,
   Target,
   User,
   X,
   XCircle,
-  Zap,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
+import { XpPill, StreakPill } from '@/components/gamification/StatPills'
 import { useAuthStore } from '@/lib/auth-store'
 import { useGamification } from '@/hooks/use-api'
 
@@ -47,9 +48,11 @@ const navItems = [
 interface SidebarProps {
   open: boolean
   onClose: () => void
+  collapsed: boolean
+  onToggleCollapse: () => void
 }
 
-export function Sidebar({ open, onClose }: SidebarProps) {
+export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarProps) {
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
   const navigate = useNavigate()
@@ -88,22 +91,50 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       <aside
         id="app-sidebar"
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex w-[17.5rem] flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-lg transition-transform duration-200 ease-out lg:static lg:translate-x-0 lg:shadow-none',
+          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-lg transition-[width,transform] duration-200 ease-out lg:static lg:translate-x-0 lg:shadow-none',
           open ? 'translate-x-0' : '-translate-x-full',
+          collapsed ? 'w-[4.75rem] lg:w-[4.75rem]' : 'w-[17.5rem] lg:w-[17.5rem]',
         )}
         aria-label="Navegação principal"
+        data-collapsed={collapsed || undefined}
       >
-        <div className="flex items-center justify-between gap-2 border-b border-sidebar-border px-4 py-4">
-          <div className="min-w-0">
-            <p translate="no" className="font-brand text-xl text-primary">
-              EstudoAI
+        <div
+          className={cn(
+            'flex items-center border-b border-sidebar-border px-3 py-3',
+            collapsed ? 'flex-col gap-2' : 'justify-between gap-2 px-4 py-4',
+          )}
+        >
+          <div className={cn('min-w-0', collapsed && 'text-center')}>
+            <p
+              translate="no"
+              className={cn(
+                'font-brand text-primary',
+                collapsed ? 'text-sm leading-none' : 'text-xl',
+              )}
+            >
+              {collapsed ? 'EA' : 'EstudoAI'}
             </p>
-            <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
-              Preparação
-            </p>
+            {!collapsed ? (
+              <p className="text-[11px] font-medium tracking-[0.12em] text-muted-foreground uppercase">
+                Preparação
+              </p>
+            ) : null}
           </div>
-          <div className="flex items-center gap-1">
-            <ThemeToggle />
+          <div className={cn('flex items-center gap-1', collapsed && 'flex-col')}>
+            {!collapsed ? <ThemeToggle /> : null}
+            <button
+              type="button"
+              className="hidden h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-muted-foreground transition hover:bg-sidebar-accent lg:inline-flex"
+              onClick={onToggleCollapse}
+              aria-label={collapsed ? 'Expandir menu' : 'Retrair menu'}
+              aria-expanded={!collapsed}
+            >
+              {collapsed ? (
+                <PanelLeftOpen className="h-4 w-4" aria-hidden />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" aria-hidden />
+              )}
+            </button>
             <button
               ref={closeRef}
               type="button"
@@ -116,35 +147,44 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </div>
         </div>
 
-        <div className="mx-3 mt-3 grid grid-cols-2 gap-2">
-          <div className="rounded-xl border border-border bg-muted/50 px-3 py-2.5">
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-              <Zap className="h-3.5 w-3.5 text-xp" aria-hidden /> XP
-            </div>
-            <p className="mt-0.5 font-display text-lg font-semibold tabular-nums text-foreground">
-              {pontos}
-            </p>
-          </div>
-          <div className="rounded-xl border border-border bg-muted/50 px-3 py-2.5">
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-              <Flame className="h-3.5 w-3.5 text-streak" aria-hidden /> Streak
-            </div>
-            <p className="mt-0.5 font-display text-lg font-semibold tabular-nums text-foreground">
-              {streak}d
-            </p>
-          </div>
+        <div
+          className={cn(
+            'mx-2 mt-3 grid gap-2',
+            collapsed ? 'grid-cols-1 px-1' : 'mx-3 grid-cols-2',
+          )}
+        >
+          <XpPill
+            value={pontos}
+            compact
+            centered
+            className={cn('w-full', collapsed && 'px-1.5 py-2')}
+          />
+          <StreakPill
+            value={streak}
+            compact
+            centered
+            className={cn('w-full', collapsed && 'px-1.5 py-2')}
+          />
         </div>
 
-        <nav className="mt-3 flex-1 space-y-0.5 overflow-y-auto px-3 pb-4" aria-label="Menu">
+        <nav
+          className={cn(
+            'mt-3 flex-1 space-y-0.5 overflow-y-auto pb-4',
+            collapsed ? 'px-1.5' : 'px-3',
+          )}
+          aria-label="Menu"
+        >
           {navItems.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
               onClick={onClose}
+              title={label}
               className={({ isActive }) =>
                 cn(
-                  'flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                  'flex min-h-11 items-center rounded-xl text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                  collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2',
                   isActive
                     ? 'bg-primary text-primary-foreground'
                     : 'text-sidebar-foreground hover:bg-sidebar-accent',
@@ -153,30 +193,48 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             >
               {({ isActive }) => (
                 <>
-                  <Icon className="h-4 w-4 shrink-0" strokeWidth={isActive ? 2.25 : 1.75} aria-hidden />
-                  <span className="truncate">{label}</span>
+                  <Icon
+                    className="h-4 w-4 shrink-0"
+                    strokeWidth={isActive ? 2.25 : 1.75}
+                    aria-hidden
+                  />
+                  {!collapsed ? <span className="truncate">{label}</span> : null}
+                  {collapsed ? <span className="sr-only">{label}</span> : null}
                 </>
               )}
             </NavLink>
           ))}
         </nav>
 
-        <div className="space-y-2 border-t border-sidebar-border p-4">
-          <div className="rounded-xl bg-muted/60 px-3 py-3">
-            <p className="truncate font-display text-sm font-semibold text-foreground">
-              {user?.name || 'Estudante'}
-            </p>
-            <p className="truncate text-xs text-muted-foreground">
-              {user?.cargo_alvo || 'Analista de TI · Araguaína'}
-            </p>
-          </div>
+        <div className={cn('space-y-2 border-t border-sidebar-border', collapsed ? 'p-2' : 'p-4')}>
+          {!collapsed ? (
+            <div className="rounded-xl bg-muted/60 px-3 py-3 text-center">
+              <p className="truncate font-display text-sm font-semibold text-foreground">
+                {user?.name || 'Estudante'}
+              </p>
+              <p className="truncate text-xs text-muted-foreground">
+                {user?.cargo_alvo || 'Analista de TI · Araguaína'}
+              </p>
+            </div>
+          ) : (
+            <div
+              className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 font-display text-sm font-bold text-primary"
+              title={user?.name || 'Estudante'}
+            >
+              {(user?.name || 'E').charAt(0).toUpperCase()}
+            </div>
+          )}
           <button
             type="button"
             onClick={handleLogout}
-            className="flex min-h-11 w-full cursor-pointer items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-sidebar-foreground transition hover:bg-destructive/10 hover:text-destructive"
+            title="Sair"
+            className={cn(
+              'flex min-h-11 w-full cursor-pointer items-center rounded-xl text-sm font-medium text-sidebar-foreground transition hover:bg-destructive/10 hover:text-destructive',
+              collapsed ? 'justify-center px-0' : 'gap-3 px-3 py-2',
+            )}
           >
             <LogOut className="h-4 w-4 shrink-0" strokeWidth={1.75} aria-hidden />
-            Sair
+            {!collapsed ? <span>Sair</span> : <span className="sr-only">Sair</span>}
           </button>
         </div>
       </aside>
