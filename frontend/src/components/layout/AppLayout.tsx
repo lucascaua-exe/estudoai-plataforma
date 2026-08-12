@@ -52,10 +52,10 @@ export function AppLayout() {
         onToggleCollapse={() => setCollapsed((v) => !v)}
       />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-border bg-card/90 px-3 backdrop-blur-md lg:hidden">
+        <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-2 border-b border-border bg-card/95 px-2.5 py-2 backdrop-blur-md sm:gap-3 sm:px-3 lg:hidden">
           <button
             type="button"
-            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => setOpen(true)}
             aria-label="Abrir menu"
             aria-expanded={open}
@@ -64,17 +64,22 @@ export function AppLayout() {
             <Menu className="h-5 w-5" strokeWidth={2} aria-hidden />
           </button>
 
-          <span translate="no" className="font-brand text-lg text-primary">
+          <span translate="no" className="min-w-0 truncate font-brand text-base text-primary sm:text-lg">
             EstudoAI
           </span>
 
-          <div className="flex items-center gap-1.5">
-            <XpPill value={pontos} compact centered={false} className="!gap-1.5 !px-2 !py-1" />
+          <div className="flex min-w-0 shrink-0 items-center gap-1">
+            <XpPill
+              value={pontos}
+              compact
+              centered={false}
+              className="!max-w-[4.75rem] !gap-1 !overflow-hidden !px-1.5 !py-1"
+            />
             <StreakPill
               value={streak}
               compact
               centered={false}
-              className="!gap-1.5 !px-2 !py-1"
+              className="!max-w-[4.75rem] !gap-1 !overflow-hidden !px-1.5 !py-1"
             />
             <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Sair">
               <LogOut className="h-4 w-4" aria-hidden />
@@ -84,10 +89,10 @@ export function AppLayout() {
 
         <main
           id="conteudo-principal"
-          className="flex-1 px-4 py-5 pb-safe md:px-8 md:py-8"
+          className="min-w-0 flex-1 overflow-x-hidden px-3 py-4 pb-safe sm:px-4 sm:py-5 md:px-8 md:py-8"
           tabIndex={-1}
         >
-          <div className="mx-auto w-full max-w-6xl">
+          <div className="mx-auto w-full min-w-0 max-w-6xl">
             <Outlet />
           </div>
         </main>

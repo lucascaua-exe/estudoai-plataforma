@@ -24,6 +24,29 @@ export function truncate(text: string, max = 120) {
   return `${text.slice(0, max).trim()}…`
 }
 
+const PT_UNGLUE =
+  /([a-záéíóúâêôãõç])(apenas|quando|quanto|sobre|entre|pelas|pelos|antes|desde|também|independentemente|independente|pessoais|privadas|públicas|empresas|anonimizados|tratamento|controlador|operador|aplica|aplicam|disposições|âmbito|aplicação|alternativa|correta|mediante|exceto|inclusive|qualquer|quaisquer|pessoa|natural|jurídica|território|brasileiro|exterior|coleta|armazenamento|assinale|proteção|informação|informações|possibilidade|possibilita)(?=[a-záéíóúâêôãõç]|$)/gi
+
+/** Corrige texto colado de PDF e evita estouro no mobile. */
+export function formatStudyText(text: string | null | undefined) {
+  if (!text) return ''
+  let out = text.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim()
+  out = out.replace(/([a-záéíóúâêôãõç])([A-ZÁÉÍÓÚÂÊÔÃÕÇ])/g, '$1 $2')
+  for (let i = 0; i < 4; i++) {
+    const next = out.replace(PT_UNGLUE, '$1 $2')
+    if (next === out) break
+    out = next
+  }
+  out = out
+    .replace(/([a-zç])(aplica-se)\b/gi, '$1 $2')
+    .replace(/([a-záéíóúç])(lei)(?=[a-záéíóúç]|$)/gi, '$1 $2')
+    .replace(/([a-záéíóúç])(dados)(?=[a-záéíóúç]|$)/gi, '$1 $2')
+    .replace(/(dados)(anonimizados)\b/gi, '$1 $2')
+    .replace(/(empresas)(privadas|públicas)\b/gi, '$1 $2')
+    .replace(/(apenas)(as|os|a|o)\b/gi, '$1 $2')
+  return out.replace(/\s{2,}/g, ' ').trim()
+}
+
 export function getErrorMessage(error: unknown, fallback = 'Ocorreu um erro.') {
   if (!error || typeof error !== 'object') return fallback
   const err = error as {

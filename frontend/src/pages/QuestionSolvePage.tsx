@@ -8,9 +8,9 @@ import {
   useToggleFavorite,
   useToggleReview,
 } from '@/hooks/use-api'
-import { cn, getErrorMessage } from '@/lib/utils'
+import { cn, formatStudyText, getErrorMessage } from '@/lib/utils'
 import type { AnswerResult } from '@/lib/types'
-import { PageHeader, ErrorState } from '@/components/ui/page'
+import { ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -31,6 +31,7 @@ export function QuestionSolvePage() {
   useEffect(() => {
     setSelected(null)
     setResult(null)
+    window.scrollTo(0, 0)
   }, [id])
 
   const alternativas = useMemo(
@@ -71,13 +72,25 @@ export function QuestionSolvePage() {
     return <ErrorState onRetry={() => refetch()} />
   }
 
+  const enunciado = formatStudyText(data.enunciado)
+
   return (
-    <div className="animate-fade-up mx-auto max-w-3xl">
-      <PageHeader
-        title="Resolver questão"
-        description={`${data.disciplina_nome || 'Disciplina'} · ${data.assunto_nome || 'Assunto'}`}
-        actions={
-          <div className="flex gap-2">
+    <div className="animate-fade-up mx-auto w-full min-w-0 max-w-3xl">
+      {/* Cabeçalho compacto no mobile — evita cortar o enunciado */}
+      <div className="mb-4 space-y-2">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+              Resolver questão
+            </p>
+            <h1 className="font-display text-lg font-semibold leading-snug text-foreground md:text-xl">
+              {formatStudyText(data.disciplina_nome || 'Disciplina')}
+            </h1>
+            <p className="mt-0.5 truncate text-sm text-muted-foreground">
+              {formatStudyText(data.assunto_nome || 'Assunto')}
+            </p>
+          </div>
+          <div className="flex shrink-0 gap-1.5">
             <Button
               variant="outline"
               size="icon"
@@ -118,15 +131,15 @@ export function QuestionSolvePage() {
                 aria-hidden
               />
             </Button>
-            <Link to="/questoes">
+            <Link to="/questoes" className="hidden sm:inline-flex">
               <Button variant="ghost">Voltar</Button>
             </Link>
           </div>
-        }
-      />
+        </div>
+      </div>
 
-      <Card className="overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 px-5 py-3">
+      <Card className="min-w-0 overflow-x-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 px-4 py-3 sm:px-5">
           <p className="font-display text-sm font-semibold tracking-wide text-foreground">
             Questão #{data.numero_origem || data.id}
           </p>
@@ -140,17 +153,18 @@ export function QuestionSolvePage() {
           </div>
         </div>
 
-        <CardContent className="space-y-6 pt-6">
-          <p className="whitespace-pre-wrap text-[1.05rem] font-medium leading-relaxed text-foreground md:text-lg">
-            {data.enunciado}
+        <CardContent className="min-w-0 space-y-5 px-4 pt-5 pb-6 sm:space-y-6 sm:px-6">
+          <p className="text-pretty break-words text-[1.02rem] font-medium leading-[1.65] text-foreground [overflow-wrap:anywhere] md:text-lg">
+            {enunciado}
           </p>
 
-          <div className="space-y-2.5" role="radiogroup" aria-label="Alternativas">
+          <div className="min-w-0 space-y-2.5" role="radiogroup" aria-label="Alternativas">
             {alternativas.map((alt) => {
               const isSelected = selected === alt.id
               const showFeedback = !!result
               const isCorrect = alt.correta === true
               const isWrong = showFeedback && isSelected && !result?.correta
+              const texto = formatStudyText(alt.texto)
 
               return (
                 <button
@@ -160,20 +174,24 @@ export function QuestionSolvePage() {
                   onClick={() => setSelected(alt.id)}
                   aria-pressed={isSelected}
                   className={cn(
-                    'flex min-h-12 w-full cursor-pointer items-start gap-3 rounded-xl border px-4 py-3.5 text-left transition-colors duration-200',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                    isSelected && !showFeedback && 'border-primary bg-primary/5',
-                    showFeedback && isCorrect && 'border-success/50 bg-success/8',
-                    isWrong && 'border-destructive/40 bg-destructive/5',
-                    !isSelected && !showFeedback && 'border-border bg-card hover:bg-muted/50',
+                    'flex min-h-12 w-full min-w-0 max-w-full cursor-pointer items-start gap-3 overflow-hidden rounded-2xl border-2 px-3.5 py-3.5 text-left transition-all duration-200 sm:px-4',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+                    isSelected &&
+                      !showFeedback &&
+                      'border-primary bg-primary/12 shadow-[0_0_0_1px_rgba(154,52,18,0.18)] ring-2 ring-primary/25',
+                    showFeedback && isCorrect && 'border-success/60 bg-success/10',
+                    isWrong && 'border-destructive/50 bg-destructive/8',
+                    !isSelected &&
+                      !showFeedback &&
+                      'border-border bg-card hover:border-primary/35 hover:bg-muted/40',
                     (!!result || answer.isPending) && 'cursor-default',
                   )}
                 >
                   <span
                     className={cn(
-                      'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-semibold',
+                      'mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-colors',
                       isSelected && !showFeedback
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'bg-primary text-primary-foreground shadow-sm'
                         : 'bg-secondary text-secondary-foreground',
                       showFeedback && isCorrect && 'bg-success text-white',
                       isWrong && 'bg-destructive text-white',
@@ -181,14 +199,20 @@ export function QuestionSolvePage() {
                   >
                     {alt.letra}
                   </span>
-                  <span className="flex-1 pt-1 text-sm font-medium leading-relaxed md:text-[0.95rem]">
-                    {alt.texto}
+                  <span className="min-w-0 flex-1 break-words pt-1.5 text-sm font-medium leading-relaxed [overflow-wrap:anywhere] md:text-[0.95rem]">
+                    {texto}
                   </span>
                   {showFeedback && isCorrect ? (
-                    <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-success" aria-label="Correta" />
+                    <CheckCircle2
+                      className="mt-1 h-5 w-5 shrink-0 text-success"
+                      aria-label="Correta"
+                    />
                   ) : null}
                   {isWrong ? (
-                    <XCircle className="mt-1 h-5 w-5 shrink-0 text-destructive" aria-label="Incorreta" />
+                    <XCircle
+                      className="mt-1 h-5 w-5 shrink-0 text-destructive"
+                      aria-label="Incorreta"
+                    />
                   ) : null}
                 </button>
               )
@@ -196,18 +220,20 @@ export function QuestionSolvePage() {
           </div>
 
           {!result ? (
-            <Button
-              size="lg"
-              className="w-full sm:w-auto"
-              onClick={onAnswer}
-              disabled={answer.isPending || selected == null}
-            >
-              {answer.isPending ? 'Corrigindo…' : 'Confirmar resposta'}
-            </Button>
+            <div className="sticky bottom-[4.75rem] z-10 -mx-1 bg-gradient-to-t from-background via-background/95 to-transparent pt-3 pb-1 lg:static lg:bottom-auto lg:bg-transparent lg:pt-0">
+              <Button
+                size="lg"
+                className="w-full shadow-md sm:w-auto"
+                onClick={onAnswer}
+                disabled={answer.isPending || selected == null}
+              >
+                {answer.isPending ? 'Corrigindo…' : 'Confirmar resposta'}
+              </Button>
+            </div>
           ) : (
             <div
               className={cn(
-                'animate-pop space-y-4 rounded-2xl border p-5',
+                'animate-pop min-w-0 space-y-4 rounded-2xl border p-4 sm:p-5',
                 result.correta
                   ? 'border-success/25 bg-success/5'
                   : 'border-destructive/20 bg-destructive/5',
@@ -236,7 +262,7 @@ export function QuestionSolvePage() {
               </div>
 
               {result.explicacao ? (
-                <div className="space-y-2">
+                <div className="min-w-0 space-y-2">
                   <p className="text-center text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
                     Resolução rápida
                   </p>
@@ -245,10 +271,10 @@ export function QuestionSolvePage() {
               ) : null}
 
               {result.fonte ? (
-                <p className="text-xs font-medium text-muted-foreground">
+                <p className="break-words text-xs font-medium text-muted-foreground [overflow-wrap:anywhere]">
                   Fonte: {result.fonte.documento || '—'}
                   {result.fonte.pagina ? ` · p. ${result.fonte.pagina}` : ''}
-                  {result.fonte.assunto ? ` · ${result.fonte.assunto}` : ''}
+                  {result.fonte.assunto ? ` · ${formatStudyText(result.fonte.assunto)}` : ''}
                 </p>
               ) : null}
 

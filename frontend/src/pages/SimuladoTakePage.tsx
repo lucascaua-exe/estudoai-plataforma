@@ -6,7 +6,7 @@ import {
   useFinishSimulado,
   useStartSimulado,
 } from '@/hooks/use-api'
-import { cn, getErrorMessage } from '@/lib/utils'
+import { cn, formatStudyText, getErrorMessage } from '@/lib/utils'
 import type { SimuladoStartResponse } from '@/lib/types'
 import { PageHeader, ErrorState } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
@@ -134,26 +134,36 @@ export function SimuladoTakePage() {
           <Badge variant="secondary">
             {current.questao.disciplina_nome || 'Disciplina'}
           </Badge>
-          <p className="whitespace-pre-wrap text-base leading-relaxed">
-            {current.questao.enunciado}
+          <p className="text-pretty break-words text-base leading-relaxed [overflow-wrap:anywhere]">
+            {formatStudyText(current.questao.enunciado)}
           </p>
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             {(current.questao.alternativas || []).map((alt) => (
               <button
                 key={alt.id}
                 type="button"
                 onClick={() => selectLetter(alt.letra)}
+                aria-pressed={selected === alt.letra}
                 className={cn(
-                  'flex w-full items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors',
+                  'flex w-full min-w-0 max-w-full items-start gap-3 overflow-hidden rounded-2xl border-2 px-3.5 py-3 text-left transition-all',
                   selected === alt.letra
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:bg-muted/40',
+                    ? 'border-primary bg-primary/12 ring-2 ring-primary/25'
+                    : 'border-border hover:border-primary/35 hover:bg-muted/40',
                 )}
               >
-                <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-primary">
+                <span
+                  className={cn(
+                    'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold',
+                    selected === alt.letra
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-secondary text-primary',
+                  )}
+                >
                   {alt.letra}
                 </span>
-                <span className="text-sm leading-relaxed">{alt.texto}</span>
+                <span className="min-w-0 flex-1 break-words text-sm leading-relaxed [overflow-wrap:anywhere]">
+                  {formatStudyText(alt.texto)}
+                </span>
               </button>
             ))}
           </div>

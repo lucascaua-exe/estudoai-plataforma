@@ -140,10 +140,96 @@ def _strip_layout_noise(text: str) -> str:
     return text
 
 
+# Palavras longas o suficiente para não quebrar substrings (ex.: "nas" dentro de "apenas")
+_PT_UNGLUE_WORDS = sorted(
+    {
+        "apenas",
+        "quando",
+        "quanto",
+        "sobre",
+        "entre",
+        "pelas",
+        "pelos",
+        "antes",
+        "desde",
+        "também",
+        "tambem",
+        "independentemente",
+        "independente",
+        "pessoais",
+        "privadas",
+        "públicas",
+        "publicas",
+        "empresas",
+        "anonimizados",
+        "tratamento",
+        "controlador",
+        "operador",
+        "aplica",
+        "aplicam",
+        "disposições",
+        "disposicoes",
+        "âmbito",
+        "ambito",
+        "aplicação",
+        "aplicacao",
+        "alternativa",
+        "correta",
+        "mediante",
+        "exceto",
+        "inclusive",
+        "qualquer",
+        "quaisquer",
+        "pessoa",
+        "natural",
+        "jurídica",
+        "juridica",
+        "território",
+        "territorio",
+        "brasileiro",
+        "exterior",
+        "coleta",
+        "armazenamento",
+        "assinale",
+        "proteção",
+        "protecao",
+        "informação",
+        "informacao",
+        "informações",
+        "informacoes",
+        "possuidor",
+        "possibilidade",
+        "possibilita",
+    },
+    key=len,
+    reverse=True,
+)
+
+_PT_UNGLUE_RE = re.compile(
+    r"(?i)([a-záéíóúâêôãõç])(" + "|".join(re.escape(w) for w in _PT_UNGLUE_WORDS) + r")(?=[a-záéíóúâêôãõç]|$)"
+)
+
+
+def _unglue_portuguese(text: str) -> str:
+    """Separa palavras coladas comuns em textos de PDF."""
+    prev = None
+    while prev != text:
+        prev = text
+        text = _PT_UNGLUE_RE.sub(r"\1 \2", text)
+    text = re.sub(r"(?i)([a-zç])(aplica-se)\b", r"\1 \2", text)
+    text = re.sub(r"(?i)([a-záéíóúç])(lei)(?=[a-záéíóúç]|$)", r"\1 \2", text)
+    text = re.sub(r"(?i)([a-záéíóúç])(dados)(?=[a-záéíóúç]|$)", r"\1 \2", text)
+    text = re.sub(r"(?i)(dados)(anonimizados)\b", r"\1 \2", text)
+    text = re.sub(r"(?i)(empresas)(privadas|públicas|publicas)\b", r"\1 \2", text)
+    text = re.sub(r"(?i)(apenas)(as|os|a|o)\b", r"\1 \2", text)
+    return text
+
+
 def _fix_glued_words(text: str) -> str:
     for pat, repl in _PHRASE_FIXES:
         text = pat.sub(repl, text)
     text = _CAMEL_RE.sub(r"\1 \2", text)
+    text = _unglue_portuguese(text)
     text = re.sub(r"\bArt\.?\s*(\d)", r"Art. \1", text, flags=re.I)
     text = re.sub(r"\bN[º°]\s*", "Nº ", text)
     text = re.sub(r"\bN\.\s*(?=\d)", "Nº ", text)
