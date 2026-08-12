@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import api from '@/lib/api'
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1800&q=80'
@@ -28,6 +29,24 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [formError, setFormError] = useState('')
+  const [hydrated, setHydrated] = useState(() => useAuthStore.persist.hasHydrated())
+
+  useEffect(() => {
+    const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true))
+    setHydrated(useAuthStore.persist.hasHydrated())
+    return unsub
+  }, [])
+
+  if (!hydrated) {
+    return (
+      <div className="flex min-h-dvh items-center justify-center bg-background p-6">
+        <div className="w-full max-w-sm space-y-3">
+          <Skeleton className="mx-auto h-10 w-40" />
+          <Skeleton className="h-40 w-full rounded-2xl" />
+        </div>
+      </div>
+    )
+  }
 
   if (access) return <Navigate to="/painel" replace />
 

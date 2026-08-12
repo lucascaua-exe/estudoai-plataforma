@@ -1,4 +1,4 @@
-import { Fire, Lightning } from '@phosphor-icons/react'
+import { Flame, Zap } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface StatPillProps {
@@ -25,7 +25,7 @@ export function XpPill({ value, className, compact, centered = true }: StatPillP
           compact ? 'h-7 w-7' : 'h-9 w-9',
         )}
       >
-        <Lightning weight="fill" className={compact ? 'h-4 w-4' : 'h-5 w-5'} aria-hidden />
+        <Zap className={compact ? 'h-4 w-4' : 'h-5 w-5'} fill="currentColor" aria-hidden />
       </span>
       <div className={cn('leading-tight', !centered && 'min-w-0')}>
         <p className="text-[10px] font-bold tracking-[0.14em] text-[#92400E]/80 uppercase dark:text-[#fcd34d]/80">
@@ -61,7 +61,7 @@ export function StreakPill({ value, className, compact, centered = true }: StatP
           compact ? 'h-7 w-7' : 'h-9 w-9',
         )}
       >
-        <Fire weight="fill" className={compact ? 'h-4 w-4' : 'h-5 w-5'} aria-hidden />
+        <Flame className={compact ? 'h-4 w-4' : 'h-5 w-5'} fill="currentColor" aria-hidden />
       </span>
       <div className={cn('leading-tight', !centered && 'min-w-0')}>
         <p className="text-[10px] font-bold tracking-[0.14em] text-[#9A3412]/80 uppercase dark:text-[#fdba74]/80">

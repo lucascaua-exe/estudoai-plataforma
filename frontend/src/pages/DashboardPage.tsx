@@ -3,12 +3,13 @@ import {
   AlertTriangle,
   BookOpen,
   CheckCircle2,
+  Flame,
   Library,
   Target,
   TrendingUp,
   XCircle,
+  Zap,
 } from 'lucide-react'
-import { Fire, Lightning } from '@phosphor-icons/react'
 import {
   Area,
   AreaChart,
@@ -152,14 +153,14 @@ export function DashboardPage() {
               hint={`${data.evolucao_semana >= 0 ? '+' : ''}${data.evolucao_semana}% vs. semana`}
             />
             <KpiCard
-              icon={({ className }) => <Fire weight="fill" className={className} />}
+              icon={Flame}
               label="Sequência"
               value={`${data.sequencia_atual} dias`}
               hint={`${data.dias_estudo} dias de estudo`}
               tone="brand"
             />
             <KpiCard
-              icon={({ className }) => <Lightning weight="fill" className={className} />}
+              icon={Zap}
               label="Pontos"
               value={String(data.pontuacao_total || gamification.data?.pontos || 0)}
               hint={`${data.dominios_confirmados} domínios confirmados`}

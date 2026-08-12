@@ -1,12 +1,11 @@
+# Usado quando o Netlify está com Base directory = frontend
 [build]
-  base = "frontend"
   command = "npm install && npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "22"
 
-# SPA — React Router
 [[redirects]]
   from = "/*"
   to = "/index.html"

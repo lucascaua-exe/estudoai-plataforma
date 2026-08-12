@@ -24,6 +24,31 @@
     />
     <meta property="og:locale" content="pt_BR" />
     <title>EstudoAI — Estudo gamificado</title>
+    <!-- Mata SW/cache antigos ANTES do app (evita tela branca pós-deploy) -->
+    <script>
+      ;(function () {
+        var KEY = 'estudoai.sw-kill-v1'
+        try {
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+              regs.forEach(function (r) {
+                r.unregister()
+              })
+            })
+          }
+          if ('caches' in window) {
+            caches.keys().then(function (keys) {
+              keys.forEach(function (k) {
+                caches.delete(k)
+              })
+            })
+          }
+          if (!sessionStorage.getItem(KEY) && 'serviceWorker' in navigator) {
+            sessionStorage.setItem(KEY, '1')
+          }
+        } catch (e) {}
+      })()
+    </script>
     <script>
       ;(function () {
         try {
@@ -36,7 +61,6 @@
           var stored = localStorage.getItem('estudoai-theme')
           var theme = 'light'
           if (mobile) {
-            // Mobile: light por padrão; ignora dark antigo salvo sem escolha manual
             theme = manual && (stored === 'dark' || stored === 'light') ? stored : 'light'
             if (!manual) localStorage.setItem('estudoai-theme', 'light')
           } else if (stored === 'dark' || stored === 'light') {
@@ -69,9 +93,11 @@
   <body>
     <div id="root">
       <div
-        style="min-height:100dvh;display:flex;align-items:center;justify-content:center;background:#F7F5F2;color:#9A3412;font-family:system-ui,sans-serif"
+        id="boot-fallback"
+        style="min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#F7F5F2;color:#9A3412;font-family:system-ui,sans-serif;padding:24px;text-align:center"
       >
-        Carregando EstudoAI…
+        <strong style="font-size:1.5rem">EstudoAI</strong>
+        <span>Carregando…</span>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
