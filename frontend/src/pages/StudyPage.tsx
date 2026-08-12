@@ -82,11 +82,11 @@ export function StudyPage() {
     <div>
       <PageHeader
         title="Estudar"
-        description="Inicie uma sessão rápida com filtros do seu edital."
+        description="Inicie uma sessão rápida com filtros do edital."
       />
 
       {catalog.isLoading ? (
-        <Skeleton className="h-72 w-full rounded-xl" />
+        <Skeleton className="h-72 w-full rounded-2xl" />
       ) : catalog.isError ? (
         <ErrorState onRetry={() => catalog.refetch()} />
       ) : (
@@ -137,7 +137,7 @@ export function StudyPage() {
                   <option value="dificil">Difícil</option>
                 </Select>
               </div>
-              <Button className="w-full" onClick={start} disabled={preview.isLoading}>
+              <Button className="w-full" size="lg" onClick={start} disabled={preview.isLoading}>
                 <Play className="h-4 w-4" />
                 Começar sessão
               </Button>

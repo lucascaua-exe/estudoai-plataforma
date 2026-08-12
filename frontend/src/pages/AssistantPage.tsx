@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Send } from 'lucide-react'
+import { Send, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAiChat } from '@/hooks/use-api'
 import { cn, getErrorMessage } from '@/lib/utils'
@@ -8,23 +8,32 @@ import { PageHeader } from '@/components/ui/page'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Badge } from '@/components/ui/badge'
+import { ChatBubbleContent } from '@/components/ai/ChatBubbleContent'
+
+const SUGGESTIONS = [
+  'O que é controlador e operador na LGPD?',
+  'Explique Scrum e o papel das sprints.',
+  'Quais os princípios da LGPD mais cobrados em prova?',
+]
 
 export function AssistantPage() {
   const chat = useAiChat()
   const [message, setMessage] = useState('')
   const [conversationId, setConversationId] = useState<number | undefined>()
+  const [aiEnabled, setAiEnabled] = useState<boolean | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
       conteudo:
-        'Olá! Sou o assistente do EstudoAI (Gemini). Posso explicar conteúdos do edital, tirar dúvidas e ajudar na preparação para Analista de TI — Araguaína/TO 2026.',
+        'Olá! Sou o assistente do EstudoAI. Posso explicar o edital, tirar dúvidas e conectar a resposta ao material do concurso de Analista de TI — Araguaína/TO 2026.',
     },
   ])
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const send = async () => {
-    const text = message.trim()
-    if (!text) return
+  const send = async (textRaw?: string) => {
+    const text = (textRaw ?? message).trim()
+    if (!text || chat.isPending) return
     setMessage('')
     setMessages((prev) => [...prev, { role: 'user', conteudo: text }])
     try {
@@ -33,21 +42,37 @@ export function AssistantPage() {
         conversation_id: conversationId,
       })
       setConversationId(res.conversation_id)
+      setAiEnabled(res.ai_enabled)
       setMessages((prev) => [...prev, res.message])
       if (!res.ai_enabled) {
-        toast.message('IA em modo limitado no momento.')
+        toast.message('IA em modo limitado — configure GEMINI_API_KEY no servidor.')
       }
       setTimeout(() => bottomRef.current?.scrollIntoView({ behavior: 'smooth' }), 50)
     } catch (err) {
       toast.error(getErrorMessage(err, 'Falha ao enviar mensagem.'))
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          conteudo: 'Não consegui responder agora. Verifique a conexão com a API e tente de novo.',
+        },
+      ])
     }
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col">
+    <div className="flex h-[calc(100dvh-8rem)] flex-col">
       <PageHeader
         title="Assistente IA"
-        description="Tire dúvidas e peça explicações sobre o conteúdo do concurso."
+        description="Tire dúvidas com base no material do concurso."
+        actions={
+          aiEnabled == null ? null : (
+            <Badge variant={aiEnabled ? 'success' : 'warning'}>
+              <Sparkles className="mr-1 h-3 w-3" aria-hidden />
+              {aiEnabled ? 'Gemini ativo' : 'IA limitada'}
+            </Badge>
+          )
+        }
       />
 
       <Card className="flex min-h-0 flex-1 flex-col">
@@ -57,22 +82,50 @@ export function AssistantPage() {
               <div
                 key={`${m.role}-${i}`}
                 className={cn(
-                  'max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
+                  'max-w-[90%] rounded-2xl px-4 py-3',
                   m.role === 'user'
                     ? 'ml-auto bg-primary text-primary-foreground'
                     : 'bg-muted text-foreground',
                 )}
               >
-                <p className="whitespace-pre-wrap">{m.conteudo}</p>
+                {m.role === 'assistant' ? (
+                  <ChatBubbleContent text={m.conteudo} />
+                ) : (
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.conteudo}</p>
+                )}
+                {m.role === 'assistant' && m.fontes?.length ? (
+                  <div className="mt-3 border-t border-border/60 pt-2 text-[11px] text-muted-foreground">
+                    Fontes:{' '}
+                    {m.fontes
+                      .slice(0, 3)
+                      .map((f) => `${f.documento || 'Material'}${f.pagina ? ` p.${f.pagina}` : ''}`)
+                      .join(' · ')}
+                  </div>
+                ) : null}
               </div>
             ))}
             {chat.isPending ? (
               <div className="w-fit rounded-2xl bg-muted px-4 py-3 text-sm text-muted-foreground">
-                Pensando…
+                Pensando com o material do edital…
               </div>
             ) : null}
             <div ref={bottomRef} />
           </div>
+
+          {!conversationId && !chat.isPending ? (
+            <div className="flex flex-wrap gap-2">
+              {SUGGESTIONS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => void send(s)}
+                  className="cursor-pointer rounded-full border border-border bg-card px-3 py-1.5 text-left text-xs font-medium text-muted-foreground transition hover:border-primary/40 hover:text-foreground"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          ) : null}
 
           <div className="flex gap-2 border-t border-border pt-4">
             <Textarea
@@ -80,6 +133,7 @@ export function AssistantPage() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Pergunte sobre LGPD, redes, banco de dados…"
               className="min-h-[52px] resize-none"
+              aria-label="Mensagem para o assistente"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault()
@@ -91,6 +145,7 @@ export function AssistantPage() {
               className="h-auto shrink-0"
               onClick={() => void send()}
               disabled={chat.isPending || !message.trim()}
+              aria-label="Enviar mensagem"
             >
               <Send className="h-4 w-4" />
             </Button>

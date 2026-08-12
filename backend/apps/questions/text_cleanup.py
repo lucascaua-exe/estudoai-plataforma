@@ -185,8 +185,45 @@ def clean_enunciado(text: str | None) -> str:
     return cleaned
 
 
+_SECTION_ANY_RE = re.compile(
+    r"(?im)(?:(?<=[.!?])\s*|(?<=\n)\s*|(?<=:)\s+|(?<=\s)|(?<=^))"
+    r"(Resposta correta|Alternativa correta|"
+    r"Por que(?: as outras(?: alternativas?)?(?: falham)?)?|"
+    r"Alternativas? incorretas?|"
+    r"Análise(?: detalhada)?(?: das alternativas)?|"
+    r"Dica(?: de memorização)?|Para memorizar)\s*:"
+)
+
+_MD_FENCE_RE = re.compile(r"```(?:\w+)?\s*|\s*```")
+_MD_BOLD_HEADING_RE = re.compile(
+    r"(?im)^\s*\*\*(Resposta correta|Alternativa correta|Por que[^:*]{0,40}|Alternativas? incorretas?|Dica[^:*]{0,40}|Para memorizar)\*\*\s*:?\s*$"
+)
+_BULLET_INLINE_RE = re.compile(r"\s+[-*•]\s+(?=[A-Ea-e]\))")
+
+
+def format_explicacao(text: str | None) -> str:
+    """Normaliza estrutura da resolução para exibição limpa no frontend."""
+    if not text:
+        return ""
+    cleaned = clean_study_text(text)
+    cleaned = _MD_FENCE_RE.sub("", cleaned)
+    cleaned = _MD_BOLD_HEADING_RE.sub(lambda m: f"{m.group(1)}:", cleaned)
+    cleaned = re.sub(
+        r"(?i)\*\*(Resposta correta|Alternativa correta|Por que[^:*]{0,40}|Alternativas? incorretas?|Dica[^:*]{0,40}|Para memorizar)\s*:?\*\*\s*:?",
+        r"\1:",
+        cleaned,
+    )
+    cleaned = re.sub(r"(?m)^\s*#{1,3}\s+", "", cleaned)
+    cleaned = _SECTION_ANY_RE.sub(r"\n\n\1:\n", cleaned)
+    cleaned = _BULLET_INLINE_RE.sub("\n• ", cleaned)
+    cleaned = re.sub(r"(?m)^\s*[-*]\s+", "• ", cleaned)
+    cleaned = re.sub(r"[ \t]+\n", "\n", cleaned)
+    cleaned = re.sub(r"\n[ \t]+", "\n", cleaned)
+    return _MULTI_NL_RE.sub("\n\n", cleaned).strip()
+
+
 def clean_explicacao(text: str | None) -> str:
-    return clean_study_text(text)
+    return format_explicacao(text)
 
 
 def clean_alternativa(text: str | None) -> str:

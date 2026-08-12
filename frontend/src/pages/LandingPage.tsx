@@ -1,8 +1,10 @@
 import { useId, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
+import { Menu, X } from 'lucide-react'
 import { useAuthStore } from '@/lib/auth-store'
 import { PLANS, type PlanId } from '@/lib/plans'
 import { cn } from '@/lib/utils'
+import { buttonVariants } from '@/components/ui/button'
 
 function planHref(id: PlanId) {
   return `/register?plano=${id}`
@@ -21,27 +23,25 @@ function DemoQuestion() {
 
   return (
     <div
-      className="border border-stone-200 bg-stone-100 dark:border-stone-800 dark:bg-stone-900"
+      className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
       role="group"
       aria-labelledby={titleId}
     >
-      <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3 dark:border-stone-800">
-        <span className="text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-          Q.184 · TI
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-muted/50 px-4 py-3">
+        <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+          Amostra · Q.184
         </span>
-        <span className="text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-          Amostra
-        </span>
+        <span className="text-xs font-medium text-primary">Feedback imediato</span>
       </div>
-      <div className="p-4 md:p-8">
+      <div className="p-4 md:p-6">
         <p
           id={titleId}
-          className="max-w-[60ch] text-base font-normal leading-relaxed text-pretty text-stone-900 dark:text-stone-50"
+          className="max-w-[60ch] text-base font-medium leading-relaxed text-pretty text-foreground"
         >
           Em gestão de projetos de software, qual abordagem organiza o trabalho em sprints curtas
           com entrega incremental de valor?
         </p>
-        <ul className="mt-8 space-y-2">
+        <ul className="mt-6 space-y-2">
           {alts.map((alt) => {
             const selected = picked === alt.id
             const showOk = picked !== null && alt.id === ok
@@ -53,37 +53,32 @@ function DemoQuestion() {
                   onClick={() => setPicked(alt.id)}
                   aria-pressed={selected}
                   className={cn(
-                    'flex min-h-[44px] w-full items-start gap-4 border px-4 py-3 text-left text-sm leading-relaxed',
-                    'motion-safe:transition-[background-color,border-color,opacity] motion-safe:duration-200 motion-reduce:transition-none',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 focus-visible:ring-offset-2 focus-visible:ring-offset-stone-50 dark:focus-visible:ring-stone-50 dark:focus-visible:ring-offset-stone-950',
-                    'active:opacity-90',
-                    showOk && 'border-[#003B8E] bg-[#003B8E]/10',
-                    showBad && 'border-stone-900/40 bg-stone-200 dark:border-stone-50/40 dark:bg-stone-800',
-                    !showOk &&
-                      !showBad &&
-                      selected &&
-                      'border-stone-900 bg-stone-200 dark:border-stone-50 dark:bg-stone-800',
-                    !showOk &&
-                      !showBad &&
-                      !selected &&
-                      'border-stone-200 bg-stone-50 hover:bg-stone-100 dark:border-stone-800 dark:bg-stone-950 dark:hover:bg-stone-900',
+                    'flex min-h-12 w-full cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium leading-relaxed transition-colors duration-200',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    showOk && 'border-success/40 bg-success/8',
+                    showBad && 'border-destructive/35 bg-destructive/5',
+                    !showOk && !showBad && selected && 'border-primary bg-primary/5',
+                    !showOk && !showBad && !selected && 'border-border bg-card hover:bg-muted/60',
                   )}
                 >
-                  <span className="inline-flex h-6 w-6 shrink-0 items-center justify-center border border-current text-xs font-medium tabular-nums">
+                  <span
+                    className={cn(
+                      'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-semibold',
+                      showOk && 'bg-success text-white',
+                      showBad && 'bg-destructive text-white',
+                      !showOk && !showBad && selected && 'bg-primary text-primary-foreground',
+                      !showOk && !showBad && !selected && 'bg-secondary text-secondary-foreground',
+                    )}
+                  >
                     {alt.id}
                   </span>
-                  <span className="min-w-0 pt-0.5 text-pretty text-stone-900 dark:text-stone-50">
-                    {alt.text}
-                  </span>
+                  <span className="min-w-0 pt-0.5 text-pretty">{alt.text}</span>
                 </button>
               </li>
             )
           })}
         </ul>
-        <p
-          className="mt-4 min-h-5 max-w-[60ch] text-sm leading-relaxed text-stone-900/40 dark:text-stone-50/40"
-          aria-live="polite"
-        >
+        <p className="mt-4 min-h-5 text-sm text-muted-foreground" aria-live="polite">
           {picked === null && 'Selecione uma alternativa…'}
           {picked === ok && 'Correto. No painel, isso alimenta revisão e domínio.'}
           {picked !== null && picked !== ok && `Gabarito: ${ok}. O erro entra na fila de revisão.`}
@@ -100,26 +95,25 @@ export function LandingPage() {
   if (access) return <Navigate to="/painel" replace />
 
   return (
-    <div className="swiss-landing min-h-dvh bg-stone-50 text-stone-900 antialiased dark:bg-stone-950 dark:text-stone-50">
+    <div className="min-h-dvh bg-background text-foreground antialiased">
       <a
         href="#conteudo"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-stone-900 focus:px-4 focus:py-3 focus:text-sm focus:font-medium focus:text-stone-50 dark:focus:bg-stone-50 dark:focus:text-stone-900"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-xl focus:bg-primary focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-primary-foreground"
       >
         Ir para o conteúdo
       </a>
 
-      {/* Nav */}
-      <header className="border-b border-stone-200 dark:border-stone-800">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 md:px-8">
+      <header className="sticky top-0 z-40 border-b border-border/90 bg-card/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-8">
           <Link
             to="/"
             translate="no"
-            className="text-base font-medium tracking-tight text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 dark:text-stone-50 dark:focus-visible:ring-stone-50"
+            className="font-brand text-xl text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-2xl"
           >
             EstudoAI
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex" aria-label="Principal">
+          <nav className="hidden items-center gap-1 md:flex" aria-label="Principal">
             {[
               { href: '#metodo', label: 'Método' },
               { href: '#amostra', label: 'Amostra' },
@@ -129,33 +123,36 @@ export function LandingPage() {
               <a
                 key={l.href}
                 href={l.href}
-                className="min-h-[44px] inline-flex items-center text-sm font-normal text-stone-900/70 motion-safe:transition-opacity hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 dark:text-stone-50/70 dark:hover:text-stone-50 dark:focus-visible:ring-stone-50"
+                className="inline-flex min-h-11 cursor-pointer items-center rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {l.label}
               </a>
             ))}
             <Link
               to="/login"
-              className="inline-flex min-h-[44px] items-center border border-stone-900 px-4 text-sm font-medium text-stone-900 motion-safe:transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 dark:border-stone-50 dark:text-stone-50 dark:focus-visible:ring-stone-50"
+              className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'ml-2')}
             >
               Entrar
             </Link>
+            <a href="#planos" className={cn(buttonVariants({ size: 'sm' }), 'ml-1')}>
+              Começar
+            </a>
           </nav>
 
           <button
             type="button"
-            className="inline-flex min-h-[44px] min-w-[44px] items-center justify-center border border-stone-200 text-sm md:hidden dark:border-stone-800"
+            className="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-xl border border-border bg-card md:hidden"
             aria-expanded={menuOpen}
             aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
             onClick={() => setMenuOpen((v) => !v)}
           >
-            {menuOpen ? 'Fechar' : 'Menu'}
+            {menuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
           </button>
         </div>
 
         {menuOpen ? (
-          <div className="border-t border-stone-200 px-4 py-4 md:hidden dark:border-stone-800">
-            <div className="flex flex-col gap-2">
+          <div className="border-t border-border px-4 py-4 md:hidden">
+            <div className="flex flex-col gap-1">
               {[
                 { href: '#metodo', label: 'Método' },
                 { href: '#amostra', label: 'Amostra' },
@@ -166,7 +163,7 @@ export function LandingPage() {
                   key={l.href}
                   href={l.href}
                   onClick={() => setMenuOpen(false)}
-                  className="flex min-h-[44px] items-center text-base text-stone-900/70 dark:text-stone-50/70"
+                  className="flex min-h-12 cursor-pointer items-center rounded-lg px-3 text-base font-medium"
                 >
                   {l.label}
                 </a>
@@ -174,7 +171,7 @@ export function LandingPage() {
               <Link
                 to="/login"
                 onClick={() => setMenuOpen(false)}
-                className="mt-2 flex min-h-[44px] items-center justify-center bg-[#003B8E] text-sm font-medium text-stone-50"
+                className={cn(buttonVariants(), 'mt-2 w-full')}
               >
                 Entrar
               </Link>
@@ -184,129 +181,88 @@ export function LandingPage() {
       </header>
 
       <main id="conteudo">
-        {/* Hero */}
-        <section className="border-b border-stone-200 py-16 md:py-24 lg:py-32 dark:border-stone-800">
+        <section className="border-b border-border py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-4 md:px-8">
-            <div className="grid grid-cols-12 gap-4 md:gap-8">
-              <div className="col-span-12 lg:col-span-8">
-                <p className="text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-                  Analista de TI · Prefeitura de Araguaína · 2026
-                </p>
-                <h1 className="mt-8 text-4xl font-light tracking-tight text-balance text-stone-900 sm:text-5xl md:text-6xl lg:text-7xl lg:leading-none dark:text-stone-50">
-                  Estudo medido
-                  <br />
-                  no edital real
-                </h1>
-                <p className="mt-8 max-w-[60ch] text-base font-normal leading-relaxed text-pretty text-stone-900/70 dark:text-stone-50/70">
-                  Mais de 2.300 questões dos PDFs oficiais, simulados, revisão inteligente e mapa de
-                  domínio. Quem já tem conta entra. Quem começa escolhe um plano.
-                </p>
-                <div className="mt-8 flex flex-wrap gap-4">
-                  <a
-                    href="#planos"
-                    className="inline-flex min-h-[44px] items-center justify-center bg-[#003B8E] px-8 text-sm font-medium text-stone-50 motion-safe:transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003B8E] focus-visible:ring-offset-2 focus-visible:ring-offset-stone-50 dark:focus-visible:ring-offset-stone-950"
-                  >
-                    Ver planos
-                  </a>
-                  <Link
-                    to="/login"
-                    className="inline-flex min-h-[44px] items-center justify-center border border-stone-900 px-8 text-sm font-medium text-stone-900 motion-safe:transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 focus-visible:ring-offset-2 dark:border-stone-50 dark:text-stone-50 dark:focus-visible:ring-stone-50"
-                  >
-                    Já tenho conta
-                  </Link>
-                </div>
-                <p className="mt-8 text-sm text-stone-900/40 dark:text-stone-50/40">
-                  Free sem cartão · Cancelamento a qualquer momento · Garantia de 7&nbsp;dias
-                </p>
-              </div>
-              <div className="col-span-12 hidden lg:col-span-4 lg:block">
-                <div className="grid h-full grid-rows-3 gap-4 border border-stone-200 p-4 dark:border-stone-800">
-                  {[
-                    { n: '2.375', l: 'questões' },
-                    { n: '6', l: 'disciplinas' },
-                    { n: '3', l: 'planos' },
-                  ].map((s) => (
-                    <div
-                      key={s.l}
-                      className="flex flex-col justify-end border-t border-stone-200 pt-4 dark:border-stone-800"
-                    >
-                      <p className="text-3xl font-light tracking-tight tabular-nums text-stone-900 dark:text-stone-50">
-                        {s.n}
-                      </p>
-                      <p className="mt-2 text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-                        {s.l}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+            <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+              Analista de TI · Araguaína · 2026
+            </p>
+            <h1 className="mt-5 max-w-[14ch] font-display text-5xl font-semibold tracking-tight text-primary md:text-6xl">
+              EstudoAI
+            </h1>
+            <p className="mt-4 max-w-[28ch] font-display text-2xl font-medium text-foreground md:text-3xl">
+              Preparação clara para o edital real.
+            </p>
+            <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-muted-foreground md:text-lg">
+              Mais de 2.300 questões oficiais, revisão inteligente e simulados — sem ruído visual,
+              com foco no que importa: passar.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href="#planos" className={cn(buttonVariants({ size: 'lg' }))}>
+                Ver planos
+              </a>
+              <Link to="/login" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}>
+                Já tenho conta
+              </Link>
             </div>
+            <p className="mt-5 text-sm text-muted-foreground">
+              Free sem cartão · Cancele quando quiser · Garantia de 7 dias
+            </p>
+            <dl className="mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-border pt-8">
+              {[
+                { n: '2.375', l: 'questões' },
+                { n: '6', l: 'disciplinas' },
+                { n: '3', l: 'planos' },
+              ].map((s) => (
+                <div key={s.l}>
+                  <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    {s.l}
+                  </dt>
+                  <dd className="mt-1 font-display text-2xl font-semibold tabular-nums">{s.n}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </section>
 
-        {/* Método */}
-        <section
-          id="metodo"
-          className="scroll-mt-8 border-b border-stone-200 py-16 md:py-24 lg:py-32 dark:border-stone-800"
-        >
+        <section id="metodo" className="scroll-mt-20 border-b border-border py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-4 md:px-8">
-            <div className="grid grid-cols-12 gap-4 md:gap-8">
-              <div className="col-span-12 md:col-span-4">
-                <p className="text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-                  Método
-                </p>
-                <h2 className="mt-4 text-3xl font-light tracking-tight text-balance text-stone-900 dark:text-stone-50">
-                  Três passos.
-                  <br />
-                  Sem ruído.
-                </h2>
-              </div>
-              <div className="col-span-12 md:col-span-8">
-                <ol className="divide-y divide-stone-200 border-y border-stone-200 dark:divide-stone-800 dark:border-stone-800">
-                  {[
-                    {
-                      n: '01',
-                      t: 'Assine',
-                      d: 'Free para validar o ritmo. Pro para cobrir o edital. Premium com IA nas fontes.',
-                    },
-                    {
-                      n: '02',
-                      t: 'Pratique',
-                      d: 'Sessões guiadas, banco filtrável e simulados no formato da prova.',
-                    },
-                    {
-                      n: '03',
-                      t: 'Corrija',
-                      d: 'Fila de erros, mapa de domínio e metas apontam o próximo bloco.',
-                    },
-                  ].map((row) => (
-                    <li key={row.n} className="grid grid-cols-12 gap-4 py-8">
-                      <span className="col-span-2 font-mono text-sm tabular-nums text-stone-900/40 dark:text-stone-50/40">
-                        {row.n}
-                      </span>
-                      <div className="col-span-10 md:col-span-9">
-                        <h3 className="text-xl font-normal text-stone-900 dark:text-stone-50">
-                          {row.t}
-                        </h3>
-                        <p className="mt-2 max-w-[60ch] text-base leading-relaxed text-pretty text-stone-900/70 dark:text-stone-50/70">
-                          {row.d}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
+            <p className="text-xs font-semibold tracking-wide text-primary uppercase">Método</p>
+            <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight">
+              Três passos objetivos
+            </h2>
+            <ol className="mt-10 grid gap-6 md:grid-cols-3">
+              {[
+                {
+                  n: '01',
+                  t: 'Escolha o plano',
+                  d: 'Free para validar o ritmo. Pro para cobrir o edital. Premium com IA nas fontes.',
+                },
+                {
+                  n: '02',
+                  t: 'Pratique no banco',
+                  d: 'Sessões guiadas, filtros por disciplina e simulados no formato da prova.',
+                },
+                {
+                  n: '03',
+                  t: 'Revise e avance',
+                  d: 'Fila de erros, mapa de domínio e metas apontam o próximo bloco.',
+                },
+              ].map((row) => (
+                <li key={row.n} className="border-t border-border pt-5">
+                  <span className="text-xs font-semibold tabular-nums text-muted-foreground">
+                    {row.n}
+                  </span>
+                  <h3 className="mt-3 font-display text-xl font-semibold">{row.t}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{row.d}</p>
+                </li>
+              ))}
+            </ol>
 
-            <div className="mt-16 grid grid-cols-12 gap-4 md:gap-8">
-              <div className="col-span-12">
-                <p className="text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-                  Edital
-                </p>
-                <h2 className="mt-4 text-3xl font-light tracking-tight dark:text-stone-50">
-                  Seis disciplinas
-                </h2>
-              </div>
+            <p className="mt-14 text-xs font-semibold tracking-wide text-primary uppercase">
+              Edital
+            </p>
+            <h2 className="mt-2 font-display text-3xl font-semibold">Seis disciplinas</h2>
+            <ul className="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {[
                 'Legislação',
                 'Tecnologia da Informação',
@@ -315,152 +271,108 @@ export function LandingPage() {
                 'Língua Portuguesa',
                 'Raciocínio Lógico e Matemático',
               ].map((name, i) => (
-                <div
+                <li
                   key={name}
-                  className="col-span-12 border border-stone-200 p-4 sm:col-span-6 lg:col-span-4 dark:border-stone-800"
+                  className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3"
                 >
-                  <p className="font-mono text-xs tabular-nums text-stone-900/40 dark:text-stone-50/40">
+                  <span className="text-xs font-semibold tabular-nums text-muted-foreground">
                     {String(i + 1).padStart(2, '0')}
-                  </p>
-                  <p className="mt-4 text-base font-normal text-stone-900 dark:text-stone-50">
-                    {name}
-                  </p>
-                </div>
+                  </span>
+                  <span className="text-sm font-medium">{name}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         </section>
 
-        {/* Amostra */}
-        <section
-          id="amostra"
-          className="scroll-mt-8 border-b border-stone-200 py-16 md:py-24 lg:py-32 dark:border-stone-800"
-        >
+        <section id="amostra" className="scroll-mt-20 border-b border-border py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-4 md:px-8">
-            <div className="grid grid-cols-12 gap-8">
-              <div className="col-span-12 lg:col-span-5">
-                <p className="text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
+            <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
+              <div>
+                <p className="text-xs font-semibold tracking-wide text-primary uppercase">
                   Produto
                 </p>
-                <h2 className="mt-4 text-3xl font-light tracking-tight text-balance dark:text-stone-50">
+                <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight">
                   Uma questão do banco
                 </h2>
-                <p className="mt-4 max-w-[60ch] text-base leading-relaxed text-pretty text-stone-900/70 dark:text-stone-50/70">
-                  Experimente o fluxo de resposta. No painel completo, cada tentativa atualiza
-                  revisão, domínio e metas.
+                <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-muted-foreground">
+                  Experimente o fluxo de resposta. No painel, cada tentativa atualiza revisão,
+                  domínio e metas — com resolução bem formatada.
                 </p>
               </div>
-              <div className="col-span-12 lg:col-span-7">
-                <DemoQuestion />
-              </div>
+              <DemoQuestion />
             </div>
           </div>
         </section>
 
-        {/* Planos */}
-        <section
-          id="planos"
-          className="scroll-mt-8 border-b border-stone-200 py-16 md:py-24 lg:py-32 dark:border-stone-800"
-        >
+        <section id="planos" className="scroll-mt-20 border-b border-border py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-4 md:px-8">
-            <div className="grid grid-cols-12 gap-4 md:gap-8">
-              <div className="col-span-12 md:col-span-5">
-                <p className="text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-                  Assinatura
-                </p>
-                <h2 className="mt-4 text-3xl font-light tracking-tight text-balance dark:text-stone-50">
-                  Três planos.
-                  <br />
-                  Um caminho.
-                </h2>
-                <p className="mt-4 max-w-[60ch] text-base leading-relaxed text-pretty text-stone-900/70 dark:text-stone-50/70">
-                  Conta nova nasce pelo plano escolhido. Se você já assinou, use Entrar.
-                </p>
-                <Link
-                  to="/login"
-                  className="mt-8 inline-flex min-h-[44px] items-center text-sm font-medium text-[#003B8E] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003B8E]"
-                >
-                  Já tenho conta → Entrar
-                </Link>
-              </div>
-              <div className="col-span-12 md:col-span-7">
-                <ul className="divide-y divide-stone-200 border border-stone-200 dark:divide-stone-800 dark:border-stone-800">
-                  {PLANS.map((plan) => (
-                    <li
-                      key={plan.id}
-                      className={cn(
-                        'p-4 md:p-8',
-                        plan.featured && 'bg-stone-100 dark:bg-stone-900',
-                      )}
-                    >
-                      <div className="flex flex-wrap items-baseline justify-between gap-4">
-                        <div>
-                          <div className="flex items-center gap-4">
-                            <h3 className="text-xl font-normal text-stone-900 dark:text-stone-50">
-                              {plan.name}
-                            </h3>
-                            {plan.featured ? (
-                              <span className="text-xs font-normal tracking-wide text-[#003B8E] uppercase">
-                                Recomendado
-                              </span>
-                            ) : null}
-                          </div>
-                          <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-pretty text-stone-900/70 dark:text-stone-50/70">
-                            {plan.description}
-                          </p>
-                        </div>
-                        <p className="text-2xl font-light tracking-tight tabular-nums text-stone-900 dark:text-stone-50">
-                          {plan.priceLabel}
-                          <span className="ml-2 text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-                            {plan.priceNote}
-                          </span>
-                        </p>
-                      </div>
-                      <ul className="mt-8 space-y-2">
-                        {plan.features.map((f) => (
-                          <li
-                            key={f}
-                            className="flex gap-4 text-sm leading-relaxed text-stone-900/70 dark:text-stone-50/70"
-                          >
-                            <span className="text-[#003B8E]" aria-hidden>
-                              —
-                            </span>
-                            <span className="text-pretty">{f}</span>
-                          </li>
-                        ))}
-                      </ul>
-                      <Link
-                        to={planHref(plan.id)}
-                        className={cn(
-                          'mt-8 inline-flex min-h-[44px] w-full items-center justify-center px-8 text-sm font-medium motion-safe:transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:w-auto',
-                          plan.featured
-                            ? 'bg-[#003B8E] text-stone-50 focus-visible:ring-[#003B8E]'
-                            : 'border border-stone-900 text-stone-900 focus-visible:ring-stone-900 dark:border-stone-50 dark:text-stone-50 dark:focus-visible:ring-stone-50',
-                        )}
-                      >
-                        {plan.cta}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ */}
-        <section
-          id="faq"
-          className="scroll-mt-8 border-b border-stone-200 py-16 md:py-24 lg:py-32 dark:border-stone-800"
-        >
-          <div className="mx-auto max-w-6xl px-4 md:px-8">
-            <p className="text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-              FAQ
-            </p>
-            <h2 className="mt-4 text-3xl font-light tracking-tight dark:text-stone-50">
-              Perguntas frequentes
+            <p className="text-xs font-semibold tracking-wide text-primary uppercase">Assinatura</p>
+            <h2 className="mt-2 font-display text-3xl font-semibold tracking-tight">
+              Três planos
             </h2>
-            <dl className="mt-16 divide-y divide-stone-200 border-y border-stone-200 dark:divide-stone-800 dark:border-stone-800">
+            <p className="mt-3 max-w-[52ch] text-base text-muted-foreground">
+              Conta nova nasce pelo plano escolhido. Se você já assinou, use Entrar.
+            </p>
+            <ul className="mt-10 grid gap-4 lg:grid-cols-3">
+              {PLANS.map((plan) => (
+                <li
+                  key={plan.id}
+                  className={cn(
+                    'flex flex-col rounded-2xl border bg-card p-5 md:p-6',
+                    plan.featured ? 'border-primary shadow-sm' : 'border-border',
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="font-display text-xl font-semibold">{plan.name}</h3>
+                    {plan.featured ? (
+                      <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-primary uppercase">
+                        Recomendado
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {plan.description}
+                  </p>
+                  <p className="mt-4 font-display text-3xl font-semibold tabular-nums">
+                    {plan.priceLabel}
+                    <span className="ml-2 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                      {plan.priceNote}
+                    </span>
+                  </p>
+                  <ul className="mt-5 flex-1 space-y-2">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex gap-2 text-sm leading-relaxed text-foreground/90">
+                        <span className="text-primary" aria-hidden>
+                          —
+                        </span>
+                        <span className="text-pretty">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    to={planHref(plan.id)}
+                    className={cn(
+                      buttonVariants({
+                        variant: plan.featured ? 'default' : 'outline',
+                        size: 'lg',
+                      }),
+                      'mt-6 w-full',
+                    )}
+                  >
+                    {plan.cta}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section id="faq" className="scroll-mt-20 border-b border-border py-16 md:py-24">
+          <div className="mx-auto max-w-6xl px-4 md:px-8">
+            <p className="text-xs font-semibold tracking-wide text-primary uppercase">FAQ</p>
+            <h2 className="mt-2 font-display text-3xl font-semibold">Perguntas frequentes</h2>
+            <dl className="mt-10 divide-y divide-border border-y border-border">
               {[
                 {
                   q: 'Preciso de cartão para o plano Free?',
@@ -479,11 +391,9 @@ export function LandingPage() {
                   a: 'Use Entrar no topo. Planos, troca e faturas ficam em Planos e faturas no painel.',
                 },
               ].map((item) => (
-                <div key={item.q} className="grid grid-cols-12 gap-4 py-8 md:gap-8">
-                  <dt className="col-span-12 text-base font-medium text-stone-900 md:col-span-5 dark:text-stone-50">
-                    {item.q}
-                  </dt>
-                  <dd className="col-span-12 max-w-[60ch] text-base leading-relaxed text-pretty text-stone-900/70 md:col-span-7 dark:text-stone-50/70">
+                <div key={item.q} className="grid gap-2 py-6 md:grid-cols-12 md:gap-8">
+                  <dt className="font-medium md:col-span-5">{item.q}</dt>
+                  <dd className="text-sm leading-relaxed text-muted-foreground md:col-span-7">
                     {item.a}
                   </dd>
                 </div>
@@ -492,70 +402,54 @@ export function LandingPage() {
           </div>
         </section>
 
-        {/* CTA final */}
-        <section className="py-16 md:py-24 lg:py-32">
+        <section className="py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-4 md:px-8">
-            <div className="grid grid-cols-12 gap-8 border border-stone-200 bg-stone-100 p-8 md:p-16 dark:border-stone-800 dark:bg-stone-900">
-              <div className="col-span-12 lg:col-span-8">
-                <h2 className="text-3xl font-light tracking-tight text-balance md:text-5xl dark:text-stone-50">
-                  Escolha o plano
-                  <br />
-                  e feche o edital
-                </h2>
-                <p className="mt-8 max-w-[60ch] text-base leading-relaxed text-pretty text-stone-900/70 dark:text-stone-50/70">
-                  Free sem cartão. Pro e Premium com cancelamento livre e garantia de 7&nbsp;dias.
-                </p>
-                <div className="mt-8 flex flex-wrap gap-4">
-                  <a
-                    href="#planos"
-                    className="inline-flex min-h-[44px] items-center justify-center bg-[#003B8E] px-8 text-sm font-medium text-stone-50 hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#003B8E] focus-visible:ring-offset-2"
-                  >
-                    Ver planos
-                  </a>
-                  <Link
-                    to="/login"
-                    className="inline-flex min-h-[44px] items-center justify-center border border-stone-900 px-8 text-sm font-medium text-stone-900 hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-900 dark:border-stone-50 dark:text-stone-50 dark:focus-visible:ring-stone-50"
-                  >
-                    Entrar
-                  </Link>
-                </div>
-              </div>
-              <div className="col-span-12 flex items-end lg:col-span-4">
-                <p className="text-xs font-normal tracking-wide text-stone-900/40 uppercase dark:text-stone-50/40">
-                  Um concurso · Um painel · Três planos
-                </p>
+            <div className="rounded-2xl border border-border bg-secondary/60 px-6 py-10 md:px-12 md:py-14">
+              <h2 className="max-w-[16ch] font-display text-3xl font-semibold tracking-tight md:text-4xl">
+                Escolha o plano e feche o edital
+              </h2>
+              <p className="mt-4 max-w-[48ch] text-base text-muted-foreground">
+                Free sem cartão. Pro e Premium com cancelamento livre e garantia de 7 dias.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a href="#planos" className={cn(buttonVariants({ size: 'lg' }))}>
+                  Ver planos
+                </a>
+                <Link to="/login" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}>
+                  Entrar
+                </Link>
               </div>
             </div>
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-stone-200 py-16 dark:border-stone-800">
+      <footer className="border-t border-border py-12">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 md:flex-row md:items-start md:justify-between md:px-8">
           <div>
-            <p translate="no" className="text-base font-medium">
+            <p translate="no" className="font-brand text-lg text-primary">
               EstudoAI
             </p>
-            <p className="mt-4 max-w-[60ch] text-sm leading-relaxed text-pretty text-stone-900/40 dark:text-stone-50/40">
+            <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-muted-foreground">
               Preparação para concursos com banco oficial, métricas e revisão inteligente.
             </p>
           </div>
-          <nav className="flex flex-wrap gap-8 text-sm text-stone-900/70 dark:text-stone-50/70">
-            <a href="#planos" className="min-h-[44px] inline-flex items-center hover:text-stone-900 dark:hover:text-stone-50">
+          <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-muted-foreground">
+            <a href="#planos" className="inline-flex min-h-11 items-center hover:text-foreground">
               Planos
             </a>
-            <Link to="/login" className="min-h-[44px] inline-flex items-center hover:text-stone-900 dark:hover:text-stone-50">
+            <Link to="/login" className="inline-flex min-h-11 items-center hover:text-foreground">
               Entrar
             </Link>
-            <Link to="/privacidade" className="min-h-[44px] inline-flex items-center hover:text-stone-900 dark:hover:text-stone-50">
+            <Link to="/privacidade" className="inline-flex min-h-11 items-center hover:text-foreground">
               Privacidade
             </Link>
-            <Link to="/termos" className="min-h-[44px] inline-flex items-center hover:text-stone-900 dark:hover:text-stone-50">
+            <Link to="/termos" className="inline-flex min-h-11 items-center hover:text-foreground">
               Termos
             </Link>
           </nav>
         </div>
-        <p className="mx-auto mt-16 max-w-6xl px-4 text-xs tracking-wide text-stone-900/40 uppercase md:px-8 dark:text-stone-50/40">
+        <p className="mx-auto mt-10 max-w-6xl px-4 text-xs tracking-wide text-muted-foreground uppercase md:px-8">
           © {new Date().getFullYear()} EstudoAI
         </p>
       </footer>

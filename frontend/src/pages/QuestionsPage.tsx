@@ -137,16 +137,16 @@ export function QuestionsPage() {
                     </div>
                     <Link
                       to={`/questoes/${q.id}`}
-                      className="font-medium text-foreground hover:text-primary"
+                      className="font-medium leading-snug text-foreground hover:text-primary"
                     >
                       {truncate(q.enunciado, 220)}
                     </Link>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="mt-1.5 text-xs text-muted-foreground">
                       {q.assunto_nome}
                       {q.documento_nome ? ` · ${q.documento_nome}` : ''}
                     </p>
                   </div>
-                  <div className="flex shrink-0 gap-1">
+                  <div className="flex shrink-0 items-center gap-1.5">
                     <Button
                       variant="ghost"
                       size="icon"

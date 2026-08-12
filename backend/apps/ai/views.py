@@ -28,11 +28,15 @@ class ChatView(APIView):
         MensagemIA.objects.create(
             conversa=conversa, role=MensagemIA.Role.USER, conteudo=message
         )
+        prior = list(
+            conversa.mensagens.exclude(role=MensagemIA.Role.SYSTEM)
+            .order_by("created_at")
+            .values("role", "conteudo")
+        )
+        # Exclui a mensagem do usuário recém-salva (já vai no prompt atual)
         history = [
-            {"role": m.role, "content": m.conteudo}
-            for m in conversa.mensagens.exclude(role=MensagemIA.Role.SYSTEM).order_by(
-                "created_at"
-            )[:-1]
+            {"role": m["role"], "content": m["conteudo"]}
+            for m in prior[:-1]
         ]
         result = chat(message, history=history)
         msg = MensagemIA.objects.create(

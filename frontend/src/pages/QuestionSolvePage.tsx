@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Bookmark, CheckCircle2, Flag, XCircle } from 'lucide-react'
+import { Bookmark, CheckCircle2, Flag, Sparkles, XCircle } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   useAnswerQuestion,
@@ -15,6 +15,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ExplanationContent } from '@/components/questions/ExplanationContent'
 
 export function QuestionSolvePage() {
   const { id } = useParams()
@@ -50,7 +51,7 @@ export function QuestionSolvePage() {
       })
       setResult(res)
       toast[res.correta ? 'success' : 'error'](
-        res.correta ? 'Resposta correta!' : `Gabarito: ${res.gabarito}`,
+        res.correta ? 'Resposta correta' : `Gabarito: ${res.gabarito}`,
       )
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível enviar a resposta.'))
@@ -60,8 +61,8 @@ export function QuestionSolvePage() {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-64 w-full rounded-xl" />
+        <Skeleton className="h-10 w-64 rounded-xl" />
+        <Skeleton className="h-72 w-full rounded-2xl" />
       </div>
     )
   }
@@ -71,10 +72,10 @@ export function QuestionSolvePage() {
   }
 
   return (
-    <div>
+    <div className="animate-fade-up mx-auto max-w-3xl">
       <PageHeader
         title="Resolver questão"
-        description={`${data.disciplina_nome || ''} · ${data.assunto_nome || ''}`}
+        description={`${data.disciplina_nome || 'Disciplina'} · ${data.assunto_nome || 'Assunto'}`}
         actions={
           <div className="flex gap-2">
             <Button
@@ -91,14 +92,15 @@ export function QuestionSolvePage() {
                 }
               }}
             >
-              <Bookmark className={cn('h-4 w-4', data.favorita && 'fill-primary text-primary')} aria-hidden />
+              <Bookmark
+                className={cn('h-4 w-4', data.favorita && 'fill-primary text-primary')}
+                aria-hidden
+              />
             </Button>
             <Button
               variant="outline"
               size="icon"
-              aria-label={
-                data.marcar_revisao ? 'Remover da revisão' : 'Marcar para revisão'
-              }
+              aria-label={data.marcar_revisao ? 'Remover da revisão' : 'Marcar para revisão'}
               onClick={async () => {
                 try {
                   const r = await review.mutateAsync(data.id)
@@ -111,7 +113,10 @@ export function QuestionSolvePage() {
                 }
               }}
             >
-              <Flag className={cn('h-4 w-4', data.marcar_revisao && 'fill-warning text-warning')} aria-hidden />
+              <Flag
+                className={cn('h-4 w-4', data.marcar_revisao && 'fill-warning text-warning')}
+                aria-hidden
+              />
             </Button>
             <Link to="/questoes">
               <Button variant="ghost">Voltar</Button>
@@ -120,20 +125,27 @@ export function QuestionSolvePage() {
         }
       />
 
-      <Card>
-        <CardContent className="space-y-6 pt-5">
+      <Card className="overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-muted/40 px-5 py-3">
+          <p className="font-display text-sm font-semibold tracking-wide text-foreground">
+            Questão #{data.numero_origem || data.id}
+          </p>
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">{data.dificuldade}</Badge>
+            <Badge variant="outline">{data.dificuldade}</Badge>
             {data.origem === 'ai_generated' ? (
-              <Badge variant="outline">Gerada por IA</Badge>
+              <Badge variant="secondary">
+                <Sparkles className="mr-1 h-3 w-3" aria-hidden /> IA
+              </Badge>
             ) : null}
           </div>
+        </div>
 
-          <p className="whitespace-pre-wrap text-base leading-relaxed text-foreground">
+        <CardContent className="space-y-6 pt-6">
+          <p className="whitespace-pre-wrap text-[1.05rem] font-medium leading-relaxed text-foreground md:text-lg">
             {data.enunciado}
           </p>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5" role="radiogroup" aria-label="Alternativas">
             {alternativas.map((alt) => {
               const isSelected = selected === alt.id
               const showFeedback = !!result
@@ -148,59 +160,100 @@ export function QuestionSolvePage() {
                   onClick={() => setSelected(alt.id)}
                   aria-pressed={isSelected}
                   className={cn(
-                    'flex w-full items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    'flex min-h-12 w-full cursor-pointer items-start gap-3 rounded-xl border px-4 py-3.5 text-left transition-colors duration-200',
+                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                     isSelected && !showFeedback && 'border-primary bg-primary/5',
-                    showFeedback && isCorrect && 'border-success bg-success/10',
-                    isWrong && 'border-destructive bg-destructive/10',
-                    !isSelected && !showFeedback && 'border-border hover:bg-muted/40',
+                    showFeedback && isCorrect && 'border-success/50 bg-success/8',
+                    isWrong && 'border-destructive/40 bg-destructive/5',
+                    !isSelected && !showFeedback && 'border-border bg-card hover:bg-muted/50',
+                    (!!result || answer.isPending) && 'cursor-default',
                   )}
                 >
-                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-primary">
+                  <span
+                    className={cn(
+                      'mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-semibold',
+                      isSelected && !showFeedback
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground',
+                      showFeedback && isCorrect && 'bg-success text-white',
+                      isWrong && 'bg-destructive text-white',
+                    )}
+                  >
                     {alt.letra}
                   </span>
-                  <span className="flex-1 text-sm leading-relaxed">{alt.texto}</span>
+                  <span className="flex-1 pt-1 text-sm font-medium leading-relaxed md:text-[0.95rem]">
+                    {alt.texto}
+                  </span>
                   {showFeedback && isCorrect ? (
-                    <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
+                    <CheckCircle2 className="mt-1 h-5 w-5 shrink-0 text-success" aria-label="Correta" />
                   ) : null}
-                  {isWrong ? <XCircle className="h-5 w-5 shrink-0 text-destructive" /> : null}
+                  {isWrong ? (
+                    <XCircle className="mt-1 h-5 w-5 shrink-0 text-destructive" aria-label="Incorreta" />
+                  ) : null}
                 </button>
               )
             })}
           </div>
 
           {!result ? (
-            <Button onClick={onAnswer} disabled={answer.isPending || selected == null}>
-              {answer.isPending ? 'Enviando…' : 'Confirmar resposta'}
+            <Button
+              size="lg"
+              className="w-full sm:w-auto"
+              onClick={onAnswer}
+              disabled={answer.isPending || selected == null}
+            >
+              {answer.isPending ? 'Corrigindo…' : 'Confirmar resposta'}
             </Button>
           ) : (
-            <div className="space-y-4 rounded-xl border border-border bg-muted/30 p-4">
-              <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                'animate-pop space-y-4 rounded-2xl border p-5',
+                result.correta
+                  ? 'border-success/25 bg-success/5'
+                  : 'border-destructive/20 bg-destructive/5',
+              )}
+            >
+              <div className="flex items-start gap-3">
                 {result.correta ? (
-                  <CheckCircle2 className="h-5 w-5 text-success" />
+                  <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success text-white">
+                    <CheckCircle2 className="h-5 w-5" aria-hidden />
+                  </div>
                 ) : (
-                  <XCircle className="h-5 w-5 text-destructive" />
+                  <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive text-white">
+                    <XCircle className="h-5 w-5" aria-hidden />
+                  </div>
                 )}
-                <p className="font-medium">
-                  {result.correta ? 'Você acertou!' : `Resposta correta: ${result.gabarito}`}
-                </p>
-              </div>
-              {result.explicacao ? (
-                <div>
-                  <p className="text-sm font-medium text-foreground">Explicação</p>
-                  <p className="mt-1 whitespace-pre-wrap text-sm text-muted-foreground">
-                    {result.explicacao}
+                <div className="min-w-0">
+                  <p className="font-display text-lg font-semibold">
+                    {result.correta ? 'Resposta correta' : `Gabarito: ${result.gabarito}`}
+                  </p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {result.correta
+                      ? 'Revise a explicação para consolidar.'
+                      : 'Leia a resolução com calma e marque para revisão se precisar.'}
                   </p>
                 </div>
+              </div>
+
+              {result.explicacao ? (
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    Resolução
+                  </p>
+                  <ExplanationContent text={result.explicacao} />
+                </div>
               ) : null}
+
               {result.fonte ? (
-                <div className="text-xs text-muted-foreground">
+                <p className="text-xs font-medium text-muted-foreground">
                   Fonte: {result.fonte.documento || '—'}
                   {result.fonte.pagina ? ` · p. ${result.fonte.pagina}` : ''}
                   {result.fonte.assunto ? ` · ${result.fonte.assunto}` : ''}
-                </div>
+                </p>
               ) : null}
+
               <div className="flex flex-wrap gap-2">
-                <Button onClick={() => navigate('/questoes')}>Voltar ao banco</Button>
+                <Button onClick={() => navigate('/questoes')}>Próximas questões</Button>
                 <Button variant="outline" onClick={() => navigate('/estudar')}>
                   Nova sessão
                 </Button>

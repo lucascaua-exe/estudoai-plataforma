@@ -35,11 +35,11 @@ import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 
-const CHART_BLUE = '#1e3a5f'
-const CHART_GREEN = '#16803c'
-const CHART_RED = '#c53030'
-const CHART_AMBER = '#c27803'
-const PIE_COLORS = [CHART_BLUE, CHART_GREEN, CHART_AMBER, '#2a4f7a', '#64748b', '#0f766e']
+const CHART_BLUE = '#9A3412'
+const CHART_GREEN = '#3F6F4E'
+const CHART_RED = '#B42318'
+const CHART_AMBER = '#B45309'
+const PIE_COLORS = [CHART_GREEN, CHART_RED, CHART_AMBER, '#C2410C', '#78716C', '#44403C']
 
 const DIFF_LABEL: Record<string, string> = {
   facil: 'Fácil',
@@ -93,12 +93,12 @@ export function DashboardPage() {
   return (
     <div className="animate-fade-up">
       <PageHeader
-        title={`Olá, ${firstName}! Vamos continuar sua preparação.`}
-        description="Central de desempenho · Analista de TI — Araguaína/TO 2026"
+        title={`Oi, ${firstName}! Pronto para subir de nível?`}
+        description="Missões do dia · Analista de TI — Araguaína/TO 2026"
         actions={
           <div className="flex flex-wrap gap-2">
             <Link to="/estudar">
-              <Button>Estudar agora</Button>
+              <Button size="lg">Continuar estudando</Button>
             </Link>
             <Link to="/evolucao">
               <Button variant="outline">Ver evolução</Button>

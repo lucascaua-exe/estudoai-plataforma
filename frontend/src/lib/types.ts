@@ -258,7 +258,7 @@ export interface ChatMessage {
   id?: number
   role: 'user' | 'assistant' | string
   conteudo: string
-  fontes?: unknown[]
+  fontes?: { documento?: string; pagina?: number | string | null }[]
 }
 
 export interface ReportGeral {

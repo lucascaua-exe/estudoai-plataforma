@@ -36,7 +36,7 @@ export function MasteredPage() {
       ) : (
         <div className="space-y-8">
           <section>
-            <h2 className="mb-3 font-serif text-lg font-semibold">Dominados</h2>
+            <h2 className="mb-3 font-display text-lg font-bold">Dominados</h2>
             {!mastered.length ? (
               <EmptyState
                 icon={CheckCircle2}
@@ -67,7 +67,7 @@ export function MasteredPage() {
 
           {candidates.length ? (
             <section>
-              <h2 className="mb-3 font-serif text-lg font-semibold">Prontos para declarar</h2>
+              <h2 className="mb-3 font-display text-lg font-bold">Prontos para declarar</h2>
               <div className="space-y-3">
                 {candidates.map((m) => (
                   <Card key={m.id}>

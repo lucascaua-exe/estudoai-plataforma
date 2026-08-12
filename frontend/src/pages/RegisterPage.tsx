@@ -67,19 +67,19 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+    <div className="flex min-h-dvh items-center justify-center px-4 py-12">
       <div className="absolute right-4 top-4">
         <ThemeToggle />
       </div>
-      <main className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm">
+      <main className="w-full max-w-md rounded-2xl border border-border bg-card p-7 shadow-sm sm:p-8">
         <p translate="no" className="font-brand text-3xl text-primary">
           EstudoAI
         </p>
-        <div className="mt-6 rounded-xl border border-border bg-muted/40 px-4 py-3">
-          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+        <div className="mt-6 rounded-xl border border-border bg-muted/50 px-4 py-3">
+          <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
             Plano selecionado
           </p>
-          <p className="mt-1 text-lg font-semibold text-foreground">
+          <p className="mt-1 font-display text-lg font-semibold text-foreground">
             {plan.name} · {plan.priceLabel}
             {plan.id !== 'free' ? ` ${plan.priceNote}` : ''}
           </p>
@@ -90,9 +90,9 @@ export function RegisterPage() {
             Trocar plano
           </Link>
         </div>
-        <h1 className="mt-8 font-serif text-2xl font-semibold tracking-tight">Criar conta</h1>
+        <h1 className="mt-8 font-display text-2xl font-semibold tracking-tight">Criar conta</h1>
         <p className="mt-2 text-pretty text-sm leading-relaxed text-muted-foreground">
-          Cadastro vinculado ao plano {plan.name}. Depois você acessa o painel com email e senha.
+          Cadastro no plano {plan.name}. Depois você acessa o painel com e-mail e senha.
         </p>
 
         <form onSubmit={onSubmit} className="mt-8 space-y-4">
@@ -151,7 +151,7 @@ export function RegisterPage() {
               placeholder="Repita a senha…"
             />
           </div>
-          <Button type="submit" className="h-11 w-full" disabled={loading}>
+          <Button type="submit" size="lg" className="w-full" disabled={loading}>
             {loading ? 'Criando…' : plan.id === 'free' ? 'Criar conta Free' : `Assinar ${plan.name}`}
           </Button>
         </form>

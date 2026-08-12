@@ -241,7 +241,7 @@ export function BillingPlansPage() {
         </Card>
 
         <div>
-          <h2 className="font-serif text-xl font-semibold tracking-tight">Trocar de plano</h2>
+          <h2 className="font-display text-xl font-bold tracking-tight">Trocar de plano</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             A troca vale a partir de agora. Planos pagos geram uma fatura do ciclo.
           </p>

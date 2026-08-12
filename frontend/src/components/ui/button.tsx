@@ -4,32 +4,38 @@ import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
   [
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium',
-    'transition-[color,background-color,border-color,box-shadow,transform,opacity]',
-    'duration-150 ease-[cubic-bezier(0.2,0,0,1)]',
+    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold',
+    'cursor-pointer transition-[background-color,border-color,color,box-shadow,opacity,transform] duration-200 ease-out',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
     'disabled:pointer-events-none disabled:opacity-50',
-    'cursor-pointer active:scale-[0.96]',
+    'active:translate-y-px',
   ].join(' '),
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        outline: 'border border-border bg-card hover:bg-muted text-foreground',
-        ghost: 'hover:bg-muted text-foreground',
-        destructive: 'bg-destructive text-white hover:bg-destructive/90',
-        success: 'bg-success text-white hover:bg-success/90',
+        default:
+          'bg-primary text-primary-foreground shadow-sm hover:brightness-105',
+        cta: 'bg-cta text-cta-foreground shadow-sm hover:brightness-105',
+        secondary:
+          'bg-secondary text-secondary-foreground hover:bg-accent',
+        outline:
+          'border border-border bg-card text-foreground shadow-sm hover:bg-muted',
+        ghost: 'text-foreground hover:bg-muted active:translate-y-0',
+        destructive:
+          'bg-destructive text-destructive-foreground shadow-sm hover:brightness-105',
+        success:
+          'bg-success text-success-foreground shadow-sm hover:brightness-105',
+        xp: 'bg-xp/15 text-xp-foreground border border-xp/25 hover:bg-xp/20',
       },
       size: {
-        default: 'h-10 min-h-10 px-4 py-2',
-        sm: 'h-8 min-h-8 rounded-md px-3 text-xs',
-        lg: 'h-11 min-h-11 rounded-lg px-6',
-        icon: 'h-10 w-10 min-h-10 min-w-10',
+        default: 'h-11 min-h-11 px-4 py-2',
+        sm: 'h-9 min-h-9 rounded-lg px-3 text-xs',
+        lg: 'h-12 min-h-12 rounded-xl px-6 text-[0.9375rem]',
+        icon: 'h-11 w-11 min-h-11 min-w-11',
       },
       pressScale: {
         true: '',
-        false: 'active:scale-100',
+        false: 'active:translate-y-0',
       },
     },
     defaultVariants: {
@@ -43,7 +49,6 @@ const buttonVariants = cva(
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
-  /** When false, disables active:scale press feedback */
   pressScale?: boolean
 }
 

@@ -8,9 +8,7 @@ export function Card({
   return (
     <div
       className={cn(
-        'rounded-xl border border-border/80 bg-card text-card-foreground',
-        'shadow-[0_0_0_1px_rgba(0,0,0,0.04),0_1px_2px_-1px_rgba(0,0,0,0.06),0_2px_4px_rgba(0,0,0,0.04)]',
-        'dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06)] dark:border-border',
+        'rounded-2xl border border-border bg-card text-card-foreground shadow-[0_1px_2px_rgba(28,25,23,0.04),0_8px_24px_-12px_rgba(28,25,23,0.08)]',
         className,
       )}
       {...props}
@@ -32,7 +30,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        'font-serif text-lg font-semibold leading-none tracking-tight text-balance',
+        'font-display text-lg font-semibold leading-none tracking-tight text-balance',
         className,
       )}
       {...props}

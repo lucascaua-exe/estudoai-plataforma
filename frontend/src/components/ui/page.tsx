@@ -11,13 +11,18 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, actions, className }: PageHeaderProps) {
   return (
-    <div className={cn('mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between', className)}>
+    <div
+      className={cn(
+        'mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between',
+        className,
+      )}
+    >
       <div>
-        <h1 className="font-serif text-2xl font-semibold tracking-tight text-balance text-foreground md:text-[1.85rem]">
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-balance text-foreground md:text-[1.75rem]">
           {title}
         </h1>
         {description ? (
-          <p className="mt-1.5 max-w-2xl text-pretty text-[0.9375rem] leading-relaxed text-muted-foreground md:text-base">
+          <p className="mt-1.5 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground md:text-[0.95rem]">
             {description}
           </p>
         ) : null}
@@ -41,12 +46,12 @@ export function ErrorState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center gap-3 rounded-xl border border-destructive/20 bg-destructive/5 px-6 py-12 text-center',
+        'flex flex-col items-center justify-center gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 px-6 py-12 text-center',
         className,
       )}
     >
       <AlertCircle className="h-8 w-8 text-destructive" />
-      <p className="text-sm text-foreground">{message}</p>
+      <p className="text-sm font-medium text-foreground">{message}</p>
       {onRetry ? (
         <Button variant="outline" onClick={onRetry}>
           Tentar novamente

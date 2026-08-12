@@ -16,7 +16,10 @@ export function Progress({
   const pct = Math.min(100, Math.max(0, (value / max) * 100))
   return (
     <div
-      className={cn('relative h-2 w-full overflow-hidden rounded-full bg-muted', className)}
+      className={cn(
+        'relative h-2.5 w-full overflow-hidden rounded-full bg-muted',
+        className,
+      )}
       role="progressbar"
       aria-valuenow={value}
       aria-valuemin={0}
@@ -25,7 +28,7 @@ export function Progress({
     >
       <div
         className={cn(
-          'h-full rounded-full bg-primary transition-[width] duration-500 ease-out',
+          'h-full rounded-full bg-primary transition-[width] duration-300 ease-out',
           indicatorClassName,
         )}
         style={{ width: `${pct}%` }}
