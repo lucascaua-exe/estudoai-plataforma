@@ -1,10 +1,10 @@
 import { NavLink } from 'react-router-dom'
 import {
   BookOpen,
-  Brain,
   FileText,
   LayoutDashboard,
   MoreHorizontal,
+  Swords,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -12,7 +12,7 @@ const items = [
   { to: '/painel', label: 'Início', icon: LayoutDashboard, end: true },
   { to: '/estudar', label: 'Estudar', icon: BookOpen },
   { to: '/questoes', label: 'Questões', icon: FileText },
-  { to: '/revisao', label: 'Revisão', icon: Brain },
+  { to: '/competicao', label: 'Competir', icon: Swords },
   { to: '/perfil', label: 'Mais', icon: MoreHorizontal },
 ]
 

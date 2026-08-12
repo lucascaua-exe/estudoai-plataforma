@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "apps.questions",
     "apps.performance",
     "apps.simulados",
+    "apps.competicoes",
     "apps.ai",
     "apps.reports",
     "apps.gamification",

@@ -75,6 +75,12 @@ const EvolutionPage = lazy(() =>
 const BillingPlansPage = lazy(() =>
   import('@/pages/BillingPlansPage').then((m) => ({ default: m.BillingPlansPage })),
 )
+const CompeticaoHubPage = lazy(() =>
+  import('@/pages/CompeticaoHubPage').then((m) => ({ default: m.CompeticaoHubPage })),
+)
+const CompeticaoRoomPage = lazy(() =>
+  import('@/pages/CompeticaoRoomPage').then((m) => ({ default: m.CompeticaoRoomPage })),
+)
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,6 +126,8 @@ export default function App() {
                   <Route path="simulados" element={<SimuladosPage />} />
                   <Route path="simulados/:id/realizar" element={<SimuladoTakePage />} />
                   <Route path="simulados/:id/resultado" element={<SimuladoResultPage />} />
+                  <Route path="competicao" element={<CompeticaoHubPage />} />
+                  <Route path="competicao/:id" element={<CompeticaoRoomPage />} />
                   <Route path="revisao" element={<ReviewPage />} />
                   <Route path="erros" element={<ErrorsPage />} />
                   <Route path="dominados" element={<MasteredPage />} />

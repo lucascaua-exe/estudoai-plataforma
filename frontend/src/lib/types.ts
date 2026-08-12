@@ -320,3 +320,81 @@ export interface DocumentItem {
   questoes_extraidas: number
   mensagem_erro: string
 }
+
+export interface CompeticaoParticipante {
+  id: number
+  apelido: string
+  is_host: boolean
+  pontos: number
+  acertos: number
+}
+
+export interface CompeticaoRankingItem {
+  posicao: number
+  id: number
+  apelido: string
+  pontos: number
+  acertos: number
+  is_host: boolean
+  tempo_total_ms: number
+}
+
+export interface CompeticaoAlternativa {
+  id: number
+  letra: string
+  texto: string
+  correta?: boolean
+}
+
+export interface CompeticaoQuestao {
+  ordem: number
+  total: number
+  numero: number
+  enunciado: string
+  imagem_url?: string | null
+  alternativas: CompeticaoAlternativa[]
+  disciplina?: string | null
+  assunto?: string | null
+  gabarito?: string
+}
+
+export interface CompeticaoEstado {
+  id: number
+  codigo: string
+  modo: '1x1' | 'todos'
+  status: 'lobby' | 'question' | 'reveal' | 'finished' | 'cancelada'
+  quantidade: number
+  tempo_por_questao: number
+  filtros: Record<string, unknown>
+  indice_atual: number
+  segundos_restantes: number | null
+  fase_iniciada_em: string | null
+  participantes: CompeticaoParticipante[]
+  ranking: CompeticaoRankingItem[]
+  questao: CompeticaoQuestao | null
+  me: {
+    id: number
+    apelido: string
+    is_host: boolean
+    pontos: number
+    token: string
+  } | null
+  minha_resposta: {
+    letra: string
+    correta: boolean | null
+    pontos: number | null
+    tempo_ms: number
+  } | null
+  vencedor: CompeticaoRankingItem | null
+  respondidos: number
+  total_ativos: number
+  expires_at: string | null
+}
+
+export interface CompeticaoJoinResult {
+  id: number
+  codigo: string
+  token: string
+  apelido: string
+  estado: CompeticaoEstado
+}

@@ -12,6 +12,7 @@ const TITLES: Record<string, string> = {
   '/estudar': 'Estudar',
   '/questoes': 'Banco de Questões',
   '/simulados': 'Simulados',
+  '/competicao': 'Competição',
   '/revisao': 'Revisão Inteligente',
   '/erros': 'Meus Erros',
   '/dominados': 'Conteúdos Dominados',
@@ -27,6 +28,7 @@ const TITLES: Record<string, string> = {
 function resolveTitle(pathname: string): string {
   if (TITLES[pathname]) return TITLES[pathname]
   if (pathname.startsWith('/questoes/')) return 'Resolver questão'
+  if (pathname.startsWith('/competicao/')) return 'Sala de competição'
   if (pathname.includes('/realizar')) return 'Realizar simulado'
   if (pathname.includes('/resultado')) return 'Resultado do simulado'
   return 'EstudoAI'

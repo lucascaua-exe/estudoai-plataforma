@@ -24,6 +24,7 @@ from apps.performance.views import (
     ReviewStartView,
 )
 from apps.simulados.views import SimuladoViewSet
+from apps.competicoes.views import SalaCompeticaoViewSet
 from apps.ai.views import ChatView, ConversasListView, GenerateQuestionsView
 from apps.reports.views import RelatorioDisciplinaView, RelatorioGeralView
 from apps.concurso.views import (
@@ -37,6 +38,7 @@ from apps.concurso.views import (
 router = DefaultRouter()
 router.register(r"questions", QuestaoViewSet, basename="questions")
 router.register(r"simulados", SimuladoViewSet, basename="simulados")
+router.register(r"competicoes", SalaCompeticaoViewSet, basename="competicoes")
 
 
 def health(_request):

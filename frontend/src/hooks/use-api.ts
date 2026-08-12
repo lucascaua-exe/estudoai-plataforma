@@ -20,6 +20,8 @@ import type {
   SimuladoResult,
   SimuladoStartResponse,
   User,
+  CompeticaoEstado,
+  CompeticaoJoinResult,
 } from '@/lib/types'
 
 export function useDashboard() {
@@ -364,5 +366,96 @@ export function useMe() {
       setUser(user)
       return user
     },
+  })
+}
+
+export function useCreateCompeticao() {
+  return useMutation({
+    mutationFn: async (body: {
+      modo: '1x1' | 'todos'
+      quantidade: number
+      tempo_por_questao: number
+      apelido?: string
+      filtros?: Record<string, unknown>
+    }) => (await api.post<CompeticaoJoinResult>('/competicoes/', body)).data,
+  })
+}
+
+export function useJoinCompeticao() {
+  return useMutation({
+    mutationFn: async (body: { codigo: string; apelido: string }) =>
+      (await api.post<CompeticaoJoinResult>('/competicoes/entrar/', body)).data,
+  })
+}
+
+export function useCompeticaoEstado(salaId: string | number | undefined, token: string | null) {
+  return useQuery({
+    queryKey: ['competicao', salaId, token],
+    enabled: !!salaId && !!token,
+    refetchInterval: (query) => {
+      const st = query.state.data?.status
+      if (!st || st === 'finished' || st === 'cancelada') return false
+      return 1200
+    },
+    queryFn: async () =>
+      (
+        await api.get<CompeticaoEstado>(`/competicoes/${salaId}/estado/`, {
+          params: { token },
+        })
+      ).data,
+  })
+}
+
+export function useCompeticaoIniciar() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, token }: { id: number; token: string }) =>
+      (await api.post<CompeticaoEstado>(`/competicoes/${id}/iniciar/`, { token })).data,
+    onSuccess: (data) => {
+      qc.setQueryData(['competicao', data.id, data.me?.token], data)
+    },
+  })
+}
+
+export function useCompeticaoResponder() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({
+      id,
+      token,
+      letra,
+    }: {
+      id: number
+      token: string
+      letra: string
+    }) =>
+      (
+        await api.post<{ ok: boolean; letra: string; estado: CompeticaoEstado }>(
+          `/competicoes/${id}/responder/`,
+          { token, letra },
+        )
+      ).data,
+    onSuccess: (data) => {
+      const token = data.estado.me?.token
+      if (token) qc.setQueryData(['competicao', data.estado.id, token], data.estado)
+    },
+  })
+}
+
+export function useCompeticaoAvancar() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id, token }: { id: number; token: string }) =>
+      (await api.post<CompeticaoEstado>(`/competicoes/${id}/avancar/`, { token })).data,
+    onSuccess: (data) => {
+      qc.setQueryData(['competicao', data.id, data.me?.token], data)
+    },
+  })
+}
+
+export function useCompeticaoSair() {
+  return useMutation({
+    mutationFn: async ({ id, token }: { id: number; token: string }) =>
+      (await api.post(`/competicoes/${id}/sair/`, { token })).data,
   })
 }
