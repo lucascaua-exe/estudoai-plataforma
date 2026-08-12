@@ -115,8 +115,14 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: light dark;
+  color-scheme: light;
   font-size: 16px;
+  background-color: #f7f5f2;
+}
+
+html.dark {
+  color-scheme: dark;
+  background-color: #1c1917;
 }
 
 body {
@@ -128,6 +134,8 @@ body {
   font-family: var(--font-sans);
   font-weight: 400;
   letter-spacing: -0.011em;
+  /* Evita o browser escurecer formulários/áreas nativas no iOS quando o SO está dark */
+  color-scheme: inherit;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

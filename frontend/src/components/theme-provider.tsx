@@ -10,40 +10,85 @@ interface ThemeContextValue {
 
 const ThemeContext = React.createContext<ThemeContextValue | null>(null)
 
+const THEME_KEY = 'estudoai-theme'
+const MANUAL_KEY = 'estudoai-theme-manual'
+
 function isMobileViewport(): boolean {
-  if (typeof window === 'undefined') return false
+  if (typeof window === 'undefined') return true
   try {
-    return window.matchMedia('(max-width: 1023px)').matches || window.matchMedia('(pointer: coarse)').matches
+    return (
+      window.matchMedia('(max-width: 1023px)').matches ||
+      window.matchMedia('(pointer: coarse)').matches ||
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+    )
   } catch {
     return window.innerWidth < 1024
   }
 }
 
+function applyDomTheme(theme: Theme) {
+  const root = document.documentElement
+  root.classList.toggle('dark', theme === 'dark')
+  root.style.colorScheme = theme
+  root.setAttribute('data-theme', theme)
+  const metaScheme = document.querySelector('meta[name="color-scheme"]')
+  if (metaScheme) metaScheme.setAttribute('content', theme)
+  const metaColor = document.querySelector('meta[name="theme-color"]')
+  if (metaColor) {
+    metaColor.setAttribute('content', theme === 'dark' ? '#1c1917' : '#F7F5F2')
+  }
+}
+
 function getInitialTheme(): Theme {
   if (typeof window === 'undefined') return 'light'
-  const stored = localStorage.getItem('estudoai-theme')
+
+  const mobile = isMobileViewport()
+  const manual = localStorage.getItem(MANUAL_KEY) === '1'
+  const stored = localStorage.getItem(THEME_KEY)
+
+  // Mobile: sempre light por padrão. Só respeita dark se o usuário escolheu no toggle.
+  if (mobile) {
+    if (manual && (stored === 'dark' || stored === 'light')) return stored
+    return 'light'
+  }
+
   if (stored === 'dark' || stored === 'light') return stored
-  // Mobile: light por padrão (branco). Desktop: respeita preferência do SO.
-  if (isMobileViewport()) return 'light'
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = React.useState<Theme>(getInitialTheme)
 
-  React.useEffect(() => {
-    const root = document.documentElement
-    root.classList.toggle('dark', theme === 'dark')
-    localStorage.setItem('estudoai-theme', theme)
-    const meta = document.querySelector('meta[name="theme-color"]')
-    if (meta) meta.setAttribute('content', theme === 'dark' ? '#1c1917' : '#9A3412')
+  React.useLayoutEffect(() => {
+    applyDomTheme(theme)
+    try {
+      localStorage.setItem(THEME_KEY, theme)
+      // Migração: se mobile abriu em light sem escolha manual, limpa dark antigo
+      if (isMobileViewport() && theme === 'light' && localStorage.getItem(MANUAL_KEY) !== '1') {
+        localStorage.setItem(THEME_KEY, 'light')
+      }
+    } catch {
+      /* ignore */
+    }
   }, [theme])
 
-  const setTheme = React.useCallback((value: Theme) => setThemeState(value), [])
-  const toggleTheme = React.useCallback(
-    () => setThemeState((t) => (t === 'dark' ? 'light' : 'dark')),
-    [],
-  )
+  const setTheme = React.useCallback((value: Theme) => {
+    try {
+      localStorage.setItem(MANUAL_KEY, '1')
+    } catch {
+      /* ignore */
+    }
+    setThemeState(value)
+  }, [])
+
+  const toggleTheme = React.useCallback(() => {
+    try {
+      localStorage.setItem(MANUAL_KEY, '1')
+    } catch {
+      /* ignore */
+    }
+    setThemeState((t) => (t === 'dark' ? 'light' : 'dark'))
+  }, [])
 
   const value = React.useMemo(
     () => ({ theme, setTheme, toggleTheme }),

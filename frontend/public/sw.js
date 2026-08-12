@@ -1,5 +1,5 @@
 /* EstudoAI PWA — cache estático leve */
-const CACHE = 'estudoai-v2'
+const CACHE = 'estudoai-v3'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

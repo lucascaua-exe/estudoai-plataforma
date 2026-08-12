@@ -10,12 +10,12 @@
       name="description"
       content="EstudoAI — prepare-se para Analista de TI Araguaína/TO 2026 com questões, XP, streak e revisão inteligente."
     />
-    <meta name="theme-color" content="#9A3412" />
+    <meta name="theme-color" content="#F7F5F2" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="EstudoAI" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="EstudoAI — Estudo gamificado para concursos" />
     <meta
@@ -27,21 +27,36 @@
     <script>
       ;(function () {
         try {
-          var stored = localStorage.getItem('estudoai-theme')
+          var ua = navigator.userAgent || ''
           var mobile =
             window.matchMedia('(max-width: 1023px)').matches ||
-            window.matchMedia('(pointer: coarse)').matches
-          var theme =
-            stored === 'dark' || stored === 'light'
-              ? stored
-              : mobile
-                ? 'light'
-                : window.matchMedia('(prefers-color-scheme: dark)').matches
-                  ? 'dark'
-                  : 'light'
-          if (theme === 'dark') document.documentElement.classList.add('dark')
-          else document.documentElement.classList.remove('dark')
-        } catch (e) {}
+            window.matchMedia('(pointer: coarse)').matches ||
+            /Android|iPhone|iPad|iPod|Mobile/i.test(ua)
+          var manual = localStorage.getItem('estudoai-theme-manual') === '1'
+          var stored = localStorage.getItem('estudoai-theme')
+          var theme = 'light'
+          if (mobile) {
+            // Mobile: light por padrão; ignora dark antigo salvo sem escolha manual
+            theme = manual && (stored === 'dark' || stored === 'light') ? stored : 'light'
+            if (!manual) localStorage.setItem('estudoai-theme', 'light')
+          } else if (stored === 'dark' || stored === 'light') {
+            theme = stored
+          } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            theme = 'dark'
+          }
+          var root = document.documentElement
+          if (theme === 'dark') root.classList.add('dark')
+          else root.classList.remove('dark')
+          root.style.colorScheme = theme
+          root.setAttribute('data-theme', theme)
+          var metaScheme = document.querySelector('meta[name="color-scheme"]')
+          if (metaScheme) metaScheme.setAttribute('content', theme)
+          var metaColor = document.querySelector('meta[name="theme-color"]')
+          if (metaColor) metaColor.setAttribute('content', theme === 'dark' ? '#1c1917' : '#F7F5F2')
+        } catch (e) {
+          document.documentElement.classList.remove('dark')
+          document.documentElement.style.colorScheme = 'light'
+        }
       })()
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
