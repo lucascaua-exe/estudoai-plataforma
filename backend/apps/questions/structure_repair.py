@@ -6,12 +6,14 @@ import re
 from apps.questions.models import Alternativa, Questao
 
 _BREADCRUMB_RE = re.compile(
-    r"(?i)^(?:\d+\.)?[A-Za-zÀ-ú\s]{0,40}[·•].{0,80}$|"
-    r"(?i)^\d+\.[A-Za-zÀ-ú].{0,60}\d+\.\d+\."
+    r"^(?:\d+\.)?[A-Za-zÀ-ú\s]{0,40}[·•].{0,80}$|"
+    r"^\d+\.[A-Za-zÀ-ú].{0,60}\d+\.\d+\.",
+    re.IGNORECASE,
 )
 _QUESTIONISH_RE = re.compile(
-    r"(?i)(?:\?|assinale|marque|indique|considere|analise|julgue|"
-    r"incorreta|correta|segundo|de acordo|é\s+(?:um|uma|o|a)\b)"
+    r"(?:\?|assinale|marque|indique|considere|analise|julgue|"
+    r"incorreta|correta|segundo|de acordo|é\s+(?:um|uma|o|a)\b)",
+    re.IGNORECASE,
 )
 _TOC_GLUE_RE = re.compile(r"[A-ZÁÉÍÓÚÃÕÂÊÔÇ]{8,}")
 
