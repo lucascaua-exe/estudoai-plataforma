@@ -18,6 +18,7 @@ import {
 } from '@/lib/utils'
 import {
   cleanApiFilters,
+  filtersToSearchParams,
   resolveQuestionFilters,
   solvePath,
 } from '@/lib/question-filters'
@@ -66,23 +67,24 @@ export function QuestionSolvePage() {
     [result, data],
   )
 
-  const goNext = async (preferredId?: number | null) => {
+  const goNext = async () => {
+    if (!data) return
     setGoingNext(true)
     try {
-      let nextId = preferredId
-      if (!nextId && data) {
-        const res = await nextQuestion.mutateAsync({
-          ...apiFilters,
-          after: data.id,
-        })
-        nextId = res.id
-      }
+      // Sempre consulta /next com after — mesma ordem do início da sessão
+      const res = await nextQuestion.mutateAsync({
+        ...apiFilters,
+        after: data.id,
+      })
+      const nextId = res.id
       if (!nextId) {
-        toast.message('Não há próxima questão com esses filtros.')
-        navigate('/questoes')
+        toast.success('Sessão concluída — não há mais questões com esses filtros.')
+        navigate(`/estudar?${filtersToSearchParams(filters).toString()}`)
         return
       }
-      navigate(solvePath(nextId, filters), { state: { filters } })
+      navigate(solvePath(nextId, filters), {
+        state: { filters, fromStudy: true },
+      })
     } catch (err) {
       toast.error(getErrorMessage(err, 'Não foi possível carregar a próxima questão.'))
     } finally {
@@ -185,7 +187,10 @@ export function QuestionSolvePage() {
                 aria-hidden
               />
             </Button>
-            <Link to="/questoes" className="hidden sm:inline-flex">
+            <Link
+              to={`/estudar?${filtersToSearchParams(filters).toString()}`}
+              className="hidden sm:inline-flex"
+            >
               <Button variant="ghost">Voltar</Button>
             </Link>
           </div>
@@ -345,16 +350,26 @@ export function QuestionSolvePage() {
 
               <div className="flex flex-wrap gap-2">
                 <Button
-                  onClick={() => goNext(result.proxima_id)}
+                  onClick={() => goNext()}
                   disabled={goingNext || nextQuestion.isPending}
                 >
                   {goingNext ? 'Carregando…' : 'Próxima questão'}
                 </Button>
-                <Button variant="outline" onClick={() => navigate('/questoes')}>
-                  Banco de questões
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    navigate(`/estudar?${filtersToSearchParams(filters).toString()}`)
+                  }
+                >
+                  Encerrar sessão
                 </Button>
-                <Button variant="ghost" onClick={() => navigate('/estudar')}>
-                  Nova sessão
+                <Button
+                  variant="ghost"
+                  onClick={() =>
+                    navigate(`/questoes?${filtersToSearchParams(filters).toString()}`)
+                  }
+                >
+                  Banco de questões
                 </Button>
               </div>
             </div>
