@@ -236,9 +236,9 @@ export function QuestionSolvePage() {
               </div>
 
               {result.explicacao ? (
-                <div className="rounded-xl border border-border bg-card p-4">
-                  <p className="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                    Resolução
+                <div className="space-y-2">
+                  <p className="text-center text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                    Resolução rápida
                   </p>
                   <ExplanationContent text={result.explicacao} />
                 </div>

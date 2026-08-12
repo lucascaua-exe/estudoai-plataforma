@@ -104,7 +104,9 @@ class QuestaoViewSet(viewsets.ReadOnlyModelViewSet):
         ]
 
         from apps.ai.rag import explain_question_answer
+        from apps.questions.text_cleanup import explicacao_precisa_reescrever
 
+        precisa_reescrever = explicacao_precisa_reescrever(questao.explicacao or "")
         explicacao = explain_question_answer(
             enunciado=questao.enunciado,
             alternativas=alts_payload,
@@ -114,9 +116,15 @@ class QuestaoViewSet(viewsets.ReadOnlyModelViewSet):
             explicacao_existente=questao.explicacao or "",
             disciplina=questao.disciplina.nome if questao.disciplina else "",
             assunto=questao.assunto.nome if questao.assunto else "",
+            force_rewrite=precisa_reescrever,
         )
-        # Persiste explicação gerada se a questão não tinha
-        if explicacao and (not questao.explicacao or len(questao.explicacao) < 80):
+        # Persiste resolução gerada/reescrita pela IA
+        if explicacao and (
+            precisa_reescrever
+            or not questao.explicacao
+            or len(questao.explicacao) < 80
+            or explicacao != questao.explicacao
+        ):
             questao.explicacao = explicacao
             questao.save(update_fields=["explicacao"])
 

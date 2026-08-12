@@ -160,33 +160,37 @@ h3,
 
 /* Prose for question explanations */
 .explanation-prose {
-  font-size: 0.9375rem;
-  line-height: 1.65;
+  font-size: 0.9rem;
+  line-height: 1.6;
   color: var(--foreground);
 }
 
 .explanation-prose p + p {
-  margin-top: 0.75rem;
-}
-
-.explanation-prose .exp-heading {
-  margin-top: 1rem;
-  margin-bottom: 0.4rem;
-  font-family: var(--font-display);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--primary);
-}
-
-.explanation-prose .exp-heading:first-child {
-  margin-top: 0;
+  margin-top: 0.55rem;
 }
 
 .explanation-prose ul,
 .explanation-prose ol {
-  margin: 0.5rem 0 0;
+  margin: 0.15rem 0 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.explanation-prose .exp-alt-list li {
+  position: relative;
+  padding: 0.45rem 0.65rem;
+  margin-top: 0.35rem;
+  border-radius: 0.65rem;
+  background: color-mix(in oklab, var(--card) 88%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 85%, transparent);
+}
+
+.explanation-prose .exp-alt-list li:first-child {
+  margin-top: 0;
+}
+
+.explanation-prose ol {
+  list-style: decimal;
   padding-left: 1.25rem;
 }
 

@@ -8,9 +8,24 @@ _ICON_RE = re.compile(
     r"\b(?:"
     r"Check-Circle|Check-Square|Chevron-right|Chevron-left|Chevron-down|Chevron-up|"
     r"LIST-UL|LIST-OL|BOOKMARK|Brain|Star|Warning|"
-    r"Caret-right|Caret-down"
+    r"Caret-right|Caret-down|ARROW-LEFT|ARROW-RIGHT|ARROW-UP|ARROW-DOWN"
     r")\b",
     re.IGNORECASE,
+)
+
+_UI_NAV_JUNK_RE = re.compile(
+    r"(?is)\s*(?:"
+    r"Continue\s*de\s*onde\s*parou|"
+    r"Continuedeondeparou|"
+    r"VOLTAR\s*[ÀAÃ]\s*QUEST[ÃA]O\s*\d*|"
+    r"Voltaràquestão\d*|"
+    r"Voltar\s*à\s*questão\s*\d*"
+    r")\s*"
+)
+
+_LEADING_META_RE = re.compile(
+    r"(?im)^\s*(?:Tecnologia\s+da\s+Informa[cç][aã]o|L[ií]ngua\s+Portuguesa|"
+    r"Legisla[cç][aã]o|Inform[aá]tica)[^\n]{0,120}?\n+"
 )
 
 _ALT_MARK_RE = re.compile(r"\b(?:Times|Check)\s+(?=\([A-Ea-e]\))", re.IGNORECASE)
@@ -117,6 +132,8 @@ def _strip_layout_noise(text: str) -> str:
     text = _GABARITO_INLINE_RE.sub("", text)
     text = _ICON_RE.sub("", text)
     text = _ALT_MARK_RE.sub("", text)
+    text = _UI_NAV_JUNK_RE.sub(" ", text)
+    text = _LEADING_META_RE.sub("", text)
     text = _remove_page_footers(text)
     text = _LGPD_LINE_RE.sub("", text)
     text = _TRAILING_TOC_RE.sub("", text)
@@ -191,14 +208,29 @@ _SECTION_ANY_RE = re.compile(
     r"Por que(?: as outras(?: alternativas?)?(?: falham)?)?|"
     r"Alternativas? incorretas?|"
     r"Análise(?: detalhada)?(?: das alternativas)?|"
-    r"Dica(?: de memorização)?|Para memorizar)\s*:"
+    r"Dica(?: de memorização)?|Para memorizar|Truque)\s*:"
 )
 
 _MD_FENCE_RE = re.compile(r"```(?:\w+)?\s*|\s*```")
 _MD_BOLD_HEADING_RE = re.compile(
-    r"(?im)^\s*\*\*(Resposta correta|Alternativa correta|Por que[^:*]{0,40}|Alternativas? incorretas?|Dica[^:*]{0,40}|Para memorizar)\*\*\s*:?\s*$"
+    r"(?im)^\s*\*\*(Resposta correta|Alternativa correta|Por que[^:*]{0,40}|Alternativas? incorretas?|Dica[^:*]{0,40}|Para memorizar|Truque)\*\*\s*:?\s*$"
 )
 _BULLET_INLINE_RE = re.compile(r"\s+[-*•]\s+(?=[A-Ea-e]\))")
+_INLINE_LETTER_ALT_RE = re.compile(r"(?<!\n)\s*[\(•\-]?\s*([A-Ea-e])\)\s+")
+_STRUCT_HEADING_RE = re.compile(
+    r"(?im)^\s*(Resposta correta|Alternativa correta|Por que|Dica|Para memorizar)\s*:"
+)
+_JUNK_MARKERS = (
+    "continuedeonde",
+    "continue de onde",
+    "arrow-left",
+    "arrow-right",
+    "voltaràquestão",
+    "voltar a questão",
+    "check-circle",
+    "chevron-right",
+    "bookmark",
+)
 
 
 def format_explicacao(text: str | None) -> str:
@@ -206,16 +238,18 @@ def format_explicacao(text: str | None) -> str:
     if not text:
         return ""
     cleaned = clean_study_text(text)
+    cleaned = _UI_NAV_JUNK_RE.sub(" ", cleaned)
     cleaned = _MD_FENCE_RE.sub("", cleaned)
     cleaned = _MD_BOLD_HEADING_RE.sub(lambda m: f"{m.group(1)}:", cleaned)
     cleaned = re.sub(
-        r"(?i)\*\*(Resposta correta|Alternativa correta|Por que[^:*]{0,40}|Alternativas? incorretas?|Dica[^:*]{0,40}|Para memorizar)\s*:?\*\*\s*:?",
+        r"(?i)\*\*(Resposta correta|Alternativa correta|Por que[^:*]{0,40}|Alternativas? incorretas?|Dica[^:*]{0,40}|Para memorizar|Truque)\s*:?\*\*\s*:?",
         r"\1:",
         cleaned,
     )
     cleaned = re.sub(r"(?m)^\s*#{1,3}\s+", "", cleaned)
     cleaned = _SECTION_ANY_RE.sub(r"\n\n\1:\n", cleaned)
     cleaned = _BULLET_INLINE_RE.sub("\n• ", cleaned)
+    cleaned = _INLINE_LETTER_ALT_RE.sub(r"\n• \1) ", cleaned)
     cleaned = re.sub(r"(?m)^\s*[-*]\s+", "• ", cleaned)
     cleaned = re.sub(r"[ \t]+\n", "\n", cleaned)
     cleaned = re.sub(r"\n[ \t]+", "\n", cleaned)
@@ -224,6 +258,33 @@ def format_explicacao(text: str | None) -> str:
 
 def clean_explicacao(text: str | None) -> str:
     return format_explicacao(text)
+
+
+def explicacao_precisa_reescrever(text: str | None) -> bool:
+    """True se a resolução está vazia, curta demais ou parece lixo de PDF."""
+    cleaned = clean_explicacao(text)
+    if not cleaned or len(cleaned) < 80:
+        return True
+
+    compact = re.sub(r"\s+", "", cleaned.lower())
+    low = cleaned.lower()
+    if any(m.replace(" ", "") in compact or m in low for m in _JUNK_MARKERS):
+        return True
+
+    has_structure = bool(_STRUCT_HEADING_RE.search(cleaned))
+    newlines = cleaned.count("\n")
+    # Parede de texto do material antigo
+    if not has_structure and newlines < 4 and len(cleaned) > 220:
+        return True
+    if "análise detalhada" in low or "analise detalhada" in low:
+        if not has_structure or newlines < 6:
+            return True
+    # Sempre preferir resolução com dica + análise das alternativas
+    if "dica" not in low and "para memorizar" not in low and "truque" not in low:
+        return True
+    if "por que" not in low and "incorret" not in low and "análise" not in low and "analise" not in low:
+        return True
+    return False
 
 
 def clean_alternativa(text: str | None) -> str:

@@ -7,7 +7,11 @@ import logging
 from django.conf import settings
 
 from apps.ai.gemini import gemini_available, generate_json, generate_text
-from apps.questions.text_cleanup import clean_explicacao, clean_study_text
+from apps.questions.text_cleanup import (
+    clean_explicacao,
+    clean_study_text,
+    explicacao_precisa_reescrever,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -39,30 +43,38 @@ Regras:
 - Prefira o CONTEXTO. Se o contexto for sumário/raso, ainda assim gere questões corretas
   e clássicas do assunto/disciplina pedidos (nível concurso), sem inventar leis inexistentes.
 - Cada questão: enunciado claro, 5 alternativas (A–E), uma correta, justificativa completa.
-- A justificativa deve explicar a alternativa correta E por que as demais estão incorretas.
+- A justificativa deve ser CURTA e no formato:
+  Resposta correta: ...
+  Por que as outras falham:
+  - A) ...
+  Dica: ...
 - Inclua trecho_referencia curto (do contexto quando houver; senão uma frase do conceito cobrado).
 - Retorne APENAS JSON válido no formato pedido, com pelo menos 1 item em "questoes".
 """
 
-EXPLAIN_SYSTEM = """Você é um professor de concurso. Explique o gabarito em português do Brasil,
-com base no enunciado, alternativas e no contexto do material quando houver.
+EXPLAIN_SYSTEM = """Você é um professor de concurso. Explique o gabarito de forma CURTA, CLARA e DIDÁTICA,
+em português do Brasil, com base no enunciado, alternativas e no contexto do material quando houver.
 
 FORMATO OBRIGATÓRIO (texto puro, sem markdown, sem cercas ```):
+
 Resposta correta:
-<1–3 frases: diga a letra certa e o motivo>
+Gabarito <LETRA>. <1 frase com o conceito-chave>. <1 frase com o porquê (máx. 2 frases no total).>
 
 Por que as outras falham:
-- A) <motivo curto>
-- B) <motivo curto>
-(liste cada alternativa incorreta em uma linha)
+- A) <máx. 1 linha: erro ou pegadinha>
+- B) <máx. 1 linha>
+(liste TODAS as alternativas incorretas; uma por linha; não invente letras)
 
 Dica:
-<uma frase prática, se útil; senão omita a seção>
+<1 frase prática para memorizar o ponto da questão — mnemônico, contraste ou regra de ouro.
+Se o assunto não permitir dica útil, escreva uma frase objetiva do tipo "Foque em: …".>
 
 Regras:
-- Use quebras de linha entre seções.
+- Seja rápido de ler: no máximo ~120 palavras no total.
+- Não copie lixo de PDF, sumário, "continue de onde parou", setas, numeração de página ou UI.
 - Não invente leis/artigos fora do contexto ou do enunciado.
 - Não use **, ##, HTML nem emojis.
+- Use exatamente os títulos: "Resposta correta:", "Por que as outras falham:", "Dica:".
 """
 
 
@@ -382,10 +394,12 @@ def explain_question_answer(
     explicacao_existente: str = "",
     disciplina: str = "",
     assunto: str = "",
+    force_rewrite: bool = False,
 ) -> str:
     """Gera ou aprimora a explicação exibida após o aluno responder."""
     existing = clean_explicacao(explicacao_existente or "")
-    if existing and len(existing) >= 80:
+    rewrite = force_rewrite or explicacao_precisa_reescrever(existing)
+    if existing and not rewrite:
         return existing
     if not ai_available():
         return existing
@@ -396,7 +410,7 @@ def explain_question_answer(
     chunks = search_chunks(f"{disciplina} {assunto} {enunciado[:200]}", k=5)
     context = build_context(chunks)
 
-    prompt = f"""O aluno respondeu uma questão.
+    prompt = f"""Reescreva a resolução desta questão de forma CURTA, organizada e fácil de estudar.
 
 Disciplina: {disciplina or '-'}
 Assunto: {assunto or '-'}
@@ -410,13 +424,24 @@ Gabarito oficial: {gabarito}
 Letra escolhida pelo aluno: {letra_escolhida}
 Acertou? {"sim" if correta else "não"}
 
-Explicação já existente (pode estar vazia ou incompleta):
+Rascunho/explicação antiga (pode ter lixo de PDF — IGNORE o lixo e use só o conteúdo útil):
 {existing or '(vazia)'}
 
 CONTEXTO DO MATERIAL:
 {context or '(sem trechos)'}
 
-Produza a explicação no formato obrigatório (seções com títulos e listas).
+Produza APENAS as 3 seções do formato obrigatório. Inclua sempre a Dica (mnemônico ou regra prática do assunto).
 """
-    text = _llm_text(prompt, system=EXPLAIN_SYSTEM, temperature=0.2)
-    return clean_explicacao(text) if text else existing
+    text = _llm_text(prompt, system=EXPLAIN_SYSTEM, temperature=0.25)
+    cleaned = clean_explicacao(text) if text else ""
+    if not cleaned:
+        return existing
+    low = cleaned.lower()
+    # Aceita saída da IA se já veio estruturada (evita loop de reescrita)
+    if "resposta correta" in low or "alternativa correta" in low:
+        return cleaned
+    if not explicacao_precisa_reescrever(cleaned):
+        return cleaned
+    if len(cleaned) > len(existing or ""):
+        return cleaned
+    return existing
