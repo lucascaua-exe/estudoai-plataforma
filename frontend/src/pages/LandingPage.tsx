@@ -5,6 +5,7 @@ import { useAuthStore } from '@/lib/auth-store'
 import { PLANS, type PlanId } from '@/lib/plans'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
+import { FadeIn } from '@/components/motion/FadeIn'
 
 function planHref(id: PlanId) {
   return `/register?plano=${id}`
@@ -103,7 +104,7 @@ export function LandingPage() {
         Ir para o conteúdo
       </a>
 
-      <header className="sticky top-0 z-40 border-b border-border/90 bg-card/90 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-border/80 bg-card/85 shadow-[0_1px_0_rgba(37,99,235,0.05)] backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-8">
           <Link
             to="/"
@@ -181,46 +182,52 @@ export function LandingPage() {
       </header>
 
       <main id="conteudo">
-        <section className="border-b border-border py-16 md:py-24">
+        <section className="relative overflow-hidden border-b border-border py-16 md:py-24">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(900px_420px_at_15%_-10%,rgba(37,99,235,0.16),transparent_55%),radial-gradient(700px_360px_at_90%_10%,rgba(14,165,233,0.12),transparent_50%),linear-gradient(180deg,#ffffff_0%,#f4f7fc_100%)]"
+          />
           <div className="mx-auto max-w-6xl px-4 md:px-8">
-            <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-              Analista de TI · Araguaína · 2026
-            </p>
-            <h1 className="mt-5 max-w-[14ch] font-display text-5xl font-semibold tracking-tight text-primary md:text-6xl">
-              EstudoAI
-            </h1>
-            <p className="mt-4 max-w-[28ch] font-display text-2xl font-medium text-foreground md:text-3xl">
-              Preparação clara para o edital real.
-            </p>
-            <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-muted-foreground md:text-lg">
-              Mais de 2.300 questões oficiais, revisão inteligente e simulados — sem ruído visual,
-              com foco no que importa: passar.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#planos" className={cn(buttonVariants({ size: 'lg' }))}>
-                Ver planos
-              </a>
-              <Link to="/login" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}>
-                Já tenho conta
-              </Link>
-            </div>
-            <p className="mt-5 text-sm text-muted-foreground">
-              Free sem cartão · Cancele quando quiser · Garantia de 7 dias
-            </p>
-            <dl className="mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-border pt-8">
-              {[
-                { n: '2.375', l: 'questões' },
-                { n: '6', l: 'disciplinas' },
-                { n: '3', l: 'planos' },
-              ].map((s) => (
-                <div key={s.l}>
-                  <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-                    {s.l}
-                  </dt>
-                  <dd className="mt-1 font-display text-2xl font-semibold tabular-nums">{s.n}</dd>
-                </div>
-              ))}
-            </dl>
+            <FadeIn>
+              <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                Analista de TI · Araguaína · 2026
+              </p>
+              <h1 className="mt-5 max-w-[14ch] font-display text-5xl font-semibold tracking-tight text-primary md:text-6xl">
+                EstudoAI
+              </h1>
+              <p className="mt-4 max-w-[28ch] font-display text-2xl font-medium text-foreground md:text-3xl">
+                Preparação clara para o edital real.
+              </p>
+              <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-muted-foreground md:text-lg">
+                Mais de 2.300 questões oficiais, revisão inteligente e simulados — sem ruído visual,
+                com foco no que importa: passar.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a href="#planos" className={cn(buttonVariants({ size: 'lg' }))}>
+                  Ver planos
+                </a>
+                <Link to="/login" className={cn(buttonVariants({ variant: 'outline', size: 'lg' }))}>
+                  Já tenho conta
+                </Link>
+              </div>
+              <p className="mt-5 text-sm text-muted-foreground">
+                Free sem cartão · Cancele quando quiser · Garantia de 7 dias
+              </p>
+              <dl className="mt-12 grid max-w-lg grid-cols-3 gap-4 border-t border-border pt-8">
+                {[
+                  { n: '2.375', l: 'questões' },
+                  { n: '6', l: 'disciplinas' },
+                  { n: '3', l: 'planos' },
+                ].map((s) => (
+                  <div key={s.l}>
+                    <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                      {s.l}
+                    </dt>
+                    <dd className="mt-1 font-display text-2xl font-semibold tabular-nums">{s.n}</dd>
+                  </div>
+                ))}
+              </dl>
+            </FadeIn>
           </div>
         </section>
 

@@ -40,73 +40,79 @@
   --color-cta-foreground: var(--cta-foreground);
 }
 
-/* Warm Professional — restrained, static warm palette */
+/* Clear Study Blue — azul + branco, alto contraste e superfície limpa */
 :root {
-  --background: #f7f5f2;
-  --foreground: #1c1917;
+  --background: #f4f7fc;
+  --foreground: #0b1f3a;
   --card: #ffffff;
-  --card-foreground: #1c1917;
-  --primary: #9a3412;
-  --primary-foreground: #fffbf7;
-  --secondary: #f0ebe4;
-  --secondary-foreground: #44403c;
-  --muted: #f3efea;
-  --muted-foreground: #57534e;
-  --accent: #ede8e1;
-  --accent-foreground: #292524;
-  --border: #e5dfd6;
-  --input: #e5dfd6;
-  --ring: #9a3412;
-  --success: #3f6f4e;
+  --card-foreground: #0b1f3a;
+  --primary: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --secondary: #e8f0fe;
+  --secondary-foreground: #1e3a5f;
+  --muted: #eef3fa;
+  --muted-foreground: #475569;
+  --accent: #dbeafe;
+  --accent-foreground: #0f2744;
+  --border: #d5e2f2;
+  --input: #d5e2f2;
+  --ring: #2563eb;
+  --success: #0f766e;
   --success-foreground: #ffffff;
   --warning: #b45309;
   --warning-foreground: #fffbeb;
-  --destructive: #b42318;
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
   --sidebar: #ffffff;
-  --sidebar-foreground: #292524;
-  --sidebar-border: #e5dfd6;
-  --sidebar-accent: #f3efea;
-  --xp: #b45309;
-  --xp-foreground: #78350f;
-  --streak: #c2410c;
-  --cta: #9a3412;
-  --cta-foreground: #fffbf7;
-  --app-pattern: linear-gradient(180deg, #faf8f5 0%, #f7f5f2 55%, #f3efea 100%);
+  --sidebar-foreground: #0f2744;
+  --sidebar-border: #d5e2f2;
+  --sidebar-accent: #eef4ff;
+  --xp: #2563eb;
+  --xp-foreground: #1e3a8a;
+  --streak: #0284c7;
+  --cta: #1d4ed8;
+  --cta-foreground: #ffffff;
+  --app-pattern:
+    radial-gradient(1200px 520px at 12% -8%, rgba(37, 99, 235, 0.12), transparent 55%),
+    radial-gradient(900px 420px at 92% 0%, rgba(14, 165, 233, 0.1), transparent 50%),
+    linear-gradient(180deg, #f8faff 0%, #f4f7fc 48%, #eef3fa 100%);
 }
 
 .dark {
-  --background: #1c1917;
-  --foreground: #fafaf9;
-  --card: #292524;
-  --card-foreground: #fafaf9;
-  --primary: #ea580c;
-  --primary-foreground: #1c1917;
-  --secondary: #44403c;
-  --secondary-foreground: #e7e5e4;
-  --muted: #292524;
-  --muted-foreground: #a8a29e;
-  --accent: #44403c;
-  --accent-foreground: #fafaf9;
-  --border: #44403c;
-  --input: #44403c;
-  --ring: #ea580c;
-  --success: #6ee7a0;
-  --success-foreground: #052e16;
+  --background: #0b1424;
+  --foreground: #e8eef7;
+  --card: #121c2e;
+  --card-foreground: #e8eef7;
+  --primary: #60a5fa;
+  --primary-foreground: #0b1424;
+  --secondary: #1a2740;
+  --secondary-foreground: #dbe7f8;
+  --muted: #152033;
+  --muted-foreground: #94a3b8;
+  --accent: #1e3354;
+  --accent-foreground: #e8eef7;
+  --border: #243247;
+  --input: #243247;
+  --ring: #60a5fa;
+  --success: #2dd4bf;
+  --success-foreground: #042f2e;
   --warning: #fbbf24;
   --warning-foreground: #422006;
   --destructive: #f87171;
   --destructive-foreground: #450a0a;
-  --sidebar: #1c1917;
-  --sidebar-foreground: #e7e5e4;
-  --sidebar-border: #44403c;
-  --sidebar-accent: #292524;
-  --xp: #fbbf24;
-  --xp-foreground: #422006;
-  --streak: #fb923c;
-  --cta: #ea580c;
-  --cta-foreground: #1c1917;
-  --app-pattern: linear-gradient(180deg, #211e1b 0%, #1c1917 100%);
+  --sidebar: #0b1424;
+  --sidebar-foreground: #dbe7f8;
+  --sidebar-border: #243247;
+  --sidebar-accent: #152033;
+  --xp: #93c5fd;
+  --xp-foreground: #dbeafe;
+  --streak: #38bdf8;
+  --cta: #3b82f6;
+  --cta-foreground: #ffffff;
+  --app-pattern:
+    radial-gradient(900px 480px at 10% -10%, rgba(59, 130, 246, 0.18), transparent 55%),
+    radial-gradient(700px 360px at 100% 0%, rgba(14, 165, 233, 0.12), transparent 50%),
+    linear-gradient(180deg, #0e1a2e 0%, #0b1424 100%);
 }
 
 * {
@@ -117,12 +123,12 @@ html {
   scroll-behavior: smooth;
   color-scheme: light;
   font-size: 16px;
-  background-color: #f7f5f2;
+  background-color: #f4f7fc;
 }
 
 html.dark {
   color-scheme: dark;
-  background-color: #1c1917;
+  background-color: #0b1424;
 }
 
 body {
@@ -261,10 +267,10 @@ h3,
 @keyframes boot-icon-glow {
   0%,
   100% {
-    box-shadow: 0 12px 40px rgba(154, 52, 18, 0.28);
+    box-shadow: 0 12px 40px rgba(29, 78, 216, 0.28);
   }
   50% {
-    box-shadow: 0 16px 48px rgba(154, 52, 18, 0.42);
+    box-shadow: 0 16px 48px rgba(37, 99, 235, 0.42);
   }
 }
 

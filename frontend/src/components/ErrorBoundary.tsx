@@ -41,11 +41,11 @@ export class ErrorBoundary extends Component<Props, State> {
     if (!this.state.hasError) return this.props.children
 
     return (
-      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-[#F7F5F2] px-6 text-center">
-        <p translate="no" className="font-brand text-2xl text-[#9A3412]">
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background px-6 text-center">
+        <p translate="no" className="font-brand text-2xl text-primary">
           EstudoAI
         </p>
-        <h1 className="font-display text-xl font-semibold text-[#1c1917]">
+        <h1 className="font-display text-xl font-semibold text-foreground">
           Não foi possível carregar a página
         </h1>
         <p className="max-w-sm text-sm text-[#57534e]">

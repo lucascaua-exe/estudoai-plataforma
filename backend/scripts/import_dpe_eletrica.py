@@ -396,14 +396,16 @@ def persist(questions: list[dict], generate_ai: bool = False) -> dict:
         assunto = get_or_create_assunto(disciplina, qdata["assunto"])
         gab = qdata["gabarito"]
         with transaction.atomic():
+            # Sempre amarra ao documento DPE — evita colidir com EAOEAR/outras provas
+            # pelo mesmo numero_origem.
             q = Questao.objects.filter(
-                disciplina=disciplina,
+                documento=doc,
                 numero_origem=qdata["numero"],
                 origem=Questao.Origem.PDF,
             ).first()
             if not q:
                 h = content_hash(qdata["numero"], qdata["enunciado"])
-                q = Questao.objects.filter(hash_conteudo=h).first()
+                q = Questao.objects.filter(hash_conteudo=h, documento=doc).first()
 
             if q:
                 q.enunciado = qdata["enunciado"]
@@ -412,9 +414,17 @@ def persist(questions: list[dict], generate_ai: bool = False) -> dict:
                 q.disciplina = disciplina
                 q.documento = doc
                 q.numero_origem = qdata["numero"]
+                # DPE não tem figuras — remove qualquer imagem herdada por bug antigo
+                if q.imagem:
+                    q.imagem.delete(save=False)
+                    q.imagem = None
                 q.save()
                 updated += 1
             else:
+                h = content_hash(qdata["numero"], qdata["enunciado"])
+                # Se hash já existe em OUTRA prova, gera hash único para não falhar unique
+                if Questao.objects.filter(hash_conteudo=h).exclude(documento=doc).exists():
+                    h = content_hash(qdata["numero"], qdata["enunciado"] + f"|dpe|{doc.id}")
                 q = Questao.objects.create(
                     disciplina=disciplina,
                     assunto=assunto,
@@ -424,7 +434,7 @@ def persist(questions: list[dict], generate_ai: bool = False) -> dict:
                     dificuldade=Questao.Dificuldade.MEDIO,
                     gabarito=gab,
                     origem=Questao.Origem.PDF,
-                    hash_conteudo=content_hash(qdata["numero"], qdata["enunciado"]),
+                    hash_conteudo=h,
                 )
                 created += 1
 

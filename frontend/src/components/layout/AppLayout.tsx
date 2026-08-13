@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { LogOut, Menu } from 'lucide-react'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
+import { PageTransition } from '@/components/motion/PageTransition'
 import { Button } from '@/components/ui/button'
 import { XpPill, StreakPill } from '@/components/gamification/StatPills'
 import { useAuthStore } from '@/lib/auth-store'
@@ -52,7 +53,7 @@ export function AppLayout() {
         onToggleCollapse={() => setCollapsed((v) => !v)}
       />
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-2 border-b border-border bg-card/95 px-2.5 py-2 backdrop-blur-md sm:gap-3 sm:px-3 lg:hidden">
+        <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-2 border-b border-border/90 bg-card/90 px-2.5 py-2 shadow-[0_1px_0_rgba(37,99,235,0.06)] backdrop-blur-md sm:gap-3 sm:px-3 lg:hidden">
           <button
             type="button"
             className="inline-flex h-11 w-11 min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -93,7 +94,7 @@ export function AppLayout() {
           tabIndex={-1}
         >
           <div className="mx-auto w-full min-w-0 max-w-6xl">
-            <Outlet />
+            <PageTransition />
           </div>
         </main>
       </div>

@@ -195,8 +195,8 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
                   'flex min-h-11 items-center rounded-xl text-sm font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                   collapsed ? 'justify-center px-0 py-2.5' : 'gap-3 px-3 py-2',
                   isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-sidebar-foreground hover:bg-sidebar-accent',
+                    ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+                    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-foreground',
                 )
               }
             >

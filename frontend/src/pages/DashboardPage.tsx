@@ -17,9 +17,6 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  Legend,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -34,12 +31,17 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
+import { AnimatedNumber } from '@/components/ui/animated-number'
+import { HorizontalCarousel } from '@/components/ui/horizontal-carousel'
+import { ChartTooltip } from '@/components/charts/ChartTooltip'
+import { DoughnutRing } from '@/components/charts/DoughnutRing'
+import { FadeIn, Stagger, StaggerItem } from '@/components/motion/FadeIn'
 
-const CHART_BLUE = '#9A3412'
-const CHART_GREEN = '#3F6F4E'
-const CHART_RED = '#B42318'
+const CHART_BLUE = '#2563EB'
+const CHART_GREEN = '#0F766E'
+const CHART_RED = '#DC2626'
 const CHART_AMBER = '#B45309'
-const PIE_COLORS = [CHART_GREEN, CHART_RED, CHART_AMBER, '#C2410C', '#78716C', '#44403C']
+const PIE_COLORS = [CHART_GREEN, CHART_RED, CHART_AMBER, '#0284C7', '#64748B', '#1E3A5F']
 
 const DIFF_LABEL: Record<string, string> = {
   facil: 'Fácil',
@@ -91,7 +93,7 @@ export function DashboardPage() {
   }))
 
   return (
-    <div className="animate-fade-up">
+    <FadeIn>
       <PageHeader
         align="center"
         title={`Oi, ${firstName}! Pronto para subir de nível?`}
@@ -118,60 +120,80 @@ export function DashboardPage() {
         <ErrorState onRetry={() => refetch()} />
       ) : data ? (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <KpiCard
-              icon={Library}
-              label="Banco de questões"
-              value={String(data.total_questoes_banco)}
-              hint={`${data.questoes_nao_respondidas ?? '—'} ainda não respondidas`}
-              tone="brand"
-            />
-            <KpiCard
-              icon={BookOpen}
-              label="Respondidas"
-              value={String(data.questoes_respondidas)}
-              hint={`${formatPercent(cobertura, 0)} do banco`}
-            />
-            <KpiCard
-              icon={CheckCircle2}
-              label="Acertos"
-              value={String(data.questoes_acertadas)}
-              hint={formatPercent(data.percentual_acerto, 1)}
-              tone="success"
-            />
-            <KpiCard
-              icon={XCircle}
-              label="Erros"
-              value={String(data.questoes_erradas)}
-              hint={`${data.pontos_atencao} pontos de atenção`}
-              tone="danger"
-            />
-            <KpiCard
-              icon={TrendingUp}
-              label="Aproveitamento"
-              value={formatPercent(data.percentual_acerto, 1)}
-              hint={`${data.evolucao_semana >= 0 ? '+' : ''}${data.evolucao_semana}% vs. semana`}
-            />
-            <KpiCard
-              icon={Flame}
-              label="Sequência"
-              value={`${data.sequencia_atual} dias`}
-              hint={`${data.dias_estudo} dias de estudo`}
-              tone="brand"
-            />
-            <KpiCard
-              icon={Zap}
-              label="Pontos"
-              value={String(data.pontuacao_total || gamification.data?.pontos || 0)}
-              hint={`${data.dominios_confirmados} domínios confirmados`}
-            />
-            <KpiCard
-              icon={Target}
-              label="Meta do dia"
-              value={`${data.questoes_hoje}/${data.meta_questoes_dia}`}
-              hint={formatDuration(data.tempo_total_segundos)}
-            />
-          </div>
+          <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <StaggerItem>
+              <KpiCard
+                icon={Library}
+                label="Banco de questões"
+                value={data.total_questoes_banco}
+                hint={`${data.questoes_nao_respondidas ?? '—'} ainda não respondidas`}
+                tone="brand"
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <KpiCard
+                icon={BookOpen}
+                label="Respondidas"
+                value={data.questoes_respondidas}
+                hint={`${formatPercent(cobertura, 0)} do banco`}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <KpiCard
+                icon={CheckCircle2}
+                label="Acertos"
+                value={data.questoes_acertadas}
+                hint={formatPercent(data.percentual_acerto, 1)}
+                tone="success"
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <KpiCard
+                icon={XCircle}
+                label="Erros"
+                value={data.questoes_erradas}
+                hint={`${data.pontos_atencao} pontos de atenção`}
+                tone="danger"
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <KpiCard
+                icon={TrendingUp}
+                label="Aproveitamento"
+                value={data.percentual_acerto}
+                suffix="%"
+                decimals={1}
+                hint={`${data.evolucao_semana >= 0 ? '+' : ''}${data.evolucao_semana}% vs. semana`}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <KpiCard
+                icon={Flame}
+                label="Sequência"
+                value={data.sequencia_atual}
+                suffix=" dias"
+                hint={`${data.dias_estudo} dias de estudo`}
+                tone="brand"
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <KpiCard
+                icon={Zap}
+                label="Pontos"
+                value={data.pontuacao_total || gamification.data?.pontos || 0}
+                hint={`${data.dominios_confirmados} domínios confirmados`}
+              />
+            </StaggerItem>
+            <StaggerItem>
+              <KpiCard
+                icon={Target}
+                label="Meta do dia"
+                value={data.questoes_hoje}
+                suffix={`/${data.meta_questoes_dia}`}
+                hint={formatDuration(data.tempo_total_segundos)}
+              />
+            </StaggerItem>
+          </Stagger>
 
           <div className="mx-auto mt-5 max-w-xl text-center">
             <Progress
@@ -208,15 +230,22 @@ export function DashboardPage() {
                         />
                         <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
                         <Tooltip
-                          formatter={(value) => [`${value}%`, 'Acerto']}
-                          labelFormatter={(l) => `Dia ${l}`}
+                          content={
+                            <ChartTooltip
+                              formatter={(v) => `${v}%`}
+                              labelFormatter={(l) => `Dia ${l}`}
+                            />
+                          }
                         />
                         <Area
                           type="monotone"
                           dataKey="percentual"
+                          name="Acerto"
                           stroke={CHART_BLUE}
                           fill="url(#pctFill)"
-                          strokeWidth={2}
+                          strokeWidth={2.5}
+                          animationDuration={900}
+                          activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -237,23 +266,14 @@ export function DashboardPage() {
               <CardContent>
                 <div className="h-64">
                   {pieAcertos.length && data.questoes_respondidas > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={pieAcertos}
-                          dataKey="value"
-                          nameKey="name"
-                          innerRadius={55}
-                          outerRadius={85}
-                          paddingAngle={3}
-                        >
-                          <Cell fill={CHART_GREEN} />
-                          <Cell fill={CHART_RED} />
-                        </Pie>
-                        <Tooltip />
-                        <Legend />
-                      </PieChart>
-                    </ResponsiveContainer>
+                    <DoughnutRing
+                      slices={[
+                        { label: 'Acertos', value: data.questoes_acertadas, color: CHART_GREEN },
+                        { label: 'Erros', value: data.questoes_erradas, color: CHART_RED },
+                      ]}
+                      centerValue={formatPercent(data.percentual_acerto, 0)}
+                      centerLabel="acerto"
+                    />
                   ) : (
                     <EmptyChart title="Sem respostas" hint="Comece pelo banco de questões." />
                   )}
@@ -276,12 +296,24 @@ export function DashboardPage() {
                         <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11 }} />
                         <YAxis type="category" dataKey="nome" width={110} tick={{ fontSize: 11 }} />
                         <Tooltip
-                          formatter={(value, _n, item) => [
-                            `${value}% (${item.payload.total} q.)`,
-                            item.payload.full,
-                          ]}
+                          content={
+                            <ChartTooltip
+                              formatter={(v, item) =>
+                                `${v}% (${String(item.payload?.total ?? '—')} q.)`
+                              }
+                              labelFormatter={(_, payload) =>
+                                String(payload?.[0]?.payload?.full ?? '')
+                              }
+                            />
+                          }
                         />
-                        <Bar dataKey="percentual" fill={CHART_BLUE} radius={[0, 6, 6, 0]} />
+                        <Bar
+                          dataKey="percentual"
+                          name="Aproveitamento"
+                          fill={CHART_BLUE}
+                          radius={[0, 8, 8, 0]}
+                          animationDuration={800}
+                        />
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
@@ -306,8 +338,15 @@ export function DashboardPage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                         <XAxis dataKey="nome" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={60} />
                         <YAxis tick={{ fontSize: 11 }} />
-                        <Tooltip formatter={(v) => [v, 'Questões']} labelFormatter={(_, p) => p?.[0]?.payload?.full || ''} />
-                        <Bar dataKey="questoes" radius={[6, 6, 0, 0]}>
+                        <Tooltip
+                          content={
+                            <ChartTooltip
+                              formatter={(v) => String(v)}
+                              labelFormatter={(_, p) => String(p?.[0]?.payload?.full ?? '')}
+                            />
+                          }
+                        />
+                        <Bar dataKey="questoes" name="Questões" radius={[8, 8, 0, 0]} animationDuration={800}>
                           {bancoChart.map((_, i) => (
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
@@ -338,8 +377,14 @@ export function DashboardPage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                         <XAxis dataKey="nome" tick={{ fontSize: 11 }} />
                         <YAxis tick={{ fontSize: 11 }} />
-                        <Tooltip />
-                        <Bar dataKey="total" fill={CHART_AMBER} name="Respondidas" radius={[6, 6, 0, 0]} />
+                        <Tooltip content={<ChartTooltip formatter={(v) => String(v)} />} />
+                        <Bar
+                          dataKey="total"
+                          fill={CHART_AMBER}
+                          name="Respondidas"
+                          radius={[8, 8, 0, 0]}
+                          animationDuration={800}
+                        />
                       </BarChart>
                     </ResponsiveContainer>
                   ) : (
@@ -395,29 +440,47 @@ export function DashboardPage() {
               <CardHeader>
                 <CardTitle>Atalhos</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <QuickLink to="/erros" title="Meus erros" desc={`${data.questoes_erradas} questões`} />
-                <QuickLink
-                  to="/mapa"
-                  title="Mapa de conhecimento"
-                  desc={`${data.pontos_atencao} pontos de atenção`}
-                />
-                <QuickLink
-                  to="/simulados"
-                  title="Simulados"
-                  desc="Prova cronometrada"
-                />
-                <QuickLink
-                  to="/dominados"
-                  title="Conteúdos dominados"
-                  desc={`${data.dominios_confirmados} confirmados`}
-                />
+              <CardContent>
+                <HorizontalCarousel label="Atalhos do painel" className="lg:hidden">
+                  {[
+                    { to: '/erros', title: 'Meus erros', desc: `${data.questoes_erradas} questões` },
+                    {
+                      to: '/mapa',
+                      title: 'Mapa de conhecimento',
+                      desc: `${data.pontos_atencao} pontos de atenção`,
+                    },
+                    { to: '/simulados', title: 'Simulados', desc: 'Prova cronometrada' },
+                    {
+                      to: '/dominados',
+                      title: 'Conteúdos dominados',
+                      desc: `${data.dominios_confirmados} confirmados`,
+                    },
+                  ].map((item) => (
+                    <div key={item.to} className="min-w-[78%] shrink-0 sm:min-w-[45%]">
+                      <QuickLink {...item} />
+                    </div>
+                  ))}
+                </HorizontalCarousel>
+                <div className="hidden space-y-2 lg:block">
+                  <QuickLink to="/erros" title="Meus erros" desc={`${data.questoes_erradas} questões`} />
+                  <QuickLink
+                    to="/mapa"
+                    title="Mapa de conhecimento"
+                    desc={`${data.pontos_atencao} pontos de atenção`}
+                  />
+                  <QuickLink to="/simulados" title="Simulados" desc="Prova cronometrada" />
+                  <QuickLink
+                    to="/dominados"
+                    title="Conteúdos dominados"
+                    desc={`${data.dominios_confirmados} confirmados`}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
         </>
       ) : null}
-    </div>
+    </FadeIn>
   )
 }
 
@@ -427,12 +490,16 @@ function KpiCard({
   value,
   hint,
   tone = 'default',
+  suffix,
+  decimals = 0,
 }: {
   icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
   label: string
-  value: string
+  value: number
   hint: string
   tone?: 'default' | 'brand' | 'success' | 'danger'
+  suffix?: string
+  decimals?: number
 }) {
   const toneClass =
     tone === 'success'
@@ -444,7 +511,7 @@ function KpiCard({
           : 'bg-secondary text-primary'
 
   return (
-    <Card className="transition-shadow hover:shadow-md">
+    <Card className="h-full transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/10">
       <CardContent className="flex flex-col items-center px-4 pt-5 pb-5 text-center">
         <div className={`mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl ${toneClass}`}>
           <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
@@ -452,8 +519,8 @@ function KpiCard({
         <p className="text-[11px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
           {label}
         </p>
-        <p className="mt-1.5 font-display text-2xl font-semibold tracking-tight tabular-nums text-foreground">
-          {value}
+        <p className="mt-1.5 font-display text-2xl font-semibold tracking-tight text-foreground">
+          <AnimatedNumber value={value} suffix={suffix} maximumFractionDigits={decimals} />
         </p>
         <p className="mt-1.5 max-w-[14rem] text-xs leading-relaxed text-muted-foreground">
           {hint}
@@ -467,7 +534,7 @@ function QuickLink({ to, title, desc }: { to: string; title: string; desc: strin
   return (
     <Link
       to={to}
-      className="block rounded-lg border border-border bg-background/60 px-3 py-2.5 transition-colors hover:bg-muted/50"
+      className="block rounded-xl border border-border bg-background/70 px-3 py-3 transition-[background-color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/5"
     >
       <p className="text-sm font-medium text-foreground">{title}</p>
       <p className="text-xs text-muted-foreground">{desc}</p>

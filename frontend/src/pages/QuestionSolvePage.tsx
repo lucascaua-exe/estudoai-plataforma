@@ -105,6 +105,10 @@ export function QuestionSolvePage() {
         filters: apiFilters,
       })
       setResult(res)
+      if (res.correta) {
+        const { celebrateCorrect } = await import('@/lib/celebrate')
+        celebrateCorrect()
+      }
       toast[res.correta ? 'success' : 'error'](
         res.correta ? 'Resposta correta' : `Gabarito: ${res.gabarito}`,
       )
@@ -247,7 +251,7 @@ export function QuestionSolvePage() {
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                     isSelected &&
                       !showFeedback &&
-                      'border-primary bg-primary/12 shadow-[0_0_0_1px_rgba(154,52,18,0.18)] ring-2 ring-primary/25',
+                      'border-primary bg-primary/12 shadow-[0_0_0_1px_rgba(37,99,235,0.18)] ring-2 ring-primary/25',
                     showFeedback && isCorrect && 'border-success/60 bg-success/10',
                     isWrong && 'border-destructive/50 bg-destructive/8',
                     !isSelected &&

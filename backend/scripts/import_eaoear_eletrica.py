@@ -284,9 +284,12 @@ def persist(questions: list[dict]) -> dict:
                 documento=doc,
             ).first()
             if not q:
-                q = Questao.objects.filter(
+                cand = Questao.objects.filter(
                     hash_conteudo=content_hash(qdata["numero"], qdata["enunciado"])
                 ).first()
+                # Nunca reaproveitar questão de outro documento
+                if cand and cand.documento_id in (None, doc.id):
+                    q = cand
 
             if q:
                 q.enunciado = qdata["enunciado"]
@@ -299,6 +302,9 @@ def persist(questions: list[dict]) -> dict:
                 q.save()
                 updated += 1
             else:
+                h = content_hash(qdata["numero"], qdata["enunciado"])
+                if Questao.objects.filter(hash_conteudo=h).exists():
+                    h = content_hash(qdata["numero"], qdata["enunciado"] + f"|eaoear|{doc.id}")
                 q = Questao.objects.create(
                     disciplina=disciplina,
                     assunto=assunto,
@@ -309,7 +315,7 @@ def persist(questions: list[dict]) -> dict:
                     dificuldade=Questao.Dificuldade.MEDIO,
                     gabarito=gab,
                     origem=Questao.Origem.PDF,
-                    hash_conteudo=content_hash(qdata["numero"], qdata["enunciado"]),
+                    hash_conteudo=h,
                 )
                 created += 1
 
@@ -327,6 +333,11 @@ def persist(questions: list[dict]) -> dict:
             if qdata.get("imagem_relpath"):
                 attach_image(q, qdata["imagem_relpath"])
                 with_img += 1
+            elif q.imagem and "eaoear" not in (q.imagem.name or "").lower():
+                # Se não há figura para esta Q, não manter imagem estranha
+                q.imagem.delete(save=False)
+                q.imagem = None
+                q.save(update_fields=["imagem"])
 
     doc.questoes_extraidas = Questao.objects.filter(documento=doc).count()
     doc.status = Documento.Status.CONCLUIDO

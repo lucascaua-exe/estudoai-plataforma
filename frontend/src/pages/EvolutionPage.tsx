@@ -19,6 +19,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/ui/empty-state'
+import { ChartTooltip } from '@/components/charts/ChartTooltip'
+import { FadeIn } from '@/components/motion/FadeIn'
+
+const STROKE = '#2563EB'
+const BAR = '#0F766E'
 
 export function EvolutionPage() {
   const [periodo, setPeriodo] = useState(30)
@@ -31,7 +36,7 @@ export function EvolutionPage() {
     })) || []
 
   return (
-    <div>
+    <FadeIn>
       <PageHeader
         title="Evolução"
         description="Acompanhe a curva de acertos ao longo do tempo."
@@ -75,29 +80,35 @@ export function EvolutionPage() {
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="acerto" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#1E3A5F" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="#1E3A5F" stopOpacity={0.02} />
+                      <stop offset="5%" stopColor={STROKE} stopOpacity={0.35} />
+                      <stop offset="95%" stopColor={STROKE} stopOpacity={0.02} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="label" tick={{ fontSize: 11 }} />
                   <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
                   <Tooltip
-                    formatter={(value) => formatPercent(Number(value), 1)}
-                    labelFormatter={(_, payload) =>
-                      payload?.[0]?.payload?.data
-                        ? format(parseISO(payload[0].payload.data), "dd 'de' MMMM", {
-                            locale: ptBR,
-                          })
-                        : ''
+                    content={
+                      <ChartTooltip
+                        formatter={(value) => formatPercent(Number(value), 1)}
+                        labelFormatter={(_, payload) => {
+                          const raw = payload?.[0]?.payload?.data
+                          return typeof raw === 'string'
+                            ? format(parseISO(raw), "dd 'de' MMMM", { locale: ptBR })
+                            : ''
+                        }}
+                      />
                     }
                   />
                   <Area
                     type="monotone"
                     dataKey="percentual"
-                    stroke="#1E3A5F"
+                    name="Acerto"
+                    stroke={STROKE}
                     fill="url(#acerto)"
-                    strokeWidth={2}
+                    strokeWidth={2.5}
+                    animationDuration={900}
+                    activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -114,14 +125,24 @@ export function EvolutionPage() {
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis dataKey="nome" tick={{ fontSize: 11 }} />
                   <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={(value) => formatPercent(Number(value), 1)} />
-                  <Bar dataKey="percentual" fill="#15803d" radius={[6, 6, 0, 0]} />
+                  <Tooltip
+                    content={
+                      <ChartTooltip formatter={(value) => formatPercent(Number(value), 1)} />
+                    }
+                  />
+                  <Bar
+                    dataKey="percentual"
+                    name="Aproveitamento"
+                    fill={BAR}
+                    radius={[8, 8, 0, 0]}
+                    animationDuration={800}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
         </div>
       )}
-    </div>
+    </FadeIn>
   )
 }

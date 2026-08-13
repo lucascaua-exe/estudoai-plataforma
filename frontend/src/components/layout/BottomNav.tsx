@@ -19,7 +19,7 @@ const items = [
 export function BottomNav() {
   return (
     <nav
-      className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-2 pt-1 shadow-[0_-6px_20px_rgba(28,25,23,0.06)] backdrop-blur-md lg:hidden"
+      className="safe-bottom fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 px-2 pt-1 shadow-[0_-6px_20px_rgba(11,31,58,0.07)] backdrop-blur-md lg:hidden"
       aria-label="Navegação rápida"
     >
       <ul className="mx-auto flex max-w-lg items-stretch justify-between gap-1">

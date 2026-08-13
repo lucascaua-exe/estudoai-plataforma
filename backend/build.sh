@@ -27,5 +27,8 @@ python manage.py import_eaoear_eletrica --from-json || true
 echo "[build] import_provas_batch…"
 python manage.py import_provas_batch || true
 
+echo "[build] repair_question_images…"
+python manage.py repair_question_images || true
+
 echo "[build] clean_question_texts…"
 python manage.py clean_question_texts || true

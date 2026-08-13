@@ -204,7 +204,7 @@ export function LoginPage() {
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div
-          className="absolute inset-0 bg-gradient-to-t from-[#1c1917]/88 via-[#1c1917]/35 to-[#1c1917]/10"
+          className="absolute inset-0 bg-gradient-to-t from-[#0B1424]/88 via-[#0B1F3A]/40 to-[#1D4ED8]/12"
           aria-hidden
         />
         <div className="absolute inset-x-0 bottom-0 p-10 xl:p-14">
