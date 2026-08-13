@@ -8,7 +8,7 @@ export function MaintenancePage() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-6 text-center">
       <div className="animate-fade-up mx-auto max-w-md space-y-5">
-        <BrandLogo size="lg" className="mx-auto h-20" />
+        <BrandLogo size="hero" className="mx-auto h-36 max-w-[16rem]" />
         <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
           <WrenchIcon className="h-7 w-7" weight={ICON_WEIGHT} aria-hidden />
         </div>

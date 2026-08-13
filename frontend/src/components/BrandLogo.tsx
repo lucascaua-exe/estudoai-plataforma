@@ -8,7 +8,7 @@ type BrandLogoProps = {
   /**
    * auto — troca com o tema (claro/escuro)
    * light — versão azul (tema claro)
-   * dark — versão branca/preta (tema escuro)
+   * dark — versão branca (tema escuro / sidebar azul)
    */
   variant?: 'auto' | 'light' | 'dark'
   /** Só a marca curta no alt */
@@ -16,22 +16,20 @@ type BrandLogoProps = {
 }
 
 const HEIGHT: Record<NonNullable<BrandLogoProps['size']>, string> = {
-  sm: 'h-9',
-  md: 'h-12',
-  lg: 'h-16',
-  hero: 'h-28 sm:h-36 md:h-44',
+  sm: 'h-11',
+  md: 'h-16',
+  lg: 'h-24 sm:h-28',
+  hero: 'h-40 sm:h-48 md:h-56',
 }
 
 function LogoImg({
   src,
   alt,
   className,
-  hidden,
 }: {
   src: string
   alt: string
   className?: string
-  hidden?: boolean
 }) {
   return (
     <img
@@ -41,7 +39,6 @@ function LogoImg({
       draggable={false}
       className={cn(
         'block h-full w-auto max-w-full select-none object-contain object-center',
-        hidden && 'hidden',
         className,
       )}
     />
@@ -55,7 +52,11 @@ export function BrandLogo({
   compact = false,
 }: BrandLogoProps) {
   const alt = compact ? BRAND_NAME : BRAND_FULL
-  const box = cn('inline-flex items-center justify-center', HEIGHT[size], className)
+  const box = cn(
+    'inline-flex items-center justify-center',
+    HEIGHT[size],
+    className,
+  )
 
   if (variant === 'light') {
     return (

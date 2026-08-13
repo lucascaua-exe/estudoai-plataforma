@@ -196,10 +196,10 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
               </span>
             ) : (
               <BrandLogo
-                size="sm"
+                size="md"
                 variant="dark"
                 compact
-                className="h-10 max-w-[9.5rem] rounded-md bg-black/25"
+                className="h-14 max-w-[11rem]"
               />
             )}
           </div>

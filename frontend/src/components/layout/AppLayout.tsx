@@ -72,7 +72,7 @@ export function AppLayout() {
             <MenuIcon className="h-5 w-5" weight="bold" aria-hidden />
           </button>
 
-          <BrandLogo size="sm" compact className="h-8 min-w-0 max-w-[7.5rem] sm:max-w-[9rem]" />
+          <BrandLogo size="sm" compact className="h-10 min-w-0 max-w-[9rem] sm:h-11 sm:max-w-[11rem]" />
 
           <div className="flex min-w-0 shrink-0 items-center gap-1">
             <XpPill

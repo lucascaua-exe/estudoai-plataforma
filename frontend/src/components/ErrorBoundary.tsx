@@ -44,7 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background px-6 text-center">
-        <BrandLogo size="md" className="h-14" />
+        <BrandLogo size="lg" className="h-24 max-w-[12rem]" />
         <h1 className="font-display text-xl font-semibold text-foreground">
           Não foi possível carregar a página
         </h1>

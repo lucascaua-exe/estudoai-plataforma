@@ -99,7 +99,7 @@ export function LoginPage() {
           </div>
 
           <header className="shrink-0 px-4 pt-1 text-center sm:px-6">
-            <BrandLogo size="lg" className="mx-auto h-[5.5rem] sm:h-28" />
+            <BrandLogo size="hero" className="mx-auto h-36 max-w-[16rem] sm:h-44 sm:max-w-[18rem]" />
           </header>
 
           {/* Meio: formulário ocupa o espaço restante e centraliza nele */}

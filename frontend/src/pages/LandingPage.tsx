@@ -113,7 +113,7 @@ export function LandingPage() {
             className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={BRAND_NAME}
           >
-            <BrandLogo size="sm" compact className="h-10 md:h-11" />
+            <BrandLogo size="md" compact className="h-12 md:h-14" />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Principal">
@@ -195,7 +195,7 @@ export function LandingPage() {
           />
           <div className="mx-auto max-w-6xl px-4 md:px-8">
             <FadeIn>
-              <BrandLogo size="hero" className="origin-left" />
+              <BrandLogo size="hero" className="origin-left max-w-[min(100%,22rem)] md:max-w-[26rem]" />
               <h1 className="sr-only">
                 {BRAND_NAME}: {BRAND_TAGLINE}
               </h1>
@@ -438,7 +438,7 @@ export function LandingPage() {
       <footer className="border-t border-border py-12">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 md:flex-row md:items-start md:justify-between md:px-8">
           <div>
-            <BrandLogo size="sm" compact className="h-11" />
+            <BrandLogo size="md" compact className="h-14" />
             <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-muted-foreground">
               {BRAND_TAGLINE}. Preparação com banco oficial, métricas e revisão inteligente.
             </p>

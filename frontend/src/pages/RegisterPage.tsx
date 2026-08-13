@@ -76,7 +76,7 @@ export function RegisterPage() {
         <ThemeToggle />
       </div>
       <main className="w-full max-w-md rounded-2xl border border-border bg-card p-7 shadow-sm sm:p-8">
-        <BrandLogo size="md" className="h-14" />
+        <BrandLogo size="lg" className="mx-auto h-28 max-w-[14rem]" />
         <div className="mt-6 rounded-xl border border-border bg-muted/50 px-4 py-3">
           <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
             Plano selecionado
