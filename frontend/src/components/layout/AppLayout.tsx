@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { XpPill, StreakPill } from '@/components/gamification/StatPills'
 import { useAuthStore } from '@/lib/auth-store'
 import { useGamification } from '@/hooks/use-api'
+import { cn } from '@/lib/utils'
 
 const COLLAPSE_KEY = 'estudoai.sidebar.collapsed'
 
@@ -43,7 +44,7 @@ export function AppLayout() {
   const streak = gamification?.sequencia_dias ?? user?.sequencia_dias ?? 0
 
   return (
-    <div className="flex min-h-dvh bg-transparent">
+    <div className="min-h-dvh bg-transparent">
       <a href="#conteudo-principal" className="skip-link">
         Ir para o conteúdo principal
       </a>
@@ -53,7 +54,12 @@ export function AppLayout() {
         collapsed={collapsed}
         onToggleCollapse={() => setCollapsed((v) => !v)}
       />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div
+        className={cn(
+          'flex min-h-dvh min-w-0 flex-col transition-[padding] duration-200',
+          collapsed ? 'lg:pl-[4.5rem]' : 'lg:pl-[17rem]',
+        )}
+      >
         <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-2 border-b border-border/90 bg-card/90 px-2.5 py-2 shadow-[0_1px_0_rgba(37,99,235,0.06)] backdrop-blur-md sm:gap-3 sm:px-3 lg:hidden">
           <button
             type="button"

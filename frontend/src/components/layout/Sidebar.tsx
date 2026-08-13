@@ -114,6 +114,8 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
   useEffect(() => {
     if (!open) return
     closeRef.current?.focus()
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
       // Trap de foco no drawer mobile
@@ -133,7 +135,10 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
       }
     }
     document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      document.removeEventListener('keydown', onKey)
+    }
   }, [open, onClose])
 
   const handleLogout = () => {
@@ -166,9 +171,9 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
         aria-labelledby={labelId}
         data-collapsed={collapsed || undefined}
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-white/20 text-white',
+          'fixed inset-y-0 left-0 z-50 flex h-dvh max-h-dvh w-[17rem] flex-col border-r border-white/20 text-white',
           'shadow-[4px_0_28px_-8px_rgba(29,78,216,0.45)] transition-[width,transform] duration-200 ease-out',
-          'motion-keep-fade lg:static lg:translate-x-0 lg:shadow-none',
+          'motion-keep-fade lg:translate-x-0 lg:shadow-none',
           open ? 'translate-x-0' : '-translate-x-full',
           collapsed ? 'w-[4.5rem]' : 'w-[17rem]',
         )}
@@ -272,11 +277,11 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
           )}
         </div>
 
-        {/* Navegação agrupada */}
+        {/* Navegação agrupada — h-0+flex-1 força altura limitada e libera overflow-y */}
         <nav
           id="app-sidebar-nav"
           className={cn(
-            'mt-3 flex-1 space-y-4 overflow-y-auto overscroll-contain pb-3',
+            'mt-3 h-0 min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain pb-3',
             collapsed ? 'px-1.5' : 'px-3',
           )}
           aria-label="Menu principal"
