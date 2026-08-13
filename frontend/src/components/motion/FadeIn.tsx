@@ -1,6 +1,7 @@
 import { motion, type HTMLMotionProps } from 'motion/react'
 import { useReducedMotionPreference } from '@/hooks/use-reduced-motion'
 import { cn } from '@/lib/utils'
+import { EASE_SMOOTH, MOTION } from '@/lib/motion'
 
 type FadeInProps = HTMLMotionProps<'div'> & {
   delay?: number
@@ -11,14 +12,14 @@ type FadeInProps = HTMLMotionProps<'div'> & {
 
 /**
  * Entrada acessível:
- * - motion OK: fade + leve slide (Tier 2)
- * - reduce: só fade curto (Tier 3), sem translate
+ * - motion OK: fade + leve slide (Fast 250ms, Smooth)
+ * - reduce: só fade Quick (150ms)
  */
 export function FadeIn({
   className,
   delay = 0,
-  y = 10,
-  duration = 0.4,
+  y = 8,
+  duration = MOTION.fast.s,
   children,
   ...props
 }: FadeInProps) {
@@ -30,9 +31,9 @@ export function FadeIn({
       initial={reduce ? { opacity: 0 } : { opacity: 0, y }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: reduce ? 0.15 : duration,
+        duration: reduce ? MOTION.quick.s : duration,
         delay: reduce ? 0 : delay,
-        ease: [0.22, 1, 0.36, 1],
+        ease: EASE_SMOOTH,
       }}
       {...props}
     >
@@ -44,7 +45,7 @@ export function FadeIn({
 export function Stagger({
   className,
   children,
-  stagger = 0.04,
+  stagger = MOTION.stagger.s,
 }: {
   className?: string
   children: React.ReactNode
@@ -61,7 +62,7 @@ export function Stagger({
         hidden: {},
         show: {
           transition: {
-            staggerChildren: reduce ? 0 : stagger,
+            staggerChildren: reduce ? 0 : Math.min(stagger, 0.04),
           },
         },
       }}
@@ -89,8 +90,8 @@ export function StaggerItem({
           opacity: 1,
           y: 0,
           transition: {
-            duration: reduce ? 0.15 : 0.35,
-            ease: [0.22, 1, 0.36, 1],
+            duration: reduce ? MOTION.quick.s : MOTION.fast.s,
+            ease: EASE_SMOOTH,
           },
         },
       }}

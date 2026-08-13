@@ -31,7 +31,7 @@ export function BottomNav() {
               end={end}
               className={({ isActive }) =>
                 cn(
-                  'flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 text-[10px] font-semibold tracking-wide transition-colors duration-200',
+                  'flex min-h-14 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-1.5 text-[10px] font-semibold tracking-wide transition-colors duration-[150ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
                   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
                   isActive
                     ? 'text-primary'
@@ -43,7 +43,7 @@ export function BottomNav() {
                 <>
                   <span
                     className={cn(
-                      'inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors duration-200',
+                      'inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors duration-[150ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
                       isActive && 'bg-primary/10',
                     )}
                   >

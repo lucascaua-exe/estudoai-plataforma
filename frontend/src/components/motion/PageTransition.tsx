@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useReducedMotionPreference } from '@/hooks/use-reduced-motion'
+import { EASE_SMOOTH, MOTION } from '@/lib/motion'
 
-/** Transição entre rotas: slide leve ou só fade se reduce. */
+/** Transição entre rotas: Fast (250ms) + Smooth ease out; reduce → Quick fade. */
 export function PageTransition() {
   const location = useLocation()
   const reduce = useReducedMotionPreference()
@@ -12,12 +13,12 @@ export function PageTransition() {
       <motion.div
         key={location.pathname}
         className="motion-keep-fade"
-        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={reduce ? { opacity: 0 } : { opacity: 0 }}
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8, filter: 'blur(3px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        exit={reduce ? { opacity: 0 } : { opacity: 0, filter: 'blur(2px)' }}
         transition={{
-          duration: reduce ? 0.15 : 0.26,
-          ease: [0.22, 1, 0.36, 1],
+          duration: reduce ? MOTION.quick.s : MOTION.fast.s,
+          ease: EASE_SMOOTH,
         }}
       >
         <Outlet />

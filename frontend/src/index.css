@@ -82,6 +82,18 @@
     radial-gradient(1200px 520px at 12% -8%, rgba(37, 99, 235, 0.12), transparent 55%),
     radial-gradient(900px 420px at 92% 0%, rgba(14, 165, 233, 0.1), transparent 50%),
     linear-gradient(180deg, #f8faff 0%, #f4f7fc 48%, #eef3fa 100%);
+
+  /* Motion tokens (Refine / transitions.dev) */
+  --motion-stagger: 40ms;
+  --motion-micro: 80ms;
+  --motion-quick: 150ms;
+  --motion-fast: 250ms;
+  --motion-medium: 350ms;
+  --motion-slow: 400ms;
+  --motion-very-slow: 500ms;
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-tooltip: ease-out;
+  --ease-swap: ease-in-out;
 }
 
 .dark {
@@ -298,15 +310,33 @@ h3,
 }
 
 .animate-fade-up {
-  animation: fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: fade-up var(--motion-slow) var(--ease-smooth) both;
 }
 
 .animate-pop {
-  animation: pop-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pop-in var(--motion-medium) var(--ease-smooth) both;
 }
 
 .boot-splash-mark {
-  animation: boot-mark 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: boot-mark var(--motion-very-slow) var(--ease-smooth) both;
+}
+
+/* Utilitários de transição alinhados aos tokens */
+.motion-color {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+  transition-duration: var(--motion-quick);
+  transition-timing-function: var(--ease-smooth);
+}
+
+.motion-transform {
+  transition-property: transform, opacity;
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--ease-smooth);
+}
+
+.motion-press:active {
+  transform: scale(0.98);
+  transition-duration: var(--motion-micro);
 }
 
 .boot-splash-icon {

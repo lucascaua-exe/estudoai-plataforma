@@ -152,7 +152,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
       <div
         role="presentation"
         className={cn(
-          'fixed inset-0 z-40 bg-[#0B1F3A]/40 backdrop-blur-[2px] transition-opacity duration-200 motion-keep-fade lg:hidden',
+          'fixed inset-0 z-40 bg-[#0B1F3A]/40 backdrop-blur-[2px] transition-opacity duration-[150ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-keep-fade lg:hidden',
           open ? 'opacity-100' : 'pointer-events-none opacity-0',
         )}
       >
@@ -172,7 +172,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
         data-collapsed={collapsed || undefined}
         className={cn(
           'fixed inset-y-0 left-0 z-50 flex h-dvh max-h-dvh w-[17rem] flex-col border-r border-white/20 text-white',
-          'shadow-[4px_0_28px_-8px_rgba(29,78,216,0.45)] transition-[width,transform] duration-200 ease-out',
+          'shadow-[4px_0_28px_-8px_rgba(29,78,216,0.45)] transition-[width,transform] duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)]',
           'motion-keep-fade lg:translate-x-0 lg:shadow-none',
           open ? 'translate-x-0' : '-translate-x-full',
           collapsed ? 'w-[4.5rem]' : 'w-[17rem]',
@@ -208,7 +208,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
             {!collapsed ? <ThemeToggle /> : null}
             <button
               type="button"
-              className="hidden min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-xl text-white/85 transition-colors duration-200 hover:bg-sidebar-accent hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 lg:inline-flex"
+              className="hidden min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-xl text-white/85 transition-colors duration-[150ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-sidebar-accent hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 lg:inline-flex"
               onClick={onToggleCollapse}
               aria-label={collapsed ? 'Expandir menu' : 'Retrair menu'}
               aria-expanded={!collapsed}
@@ -223,7 +223,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
             <button
               ref={closeRef}
               type="button"
-              className="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-xl text-white/85 transition-colors duration-200 hover:bg-sidebar-accent hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 lg:hidden"
+              className="inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-xl text-white/85 transition-colors duration-[150ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-sidebar-accent hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 lg:hidden"
               onClick={onClose}
               aria-label="Fechar menu"
             >
@@ -306,7 +306,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
                       className={({ isActive }) =>
                         cn(
                           'group relative flex min-h-11 cursor-pointer items-center rounded-xl text-sm font-medium',
-                          'transition-colors duration-200 ease-out motion-keep-fade',
+                          'transition-colors duration-[150ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-keep-fade',
                           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
                           collapsed ? 'justify-center px-0' : 'gap-3 px-3',
                           isActive
@@ -355,7 +355,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
               to="/perfil"
               onClick={onClose}
               title={user?.name || 'Perfil'}
-              className="mx-auto flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/15 font-display text-sm font-bold text-white transition-colors duration-200 hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+              className="mx-auto flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white/15 font-display text-sm font-bold text-white transition-colors duration-[150ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
             >
               <span aria-hidden>{initials || 'E'}</span>
               <span className="sr-only">Perfil</span>
@@ -364,7 +364,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
             <Link
               to="/perfil"
               onClick={onClose}
-              className="flex cursor-pointer items-center gap-3 rounded-xl border border-sidebar-border bg-sidebar-chip px-3 py-2.5 text-left transition-colors duration-200 hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+              className="flex cursor-pointer items-center gap-3 rounded-xl border border-sidebar-border bg-sidebar-chip px-3 py-2.5 text-left transition-colors duration-[150ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
               title="Editar cargo e perfil"
             >
               <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/20 font-display text-sm font-bold text-white">
@@ -392,7 +392,7 @@ export function Sidebar({ open, onClose, collapsed, onToggleCollapse }: SidebarP
             title="Sair"
             className={cn(
               'flex min-h-11 w-full cursor-pointer items-center rounded-xl text-sm font-medium text-white/80',
-              'transition-colors duration-200 hover:bg-red-500/20 hover:text-white',
+              'transition-colors duration-[150ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-red-500/20 hover:text-white',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70',
               collapsed ? 'justify-center px-0' : 'gap-3 px-3',
             )}
