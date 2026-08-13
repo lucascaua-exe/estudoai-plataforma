@@ -1,14 +1,7 @@
 import confetti from 'canvas-confetti'
+import { prefersReducedMotion } from '@/hooks/use-reduced-motion'
 
-function prefersReducedMotion(): boolean {
-  try {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  } catch {
-    return false
-  }
-}
-
-/** Confetes leves ao acertar (respeita prefers-reduced-motion). */
+/** Confetes leves ao acertar (Tier 1 — removido com reduced motion). */
 export function celebrateCorrect() {
   if (typeof window === 'undefined' || prefersReducedMotion()) return
 

@@ -1,19 +1,24 @@
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import { AnimatePresence, motion } from 'motion/react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { useReducedMotionPreference } from '@/hooks/use-reduced-motion'
 
-/** Transição suave entre rotas do layout autenticado. */
+/** Transição entre rotas: slide leve ou só fade se reduce. */
 export function PageTransition() {
   const location = useLocation()
-  const reduce = useReducedMotion()
+  const reduce = useReducedMotionPreference()
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
-        initial={reduce ? false : { opacity: 0, y: 10 }}
+        className="motion-keep-fade"
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={reduce ? undefined : { opacity: 0, y: -6 }}
-        transition={{ duration: reduce ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
+        exit={reduce ? { opacity: 0 } : { opacity: 0 }}
+        transition={{
+          duration: reduce ? 0.15 : 0.26,
+          ease: [0.22, 1, 0.36, 1],
+        }}
       >
         <Outlet />
       </motion.div>

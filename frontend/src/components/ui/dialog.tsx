@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { X } from 'lucide-react'
+import { CloseIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
@@ -101,7 +101,7 @@ export function Dialog({
             onClick={() => onOpenChange(false)}
             aria-label="Fechar"
           >
-            <X className="h-4 w-4" aria-hidden />
+            <CloseIcon className="h-4 w-4" weight="bold" aria-hidden />
           </Button>
         </div>
         {children}

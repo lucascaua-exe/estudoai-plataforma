@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "apps.concurso",
     "apps.catalog",
     "apps.documents",
-    "apps.questions",
+    "apps.questions.apps.QuestionsConfig",
     "apps.performance",
     "apps.simulados",
     "apps.competicoes",

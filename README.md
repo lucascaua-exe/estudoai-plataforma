@@ -1,4 +1,4 @@
-# EstudoAI
+# A Forja
 
 > Plataforma web de preparação para concurso — **Analista de Tecnologia da Informação · Prefeitura Municipal de Araguaína/TO · 2026 (banca IMPAR)**.
 
@@ -26,7 +26,7 @@ Monorepo com API Django e SPA React, prontos para deploy em **Render** (backend)
 
 ## Sobre o projeto
 
-O **EstudoAI** é um micro-SaaS de estudos orientado ao edital e aos materiais oficiais do concurso (PDFs de teoria, resumo e questões). O conteúdo pedagógico **não é inventado**: é ingerido a partir dos PDFs em `backend/data/pdfs/` e persistido no banco.
+**A Forja** (*A disciplina que molda o seu nome*) é um micro-SaaS de estudos orientado ao edital e aos materiais oficiais do concurso (PDFs de teoria, resumo e questões). O conteúdo pedagógico **não é inventado**: é ingerido a partir dos PDFs em `backend/data/pdfs/` e persistido no banco.
 
 Objetivos do produto:
 

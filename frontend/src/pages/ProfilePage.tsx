@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { CargoField } from '@/components/profile/CargoField'
 
 export function ProfilePage() {
   const user = useAuthStore((s) => s.user)
@@ -66,8 +67,11 @@ export function ProfilePage() {
     <div>
       <PageHeader
         title="Meu Perfil"
-        description={`${user?.email || ''} · ${gamification.data?.pontos ?? user?.pontos ?? 0} pontos`}
+        description="Atualize nome, concurso e cargo — o cargo aparece na barra lateral."
       />
+      <p className="mb-4 text-sm text-muted-foreground">
+        {user?.email || ''} · {gamification.data?.pontos ?? user?.pontos ?? 0} pontos
+      </p>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
@@ -93,14 +97,11 @@ export function ProfilePage() {
                   onChange={(e) => setProfile((p) => ({ ...p, concurso_alvo: e.target.value }))}
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="perfil-cargo">Cargo alvo</Label>
-                <Input
-                  id="perfil-cargo"
-                  value={profile.cargo_alvo}
-                  onChange={(e) => setProfile((p) => ({ ...p, cargo_alvo: e.target.value }))}
-                />
-              </div>
+              <CargoField
+                id="perfil-cargo"
+                value={profile.cargo_alvo}
+                onChange={(cargo_alvo) => setProfile((p) => ({ ...p, cargo_alvo }))}
+              />
               <div className="space-y-2">
                 <Label htmlFor="perfil-data-prova">Data da prova</Label>
                 <Input

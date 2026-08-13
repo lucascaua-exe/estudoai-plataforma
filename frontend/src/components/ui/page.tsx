@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react'
+import { AlertIcon, ICON_WEIGHT } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -76,7 +76,7 @@ export function ErrorState({
         className,
       )}
     >
-      <AlertCircle className="h-8 w-8 text-destructive" />
+      <AlertIcon className="h-8 w-8 text-destructive" weight={ICON_WEIGHT} aria-hidden />
       <p className="text-sm font-medium text-foreground">{message}</p>
       {onRetry ? (
         <Button variant="outline" onClick={onRetry}>

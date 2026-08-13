@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { CheckCircle2, CreditCard, Receipt } from 'lucide-react'
+import { CheckIcon, ICON_WEIGHT, PlansIcon, ReceiptIcon } from '@/components/ui/icons'
 import api from '@/lib/api'
 import { PLANS, type PlanId } from '@/lib/plans'
 import { getErrorMessage } from '@/lib/utils'
@@ -166,11 +166,11 @@ export function BillingPlansPage() {
           <CardHeader className="flex flex-row items-start justify-between gap-4">
             <div>
               <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" aria-hidden />
+                <PlansIcon className="h-5 w-5" weight={ICON_WEIGHT} aria-hidden />
                 Seu plano
               </CardTitle>
               <p className="mt-2 text-sm text-muted-foreground">
-                {current?.description || 'Assinatura EstudoAI'}
+                {current?.description || 'Assinatura A Forja'}
               </p>
             </div>
             <Badge variant={sub.status === 'active' ? 'success' : 'secondary'}>
@@ -223,7 +223,7 @@ export function BillingPlansPage() {
               <ul className="grid gap-2 sm:grid-cols-2">
                 {current.features.map((f) => (
                   <li key={f} className="flex gap-2 text-sm text-muted-foreground">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" aria-hidden />
+                    <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-success" weight={ICON_WEIGHT} aria-hidden />
                     <span className="text-pretty">{f}</span>
                   </li>
                 ))}
@@ -272,7 +272,7 @@ export function BillingPlansPage() {
                     <ul className="flex-1 space-y-2">
                       {plan.features.slice(0, 4).map((f) => (
                         <li key={f} className="flex gap-2 text-xs text-muted-foreground">
-                          <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" aria-hidden />
+                          <CheckIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" weight={ICON_WEIGHT} aria-hidden />
                           <span>{f}</span>
                         </li>
                       ))}
@@ -294,7 +294,7 @@ export function BillingPlansPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Receipt className="h-5 w-5" aria-hidden />
+              <ReceiptIcon className="h-5 w-5" weight={ICON_WEIGHT} aria-hidden />
               Faturas
             </CardTitle>
           </CardHeader>

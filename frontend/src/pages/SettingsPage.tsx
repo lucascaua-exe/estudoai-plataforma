@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Skeleton } from '@/components/ui/skeleton'
+import { CargoField } from '@/components/profile/CargoField'
 
 export function SettingsPage() {
   const { theme, setTheme } = useTheme()
@@ -85,15 +86,13 @@ export function SettingsPage() {
                     onChange={(e) => setForm((f) => ({ ...f, orgao: e.target.value }))}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cfg-cargo">Cargo</Label>
-                  <Input
-                    id="cfg-cargo"
-                    value={form.cargo}
-                    onChange={(e) => setForm((f) => ({ ...f, cargo: e.target.value }))}
-                    placeholder="Analista de Tecnologia da Informação"
-                  />
-                </div>
+                <CargoField
+                  id="cfg-cargo"
+                  label="Cargo"
+                  value={form.cargo}
+                  onChange={(cargo) => setForm((f) => ({ ...f, cargo }))}
+                  hint="Aparece na barra do usuário. Escolha ou digite o seu."
+                />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="cfg-data-prova">Data da prova</Label>

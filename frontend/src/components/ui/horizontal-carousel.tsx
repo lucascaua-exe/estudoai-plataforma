@@ -1,5 +1,5 @@
 import useEmblaCarousel from 'embla-carousel-react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeftIcon, ChevronRightIcon } from '@/components/ui/icons'
 import { useCallback, useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -53,7 +53,7 @@ export function HorizontalCarousel({ children, className, label }: HorizontalCar
           disabled={!canPrev}
           onClick={() => emblaApi?.scrollPrev()}
         >
-          <ChevronLeft className="h-4 w-4" aria-hidden />
+          <ChevronLeftIcon className="h-4 w-4" weight="bold" aria-hidden />
         </Button>
         <Button
           type="button"
@@ -64,7 +64,7 @@ export function HorizontalCarousel({ children, className, label }: HorizontalCar
           disabled={!canNext}
           onClick={() => emblaApi?.scrollNext()}
         >
-          <ChevronRight className="h-4 w-4" aria-hidden />
+          <ChevronRightIcon className="h-4 w-4" weight="bold" aria-hidden />
         </Button>
       </div>
     </div>

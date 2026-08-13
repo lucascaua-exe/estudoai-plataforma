@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { Plus, Play } from 'lucide-react'
+import { ICON_WEIGHT, PlayIcon, PlusIcon } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import { useCreateSimulado, useSimulados, useStartSimulado } from '@/hooks/use-api'
 import { formatPercent, getErrorMessage } from '@/lib/utils'
@@ -69,7 +69,7 @@ export function SimuladosPage() {
         description="Treine no formato de prova e analise o desempenho."
         actions={
           <Button onClick={() => setOpen(true)}>
-            <Plus className="h-4 w-4" />
+            <PlusIcon className="h-4 w-4" weight={ICON_WEIGHT} />
             Novo simulado
           </Button>
         }
@@ -117,7 +117,7 @@ export function SimuladosPage() {
                     </Link>
                   ) : (
                     <Button onClick={() => onResume(s.id, s.status)}>
-                      <Play className="h-4 w-4" />
+                      <PlayIcon className="h-4 w-4" weight={ICON_WEIGHT} />
                       {s.status === 'em_andamento' ? 'Continuar' : 'Iniciar'}
                     </Button>
                   )}

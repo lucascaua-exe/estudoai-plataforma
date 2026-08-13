@@ -7,6 +7,7 @@ import { getErrorMessage } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { BrandLogo } from '@/components/BrandLogo'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
 import { Skeleton } from '@/components/ui/skeleton'
 
@@ -97,16 +98,8 @@ export function LoginPage() {
             <ThemeToggle />
           </div>
 
-          <header className="shrink-0 px-8 pt-1 text-center">
-            <p
-              translate="no"
-              className="font-brand text-[2.75rem] leading-[0.95] text-primary sm:text-[3.1rem]"
-            >
-              EstudoAI
-            </p>
-            <p className="mx-auto mt-2.5 max-w-[18ch] text-pretty text-[0.95rem] font-medium leading-snug tracking-tight text-foreground/80">
-              Estude com o ritmo de quem vai passar.
-            </p>
+          <header className="shrink-0 px-4 pt-1 text-center sm:px-6">
+            <BrandLogo size="lg" className="mx-auto h-[5.5rem] sm:h-28" />
           </header>
 
           {/* Meio: formulário ocupa o espaço restante e centraliza nele */}

@@ -1,19 +1,20 @@
 import { NavLink } from 'react-router-dom'
 import {
-  BookOpen,
-  FileText,
-  LayoutDashboard,
-  MoreHorizontal,
-  Swords,
-} from 'lucide-react'
+  BookIcon,
+  CompeteIcon,
+  HomeIcon,
+  ICON_WEIGHT,
+  MoreIcon,
+  QuestionsIcon,
+} from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 
 const items = [
-  { to: '/painel', label: 'Início', icon: LayoutDashboard, end: true },
-  { to: '/estudar', label: 'Estudar', icon: BookOpen },
-  { to: '/questoes', label: 'Questões', icon: FileText },
-  { to: '/competicao', label: 'Competir', icon: Swords },
-  { to: '/perfil', label: 'Mais', icon: MoreHorizontal },
+  { to: '/painel', label: 'Início', icon: HomeIcon, end: true },
+  { to: '/estudar', label: 'Estudar', icon: BookIcon },
+  { to: '/questoes', label: 'Questões', icon: QuestionsIcon },
+  { to: '/competicao', label: 'Competir', icon: CompeteIcon },
+  { to: '/perfil', label: 'Mais', icon: MoreIcon },
 ]
 
 export function BottomNav() {
@@ -48,7 +49,7 @@ export function BottomNav() {
                   >
                     <Icon
                       className="h-5 w-5"
-                      strokeWidth={isActive ? 2.25 : 1.75}
+                      weight={isActive ? 'fill' : ICON_WEIGHT}
                       aria-hidden
                     />
                   </span>

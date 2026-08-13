@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Send, Sparkles } from 'lucide-react'
+import { ICON_WEIGHT, SendIcon, SparkleIcon } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import { useAiChat } from '@/hooks/use-api'
 import { cn, getErrorMessage } from '@/lib/utils'
@@ -26,7 +26,7 @@ export function AssistantPage() {
     {
       role: 'assistant',
       conteudo:
-        'Oi! Eu sou o tutor do EstudoAI. Pode mandar desde um “bom dia” até uma dúvida pesada do edital — eu respondo com linguagem clara, uso meu conhecimento de concurso e, quando fizer sentido, cruzo com o material da sua base. Bora estudar?',
+        'Oi! Eu sou o tutor da Forja. Pode mandar desde um “bom dia” até uma dúvida pesada do edital — eu respondo com linguagem clara, uso meu conhecimento de concurso e, quando fizer sentido, cruzo com o material da sua base. Bora estudar?',
     },
   ])
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -71,7 +71,7 @@ export function AssistantPage() {
         actions={
           aiEnabled == null ? null : (
             <Badge variant={aiEnabled ? 'success' : 'warning'}>
-              <Sparkles className="mr-1 h-3 w-3" aria-hidden />
+              <SparkleIcon className="mr-1 h-3 w-3" weight={ICON_WEIGHT} aria-hidden />
               {aiEnabled ? 'Gemini ativo' : 'IA limitada'}
             </Badge>
           )
@@ -146,7 +146,7 @@ export function AssistantPage() {
               disabled={chat.isPending || !message.trim()}
               aria-label="Enviar mensagem"
             >
-              <Send className="h-4 w-4" />
+              <SendIcon className="h-4 w-4" weight={ICON_WEIGHT} />
             </Button>
           </div>
         </CardContent>

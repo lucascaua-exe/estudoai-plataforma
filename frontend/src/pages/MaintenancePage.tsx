@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Wrench } from 'lucide-react'
+import { BrandLogo } from '@/components/BrandLogo'
+import { ICON_WEIGHT, WrenchIcon } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 
 /** Landing pública em manutenção — entrada oficial é o login. */
@@ -7,12 +8,10 @@ export function MaintenancePage() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-6 text-center">
       <div className="animate-fade-up mx-auto max-w-md space-y-5">
+        <BrandLogo size="lg" className="mx-auto h-20" />
         <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-          <Wrench className="h-7 w-7" aria-hidden />
+          <WrenchIcon className="h-7 w-7" weight={ICON_WEIGHT} aria-hidden />
         </div>
-        <p translate="no" className="font-brand text-3xl text-primary">
-          EstudoAI
-        </p>
         <h1 className="font-display text-2xl font-semibold text-foreground">
           Página em manutenção
         </h1>

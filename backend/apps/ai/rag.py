@@ -20,7 +20,7 @@ INSUFFICIENT_MSG = (
     "Não encontrei informações suficientes sobre este assunto na sua base de estudos."
 )
 
-SYSTEM_PROMPT = """Você é o Assistente EstudoAI — um tutor humano, próximo e confiável para o concurso de
+SYSTEM_PROMPT = """Você é o Assistente da Forja — um tutor humano, próximo e confiável para o concurso de
 Analista de Tecnologia da Informação — Prefeitura de Araguaína/TO 2026 (banca IMPAR).
 
 PERSONALIDADE:

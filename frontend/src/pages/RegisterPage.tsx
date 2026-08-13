@@ -8,7 +8,9 @@ import { getErrorMessage } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { BrandLogo } from '@/components/BrandLogo'
 import { ThemeToggle } from '@/components/layout/ThemeToggle'
+import { CargoField } from '@/components/profile/CargoField'
 
 function isPlanId(value: string | null): value is PlanId {
   return value === 'free' || value === 'pro' || value === 'premium'
@@ -30,6 +32,8 @@ export function RegisterPage() {
     email: '',
     password: '',
     password_confirm: '',
+    cargo_alvo: '',
+    concurso_alvo: '',
   })
   const [loading, setLoading] = useState(false)
 
@@ -72,9 +76,7 @@ export function RegisterPage() {
         <ThemeToggle />
       </div>
       <main className="w-full max-w-md rounded-2xl border border-border bg-card p-7 shadow-sm sm:p-8">
-        <p translate="no" className="font-brand text-3xl text-primary">
-          EstudoAI
-        </p>
+        <BrandLogo size="md" className="h-14" />
         <div className="mt-6 rounded-xl border border-border bg-muted/50 px-4 py-3">
           <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
             Plano selecionado
@@ -123,6 +125,22 @@ export function RegisterPage() {
               placeholder="seu@email.com…"
             />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="concurso_alvo">Concurso (opcional)</Label>
+            <Input
+              id="concurso_alvo"
+              name="concurso_alvo"
+              value={form.concurso_alvo}
+              onChange={onChange}
+              placeholder="Ex.: Prefeitura, TRT, Banco do Brasil…"
+            />
+          </div>
+          <CargoField
+            id="cargo_alvo"
+            value={form.cargo_alvo}
+            onChange={(cargo_alvo) => setForm((prev) => ({ ...prev, cargo_alvo }))}
+            hint="Escolha ou digite o cargo — aparece na sua barra do app."
+          />
           <div className="space-y-2">
             <Label htmlFor="password">Senha</Label>
             <Input

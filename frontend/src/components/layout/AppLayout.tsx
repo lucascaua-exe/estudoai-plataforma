@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LogOut, Menu } from 'lucide-react'
+import { BrandLogo } from '@/components/BrandLogo'
+import { ICON_WEIGHT, LogoutIcon, MenuIcon } from '@/components/ui/icons'
 import { Sidebar } from '@/components/layout/Sidebar'
 import { BottomNav } from '@/components/layout/BottomNav'
 import { PageTransition } from '@/components/motion/PageTransition'
@@ -62,12 +63,10 @@ export function AppLayout() {
             aria-expanded={open}
             aria-controls="app-sidebar"
           >
-            <Menu className="h-5 w-5" strokeWidth={2} aria-hidden />
+            <MenuIcon className="h-5 w-5" weight="bold" aria-hidden />
           </button>
 
-          <span translate="no" className="min-w-0 truncate font-brand text-base text-primary sm:text-lg">
-            EstudoAI
-          </span>
+          <BrandLogo size="sm" compact className="h-8 min-w-0 max-w-[7.5rem] sm:max-w-[9rem]" />
 
           <div className="flex min-w-0 shrink-0 items-center gap-1">
             <XpPill
@@ -83,7 +82,7 @@ export function AppLayout() {
               className="!max-w-[4.75rem] !gap-1 !overflow-hidden !px-1.5 !py-1"
             />
             <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Sair">
-              <LogOut className="h-4 w-4" aria-hidden />
+              <LogoutIcon className="h-4 w-4" weight={ICON_WEIGHT} aria-hidden />
             </Button>
           </div>
         </header>

@@ -1,4 +1,4 @@
-import { CheckCircle2 } from 'lucide-react'
+import { CheckIcon } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import { useDeclareMastery, useMastery } from '@/hooks/use-api'
 import { formatPercent, getErrorMessage } from '@/lib/utils'
@@ -39,7 +39,7 @@ export function MasteredPage() {
             <h2 className="mb-3 font-display text-lg font-bold">Dominados</h2>
             {!mastered.length ? (
               <EmptyState
-                icon={CheckCircle2}
+                icon={CheckIcon}
                 title="Nenhum conteúdo dominado ainda"
                 description="Continue praticando até comprovar domínio nos assuntos."
               />

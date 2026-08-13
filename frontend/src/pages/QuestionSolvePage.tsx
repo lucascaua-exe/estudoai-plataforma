@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { Bookmark, CheckCircle2, Flag, Sparkles, XCircle } from 'lucide-react'
+import {
+  BookmarkIcon,
+  CheckIcon,
+  ErrorsIcon,
+  FlagIcon,
+  ICON_WEIGHT,
+  ICON_WEIGHT_UI,
+  SparkleIcon,
+} from '@/components/ui/icons'
 import { toast } from 'sonner'
 import {
   useAnswerQuestion,
@@ -164,8 +172,9 @@ export function QuestionSolvePage() {
                 }
               }}
             >
-              <Bookmark
-                className={cn('h-4 w-4', data.favorita && 'fill-primary text-primary')}
+              <BookmarkIcon
+                className={cn('h-4 w-4', data.favorita && 'text-primary')}
+                weight={data.favorita ? 'fill' : ICON_WEIGHT_UI}
                 aria-hidden
               />
             </Button>
@@ -186,8 +195,9 @@ export function QuestionSolvePage() {
                 }
               }}
             >
-              <Flag
-                className={cn('h-4 w-4', data.marcar_revisao && 'fill-warning text-warning')}
+              <FlagIcon
+                className={cn('h-4 w-4', data.marcar_revisao && 'text-warning')}
+                weight={data.marcar_revisao ? 'fill' : ICON_WEIGHT_UI}
                 aria-hidden
               />
             </Button>
@@ -213,7 +223,7 @@ export function QuestionSolvePage() {
             {data.banca ? <Badge variant="outline">{data.banca}</Badge> : null}
             {data.origem === 'ai_generated' ? (
               <Badge variant="secondary">
-                <Sparkles className="mr-1 h-3 w-3" aria-hidden /> IA
+                <SparkleIcon className="mr-1 h-3 w-3" weight={ICON_WEIGHT} aria-hidden /> IA
               </Badge>
             ) : null}
           </div>
@@ -276,14 +286,16 @@ export function QuestionSolvePage() {
                     {texto}
                   </span>
                   {showFeedback && isCorrect ? (
-                    <CheckCircle2
+                    <CheckIcon
                       className="mt-1 h-5 w-5 shrink-0 text-success"
+                      weight={ICON_WEIGHT}
                       aria-label="Correta"
                     />
                   ) : null}
                   {isWrong ? (
-                    <XCircle
+                    <ErrorsIcon
                       className="mt-1 h-5 w-5 shrink-0 text-destructive"
+                      weight={ICON_WEIGHT}
                       aria-label="Incorreta"
                     />
                   ) : null}
@@ -315,11 +327,11 @@ export function QuestionSolvePage() {
               <div className="flex items-start gap-3">
                 {result.correta ? (
                   <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success text-white">
-                    <CheckCircle2 className="h-5 w-5" aria-hidden />
+                    <CheckIcon className="h-5 w-5" weight={ICON_WEIGHT} aria-hidden />
                   </div>
                 ) : (
                   <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-destructive text-white">
-                    <XCircle className="h-5 w-5" aria-hidden />
+                    <ErrorsIcon className="h-5 w-5" weight={ICON_WEIGHT} aria-hidden />
                   </div>
                 )}
                 <div className="min-w-0">

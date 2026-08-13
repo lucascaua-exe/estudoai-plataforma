@@ -1,4 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { BrandLogo } from '@/components/BrandLogo'
+import { BRAND_NAME } from '@/lib/brand'
 import { Button } from '@/components/ui/button'
 
 interface Props {
@@ -18,7 +20,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('EstudoAI ErrorBoundary:', error, info)
+    console.error(`${BRAND_NAME} ErrorBoundary:`, error, info)
   }
 
   private async recover() {
@@ -42,9 +44,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
     return (
       <div className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-background px-6 text-center">
-        <p translate="no" className="font-brand text-2xl text-primary">
-          EstudoAI
-        </p>
+        <BrandLogo size="md" className="h-14" />
         <h1 className="font-display text-xl font-semibold text-foreground">
           Não foi possível carregar a página
         </h1>

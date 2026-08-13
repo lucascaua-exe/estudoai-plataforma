@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from .models import Alternativa, Questao, QuestaoUsuarioMeta, Tentativa
 from .text_cleanup import clean_alternativa, clean_enunciado, clean_explicacao
+from .text_monitor import heal_field
 
 
 class AlternativaSerializer(serializers.ModelSerializer):
@@ -13,7 +14,7 @@ class AlternativaSerializer(serializers.ModelSerializer):
         fields = ["id", "letra", "texto"]
 
     def get_texto(self, obj):
-        return clean_alternativa(obj.texto)
+        return heal_field(obj, "texto", clean_alternativa(obj.texto))
 
 
 class AlternativaReveladaSerializer(serializers.ModelSerializer):
@@ -24,7 +25,7 @@ class AlternativaReveladaSerializer(serializers.ModelSerializer):
         fields = ["id", "letra", "texto", "correta"]
 
     def get_texto(self, obj):
-        return clean_alternativa(obj.texto)
+        return heal_field(obj, "texto", clean_alternativa(obj.texto))
 
 
 class QuestaoListSerializer(serializers.ModelSerializer):
@@ -62,7 +63,7 @@ class QuestaoListSerializer(serializers.ModelSerializer):
         ]
 
     def get_enunciado(self, obj):
-        return clean_enunciado(obj.enunciado)
+        return heal_field(obj, "enunciado", clean_enunciado(obj.enunciado))
 
     def get_imagem_url(self, obj):
         if not getattr(obj, "imagem", None):
@@ -145,12 +146,14 @@ class QuestaoDetailSerializer(QuestaoListSerializer):
         ]
 
     def get_explicacao(self, obj):
-        return clean_explicacao(obj.explicacao)
+        return heal_field(obj, "explicacao", clean_explicacao(obj.explicacao))
 
     def get_trecho_referencia(self, obj):
         from .text_cleanup import clean_study_text
 
-        return clean_study_text(obj.trecho_referencia or "")
+        return heal_field(
+            obj, "trecho_referencia", clean_study_text(obj.trecho_referencia or "")
+        )
 
     def get_alternativas(self, obj):
         request = self.context.get("request")

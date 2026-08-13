@@ -6,6 +6,12 @@
     </linearGradient>
   </defs>
   <rect width="64" height="64" rx="16" fill="url(#g)"/>
-  <path d="M18 40V24l14-6 14 6v16l-14 6-14-6z" stroke="#FFFFFF" stroke-width="2.75" stroke-linejoin="round"/>
-  <path d="M32 20v26M18 24l14 6 14-6" stroke="#FFFFFF" stroke-width="2.75" stroke-linejoin="round"/>
+  <!-- livro -->
+  <path d="M14 44c4-2.5 9-3.5 18-3.5s14 1 18 3.5v4.5c-4-2.2-9-3.2-18-3.2S18 46.3 14 48.5V44z" fill="#fff"/>
+  <path d="M32 40.5v9" stroke="#1D4ED8" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- bigorna -->
+  <path d="M22 33h20l2 4H20l2-4zM24 37h16v3.5c0 1.2-1 2.2-2.2 2.2H26.2c-1.2 0-2.2-1-2.2-2.2V37z" fill="#fff"/>
+  <!-- martelo -->
+  <path d="M38 14l8 5-3.2 5.2-8-5L38 14z" fill="#fff"/>
+  <path d="M36.5 21.5l-8.5 13.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
 </svg>

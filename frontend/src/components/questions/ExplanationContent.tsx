@@ -1,4 +1,4 @@
-import { Lightbulb, ListChecks, CheckCircle2 } from 'lucide-react'
+import { CheckIcon, ChecklistIcon, ICON_WEIGHT, TipIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 
 type Block =
@@ -178,9 +178,9 @@ function RichText({ text }: { text: string }) {
 }
 
 function SectionIcon({ kind }: { kind: SectionKind }) {
-  if (kind === 'tip') return <Lightbulb className="h-4 w-4" aria-hidden />
-  if (kind === 'correct') return <CheckCircle2 className="h-4 w-4" aria-hidden />
-  if (kind === 'wrong') return <ListChecks className="h-4 w-4" aria-hidden />
+  if (kind === 'tip') return <TipIcon className="h-4 w-4" weight={ICON_WEIGHT} aria-hidden />
+  if (kind === 'correct') return <CheckIcon className="h-4 w-4" weight={ICON_WEIGHT} aria-hidden />
+  if (kind === 'wrong') return <ChecklistIcon className="h-4 w-4" weight={ICON_WEIGHT} aria-hidden />
   return null
 }
 

@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import { BRAND_FULL, BRAND_NAME } from '@/lib/brand'
 
 const TITLES: Record<string, string> = {
-  '/': 'EstudoAI — Preparação Concursos',
+  '/': BRAND_FULL,
   '/login': 'Entrar',
   '/register': 'Assinar',
   '/privacidade': 'Privacidade',
@@ -31,7 +32,7 @@ function resolveTitle(pathname: string): string {
   if (pathname.startsWith('/competicao/')) return 'Sala de competição'
   if (pathname.includes('/realizar')) return 'Realizar simulado'
   if (pathname.includes('/resultado')) return 'Resultado do simulado'
-  return 'EstudoAI'
+  return BRAND_NAME
 }
 
 export function DocumentTitle() {
@@ -40,11 +41,11 @@ export function DocumentTitle() {
   useEffect(() => {
     const page = resolveTitle(pathname)
     document.title =
-      pathname === '/' || page.startsWith('EstudoAI')
-        ? page.startsWith('EstudoAI')
+      pathname === '/' || page.startsWith(BRAND_NAME)
+        ? page.startsWith(BRAND_NAME)
           ? page
-          : 'EstudoAI — Preparação Concursos'
-        : `${page} · EstudoAI`
+          : BRAND_FULL
+        : `${page} · ${BRAND_NAME}`
   }, [pathname])
 
   return null

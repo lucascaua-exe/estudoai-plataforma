@@ -1,7 +1,7 @@
 {
-  "name": "EstudoAI — Preparação Concursos",
-  "short_name": "EstudoAI",
-  "description": "Plataforma de estudos para Analista de TI — Araguaína/TO 2026.",
+  "name": "A Forja — A disciplina que molda o seu nome",
+  "short_name": "A Forja",
+  "description": "Plataforma de estudos para concursos. A disciplina que molda o seu nome.",
   "start_url": "/login",
   "scope": "/",
   "display": "standalone",

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { BrandLogo } from '@/components/BrandLogo'
 import { cn } from '@/lib/utils'
 
 const SEEN_KEY = 'estudoai.boot.seen'
@@ -37,26 +38,8 @@ export function BootSplash() {
       )}
       aria-hidden
     >
-      <div className="boot-splash-mark flex flex-col items-center gap-3">
-        <div className="boot-splash-icon flex h-20 w-20 items-center justify-center rounded-[1.35rem] bg-primary shadow-[0_12px_40px_rgba(29,78,216,0.28)]">
-          <svg viewBox="0 0 64 64" className="h-11 w-11" fill="none" aria-hidden>
-            <path
-              d="M18 40V24l14-6 14 6v16l-14 6-14-6z"
-              stroke="#FFFFFF"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M32 20v26M18 24l14 6 14-6"
-              stroke="#FFFFFF"
-              strokeWidth="2.5"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </div>
-        <p translate="no" className="font-brand text-2xl tracking-tight text-primary">
-          EstudoAI
-        </p>
+      <div className="boot-splash-mark flex flex-col items-center">
+        <BrandLogo size="hero" className="boot-splash-icon drop-shadow-sm" />
       </div>
     </div>
   )

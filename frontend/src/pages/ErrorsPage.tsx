@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { AlertTriangle } from 'lucide-react'
+import { WarningIcon } from '@/components/ui/icons'
 import { useErrors } from '@/hooks/use-api'
 import { truncate } from '@/lib/utils'
 import { PageHeader, ErrorState } from '@/components/ui/page'
@@ -29,7 +29,7 @@ export function ErrorsPage() {
         <ErrorState onRetry={() => refetch()} />
       ) : !data?.length ? (
         <EmptyState
-          icon={AlertTriangle}
+          icon={WarningIcon}
           title="Nenhum erro registrado"
           description="Quando você errar questões, elas aparecerão aqui para revisão."
         />

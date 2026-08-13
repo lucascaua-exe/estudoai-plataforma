@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Brain, Play } from 'lucide-react'
+import { ICON_WEIGHT, PlayIcon, ReviewIcon } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import { useReviewRecommended, useStartReview } from '@/hooks/use-api'
 import { formatPercent, getErrorMessage } from '@/lib/utils'
@@ -43,7 +43,7 @@ export function ReviewPage() {
         description="Priorize assuntos com base no seu desempenho recente."
         actions={
           <Button onClick={onStart} disabled={starting || start.isPending}>
-            <Play className="h-4 w-4" />
+            <PlayIcon className="h-4 w-4" weight={ICON_WEIGHT} />
             {starting ? 'Preparando…' : 'Iniciar revisão'}
           </Button>
         }
@@ -62,7 +62,7 @@ export function ReviewPage() {
           !data.prioridade_media.length &&
           !data.prioridade_baixa.length) ? (
         <EmptyState
-          icon={Brain}
+          icon={ReviewIcon}
           title="Sem recomendações ainda"
           description="Responda mais questões para gerar um plano de revisão personalizado."
           actionLabel="Estudar agora"

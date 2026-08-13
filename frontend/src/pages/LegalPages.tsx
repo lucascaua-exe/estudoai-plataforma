@@ -5,7 +5,7 @@ export function PrivacyPage() {
   return (
     <LegalShell title="Privacidade">
       <p>
-        A EstudoAI trata dados de conta (nome, email) e progresso de estudo apenas para operar o
+        A Forja trata dados de conta (nome, email) e progresso de estudo apenas para operar o
         painel. Não vendemos dados a terceiros.
       </p>
       <p>

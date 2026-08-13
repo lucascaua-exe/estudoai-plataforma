@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { BookOpen, Play, Sparkles } from 'lucide-react'
+import { BookIcon, ICON_WEIGHT, PlayIcon, SparkleIcon } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import {
   useCatalog,
@@ -381,7 +381,7 @@ export function StudyPage() {
                 />
               ) : available === 0 && !preview.isLoading ? (
                 <EmptyState
-                  icon={BookOpen}
+                  icon={BookIcon}
                   title="Nada para praticar com esses filtros"
                   description="Afrouxe banca/dificuldade, mude o modo ou abra o banco completo."
                   actionLabel="Abrir banco de questões"
@@ -398,7 +398,7 @@ export function StudyPage() {
                   onClick={start}
                   disabled={!canStart}
                 >
-                  <Play className="h-4 w-4" />
+                  <PlayIcon className="h-4 w-4" weight={ICON_WEIGHT} />
                   {starting || nextQuestion.isPending
                     ? 'Abrindo primeira questão…'
                     : 'Começar sessão'}
@@ -422,7 +422,7 @@ export function StudyPage() {
           <Card className="h-fit">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" aria-hidden />
+                <SparkleIcon className="h-4 w-4 text-primary" weight={ICON_WEIGHT} aria-hidden />
                 Gerar com IA
               </CardTitle>
             </CardHeader>
@@ -447,7 +447,7 @@ export function StudyPage() {
                 onClick={onGenerate}
                 disabled={generate.isPending || !assunto || !disciplina}
               >
-                <Sparkles className="h-4 w-4" />
+                <SparkleIcon className="h-4 w-4" weight={ICON_WEIGHT} />
                 {generate.isPending ? 'Gerando…' : 'Gerar e praticar'}
               </Button>
               {!assunto ? (

@@ -30,5 +30,5 @@ python manage.py import_provas_batch || true
 echo "[build] repair_question_images…"
 python manage.py repair_question_images || true
 
-echo "[build] clean_question_texts…"
-python manage.py clean_question_texts || true
+echo "[build] monitor_question_texts --once…"
+python manage.py monitor_question_texts --once || true

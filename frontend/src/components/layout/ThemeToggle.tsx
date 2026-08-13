@@ -1,7 +1,6 @@
-import { Moon, Sun } from 'lucide-react'
+import { MoonIcon, SunIcon } from '@/components/ui/icons'
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/components/theme-provider'
-import { cn } from '@/lib/utils'
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
@@ -13,29 +12,14 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      aria-label={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
-      className="relative"
+      aria-label={isDark ? 'Ativar tema claro' : 'Ativar tema escuro'}
+      title={isDark ? 'Tema claro' : 'Tema escuro'}
     >
-      <Sun
-        className={cn(
-          'h-4 w-4 absolute transition-[opacity,transform,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)]',
-          isDark
-            ? 'opacity-100 scale-100 blur-0'
-            : 'opacity-0 scale-[0.25] blur-[4px] pointer-events-none',
-        )}
-        strokeWidth={1.75}
-        aria-hidden
-      />
-      <Moon
-        className={cn(
-          'h-4 w-4 transition-[opacity,transform,filter] duration-200 ease-[cubic-bezier(0.2,0,0,1)]',
-          isDark
-            ? 'opacity-0 scale-[0.25] blur-[4px] pointer-events-none'
-            : 'opacity-100 scale-100 blur-0',
-        )}
-        strokeWidth={1.75}
-        aria-hidden
-      />
+      {isDark ? (
+        <SunIcon className="h-4 w-4" weight="duotone" aria-hidden />
+      ) : (
+        <MoonIcon className="h-4 w-4" weight="duotone" aria-hidden />
+      )}
     </Button>
   )
 }

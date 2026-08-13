@@ -300,7 +300,19 @@ export function useUpdateConcurso() {
   return useMutation({
     mutationFn: async (body: Partial<Concurso>) =>
       (await api.patch<Concurso>('/concurso/', body)).data,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['concurso'] }),
+    onSuccess: (data) => {
+      qc.invalidateQueries({ queryKey: ['concurso'] })
+      qc.invalidateQueries({ queryKey: ['me'] })
+      const { user, setUser } = useAuthStore.getState()
+      if (user) {
+        setUser({
+          ...user,
+          cargo_alvo: data.cargo || '',
+          concurso_alvo: data.nome || '',
+          data_prova: data.data_prova ?? user.data_prova,
+        })
+      }
+    },
   })
 }
 

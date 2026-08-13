@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useState } from 'react'
-import { X, ZoomIn } from 'lucide-react'
+import { CloseIcon, ICON_WEIGHT, ZoomIcon } from '@/components/ui/icons'
 import { cn, resolveMediaUrl } from '@/lib/utils'
 
 interface QuestionFigureProps {
@@ -60,7 +60,7 @@ export function QuestionFigure({
           className="mx-auto max-h-72 w-full object-contain p-2 transition duration-200 group-hover:scale-[1.01] sm:max-h-80"
         />
         <span className="pointer-events-none absolute right-3 bottom-3 inline-flex items-center gap-1 rounded-lg bg-background/90 px-2 py-1 text-[11px] font-medium text-muted-foreground shadow-sm ring-1 ring-border">
-          <ZoomIn className="h-3.5 w-3.5" aria-hidden />
+          <ZoomIcon className="h-3.5 w-3.5" weight={ICON_WEIGHT} aria-hidden />
           Ampliar
         </span>
       </button>
@@ -82,7 +82,7 @@ export function QuestionFigure({
             aria-label="Fechar zoom"
             onClick={() => setOpen(false)}
           >
-            <X className="h-5 w-5" aria-hidden />
+            <CloseIcon className="h-5 w-5" weight="bold" aria-hidden />
           </button>
           <img
             src={resolved}

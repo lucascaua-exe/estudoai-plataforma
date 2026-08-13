@@ -100,6 +100,25 @@ _PHRASE_FIXES = [
     (re.compile(r"Operador[eé]", re.I), "Operador é"),
     (re.compile(r"[eé]definido", re.I), "é definido"),
     (re.compile(r"LGPD,\s*", re.I), "LGPD, "),
+    (re.compile(r"(?<![a-záéíóúç])deacordo(?![a-záéíóúç])", re.I), "de acordo"),
+    (re.compile(r"(?<![a-záéíóúç])emrela[cç][aã]o(?![a-záéíóúç])", re.I), "em relação"),
+    (re.compile(r"(?<![a-záéíóúç])comrela[cç][aã]o(?![a-záéíóúç])", re.I), "com relação"),
+    (re.compile(r"(?<![a-záéíóúç])pormeio(?![a-záéíóúç])", re.I), "por meio"),
+    (re.compile(r"(?<![a-záéíóúç])atrav[eé]sde(?![a-záéíóúç])", re.I), "através de"),
+    (re.compile(r"(?<![a-záéíóúç])nosentido(?![a-záéíóúç])", re.I), "no sentido"),
+    (re.compile(r"(?<![a-záéíóúç])nocaso(?![a-záéíóúç])", re.I), "no caso"),
+    (re.compile(r"(?<![a-záéíóúç])emface(?![a-záéíóúç])", re.I), "em face"),
+    (re.compile(r"(?<![a-záéíóúç])acercade(?![a-záéíóúç])", re.I), "acerca de"),
+    # Evita "deformação" / "deformar"
+    (re.compile(r"(?<![a-záéíóúç])deforma(?![a-záéíóúçãõâêô])", re.I), "de forma"),
+    (re.compile(r"(?<![a-záéíóúç])demaneira(?![a-záéíóúç])", re.I), "de maneira"),
+    (re.compile(r"(?<![a-záéíóúç])aosagentes(?![a-záéíóúç])", re.I), "aos agentes"),
+    (re.compile(r"(?<![a-záéíóúç])dasalternativas(?![a-záéíóúç])", re.I), "das alternativas"),
+    (re.compile(r"(?<![a-záéíóúç])dasoutras(?![a-záéíóúç])", re.I), "das outras"),
+    (re.compile(r"(incorreta[s]?)(?=[A-ZÁÉÍÓÚ])", re.I), r"\1 "),
+    (re.compile(r"(?<![a-záéíóúç])respostacorreta(?![a-záéíóúç])", re.I), "resposta correta"),
+    (re.compile(r"(?<![a-záéíóúç])alternativaincorreta(?![a-záéíóúç])", re.I), "alternativa incorreta"),
+    (re.compile(r"(quest[aã]o)(?=\d)", re.I), r"\1 "),
     # Espaços após numeração de sumário colada: "3.Língua" / "2.4.Desenvolvimento"
     (re.compile(r"(\d+\.)([A-Za-zÀ-ú])"), r"\1 \2"),
     (re.compile(r"(\d+\.\d+\.)([A-Za-zÀ-ú])"), r"\1 \2"),
@@ -214,6 +233,41 @@ _PT_UNGLUE_WORDS = sorted(
         "possuidor",
         "possibilidade",
         "possibilita",
+        "conforme",
+        "segundo",
+        "através",
+        "atraves",
+        "portanto",
+        "contudo",
+        "entretanto",
+        "embora",
+        "enquanto",
+        "durante",
+        "abaixo",
+        "acima",
+        "seguinte",
+        "seguintes",
+        "incorreta",
+        "incorretas",
+        "relativa",
+        "relativo",
+        "respectiva",
+        "respectivo",
+        "respectivas",
+        "respectivos",
+        "considerando",
+        "considere",
+        "analise",
+        "análise",
+        "julgue",
+        "marque",
+        "indique",
+        "enunciado",
+        "resolução",
+        "resolucao",
+        "gabarito",
+        "assertiva",
+        "assertivas",
     },
     key=len,
     reverse=True,
@@ -251,6 +305,12 @@ def _fix_glued_words(text: str) -> str:
     text = re.sub(r"\bArt\.?\s*(\d)", r"Art. \1", text, flags=re.I)
     text = re.sub(r"\bN[º°]\s*", "Nº ", text)
     text = re.sub(r"\bN\.\s*(?=\d)", "Nº ", text)
+    # lei13 / Lei13.709 → lei 13
+    text = re.sub(r"(?i)\b(lei)(\d)", r"\1 \2", text)
+    # art.5 / Art5 → Art. 5 (após Art. já normalizado acima)
+    text = re.sub(r"(?i)\b(art\.?)\s*(\d)", r"Art. \2", text)
+    # Letra colada em dígito em refs legais comuns: "nº13" já coberto; "item2" etc.
+    text = re.sub(r"(?i)\b(item|inciso|parágrafo|paragrafo|al[ií]nea)(\d)", r"\1 \2", text)
     return text
 
 

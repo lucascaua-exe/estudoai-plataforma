@@ -1,29 +1,22 @@
 import { Link } from 'react-router-dom'
 import {
-  AlertTriangle,
-  BookOpen,
-  CheckCircle2,
-  Flame,
-  Library,
-  Target,
-  TrendingUp,
-  XCircle,
-  Zap,
-} from 'lucide-react'
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
+  ArrowRightIcon,
+  BookIcon,
+  CheckIcon,
+  CompeteIcon,
+  ErrorsIcon,
+  GoalsIcon,
+  ICON_WEIGHT,
+  MapIcon,
+  StreakIcon,
+  TrendIcon,
+  WarningIcon,
+  XpIcon,
+  type PhosphorIcon,
+} from '@/components/ui/icons'
 import { useAuthStore } from '@/lib/auth-store'
-import { formatDuration, formatPercent } from '@/lib/utils'
+import { displayCargo } from '@/lib/cargo-options'
+import { cn, formatDuration, formatPercent } from '@/lib/utils'
 import { useDashboard, useGamification } from '@/hooks/use-api'
 import { PageHeader, ErrorState } from '@/components/ui/page'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,16 +25,13 @@ import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { AnimatedNumber } from '@/components/ui/animated-number'
-import { HorizontalCarousel } from '@/components/ui/horizontal-carousel'
-import { ChartTooltip } from '@/components/charts/ChartTooltip'
+import { AreaTrendChart } from '@/components/charts/AreaTrendChart'
 import { DoughnutRing } from '@/components/charts/DoughnutRing'
+import { MetricBars } from '@/components/charts/MetricBars'
 import { FadeIn, Stagger, StaggerItem } from '@/components/motion/FadeIn'
 
-const CHART_BLUE = '#2563EB'
-const CHART_GREEN = '#0F766E'
-const CHART_RED = '#DC2626'
-const CHART_AMBER = '#B45309'
-const PIE_COLORS = [CHART_GREEN, CHART_RED, CHART_AMBER, '#0284C7', '#64748B', '#1E3A5F']
+const CHART_OK = '#0D9488'
+const CHART_ERR = '#FB7185'
 
 const DIFF_LABEL: Record<string, string> = {
   facil: 'Fácil',
@@ -59,116 +49,120 @@ export function DashboardPage() {
   const metaPct = data
     ? Math.min(100, (data.questoes_hoje / Math.max(1, data.meta_questoes_dia)) * 100)
     : 0
-
   const cobertura =
     data && data.total_questoes_banco
       ? Math.min(100, (data.questoes_respondidas / data.total_questoes_banco) * 100)
       : 0
 
-  const pieAcertos =
-    data && data.questoes_respondidas
-      ? [
-          { name: 'Acertos', value: data.questoes_acertadas },
-          { name: 'Erros', value: data.questoes_erradas },
-        ]
-      : []
+  const discBars =
+    data?.por_disciplina?.map((d) => ({
+      id: d.id,
+      label: d.nome,
+      value: d.percentual,
+      hint: `${formatPercent(d.percentual, 0)} · ${d.total} q.`,
+      tone: 'brand' as const,
+    })) ?? []
 
-  const bancoChart = (data?.banco_por_disciplina || []).map((d) => ({
-    nome: d.nome.length > 18 ? `${d.nome.slice(0, 16)}…` : d.nome,
-    full: d.nome,
-    questoes: d.questoes,
-  }))
+  const diffBars =
+    data?.distribuicao_dificuldade?.map((d) => ({
+      id: d.dificuldade,
+      label: DIFF_LABEL[d.dificuldade] || d.dificuldade,
+      value: d.total,
+      max: Math.max(...(data.distribuicao_dificuldade || []).map((x) => x.total), 1),
+      hint: `${d.total} · ${formatPercent(d.percentual, 0)} acerto`,
+      tone:
+        d.dificuldade === 'dificil'
+          ? ('warning' as const)
+          : d.dificuldade === 'facil'
+            ? ('success' as const)
+            : ('brand' as const),
+    })) ?? []
 
-  const discChart = (data?.por_disciplina || []).map((d) => ({
-    nome: d.nome.length > 16 ? `${d.nome.slice(0, 14)}…` : d.nome,
-    full: d.nome,
-    percentual: d.percentual,
-    total: d.total,
-  }))
-
-  const diffChart = (data?.distribuicao_dificuldade || []).map((d) => ({
-    nome: DIFF_LABEL[d.dificuldade] || d.dificuldade,
-    total: d.total,
-    percentual: d.percentual,
-  }))
+  const weekDelta = data?.evolucao_semana ?? 0
 
   return (
-    <FadeIn>
-      <PageHeader
-        align="center"
-        title={`Oi, ${firstName}! Pronto para subir de nível?`}
-        description="Missões do dia · Analista de TI — Araguaína/TO 2026"
-        actions={
-          <div className="flex flex-wrap justify-center gap-2">
-            <Link to="/estudar">
-              <Button size="lg">Continuar estudando</Button>
-            </Link>
-            <Link to="/evolucao">
-              <Button variant="outline">Ver evolução</Button>
-            </Link>
-          </div>
-        }
-      />
-
+    <div className="space-y-6 md:space-y-8">
       {isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-28 rounded-xl" />
-          ))}
-        </div>
+        <DashboardSkeleton />
       ) : isError ? (
         <ErrorState onRetry={() => refetch()} />
       ) : data ? (
         <>
-          <Stagger className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <StaggerItem>
-              <KpiCard
-                icon={Library}
-                label="Banco de questões"
-                value={data.total_questoes_banco}
-                hint={`${data.questoes_nao_respondidas ?? '—'} ainda não respondidas`}
-                tone="brand"
+          {/* 1. Hero — foco do dia */}
+          <FadeIn>
+            <section className="relative overflow-hidden rounded-2xl border border-border bg-card px-5 py-6 shadow-[0_1px_2px_rgba(11,31,58,0.04),0_12px_32px_-16px_rgba(29,78,216,0.12)] sm:px-7 sm:py-7">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(700px_280px_at_0%_0%,rgba(37,99,235,0.1),transparent_55%)]"
               />
-            </StaggerItem>
+              <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(16rem,0.8fr)] lg:items-end">
+                <div>
+                  <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                    Início · {displayCargo(user?.cargo_alvo, 'Escolha seu cargo no perfil')}
+                  </p>
+                  <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-balance text-foreground md:text-3xl">
+                    Olá, {firstName}
+                  </h1>
+                  <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground md:text-[0.95rem]">
+                    Meta de hoje, aproveitamento e o próximo passo — sem ruído.
+                  </p>
+                  <div className="mt-5 flex flex-wrap gap-2">
+                    <Link to="/estudar">
+                      <Button size="lg" className="gap-2">
+                        Continuar estudando
+                        <ArrowRightIcon className="h-4 w-4" weight={ICON_WEIGHT} aria-hidden />
+                      </Button>
+                    </Link>
+                    <Link to="/evolucao">
+                      <Button size="lg" variant="outline">
+                        Ver evolução
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="rounded-xl border border-border/80 bg-background/70 p-4 backdrop-blur-sm">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                      Meta do dia
+                    </p>
+                    <Badge variant={metaPct >= 100 ? 'success' : 'secondary'}>
+                      {formatPercent(metaPct, 0)}
+                    </Badge>
+                  </div>
+                  <p className="mt-2 font-display text-2xl font-semibold tabular-nums text-foreground">
+                    <AnimatedNumber value={data.questoes_hoje} />
+                    <span className="text-muted-foreground">/{data.meta_questoes_dia}</span>
+                  </p>
+                  <Progress
+                    value={metaPct}
+                    className="mt-3"
+                    indicatorClassName={metaPct >= 100 ? 'bg-success' : undefined}
+                  />
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Tempo total · {formatDuration(data.tempo_total_segundos)}
+                  </p>
+                </div>
+              </div>
+            </section>
+          </FadeIn>
+
+          {/* 2. KPIs principais */}
+          <Stagger className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StaggerItem>
-              <KpiCard
-                icon={BookOpen}
-                label="Respondidas"
-                value={data.questoes_respondidas}
-                hint={`${formatPercent(cobertura, 0)} do banco`}
-              />
-            </StaggerItem>
-            <StaggerItem>
-              <KpiCard
-                icon={CheckCircle2}
-                label="Acertos"
-                value={data.questoes_acertadas}
-                hint={formatPercent(data.percentual_acerto, 1)}
-                tone="success"
-              />
-            </StaggerItem>
-            <StaggerItem>
-              <KpiCard
-                icon={XCircle}
-                label="Erros"
-                value={data.questoes_erradas}
-                hint={`${data.pontos_atencao} pontos de atenção`}
-                tone="danger"
-              />
-            </StaggerItem>
-            <StaggerItem>
-              <KpiCard
-                icon={TrendingUp}
+              <StatCard
+                icon={TrendIcon}
                 label="Aproveitamento"
                 value={data.percentual_acerto}
                 suffix="%"
                 decimals={1}
-                hint={`${data.evolucao_semana >= 0 ? '+' : ''}${data.evolucao_semana}% vs. semana`}
+                hint={`${weekDelta >= 0 ? '+' : ''}${weekDelta}% vs. semana`}
+                tone="brand"
               />
             </StaggerItem>
             <StaggerItem>
-              <KpiCard
-                icon={Flame}
+              <StatCard
+                icon={StreakIcon}
                 label="Sequência"
                 value={data.sequencia_atual}
                 suffix=" dias"
@@ -177,314 +171,254 @@ export function DashboardPage() {
               />
             </StaggerItem>
             <StaggerItem>
-              <KpiCard
-                icon={Zap}
+              <StatCard
+                icon={XpIcon}
                 label="Pontos"
                 value={data.pontuacao_total || gamification.data?.pontos || 0}
-                hint={`${data.dominios_confirmados} domínios confirmados`}
+                hint={`${data.dominios_confirmados} domínios`}
               />
             </StaggerItem>
             <StaggerItem>
-              <KpiCard
-                icon={Target}
-                label="Meta do dia"
-                value={data.questoes_hoje}
-                suffix={`/${data.meta_questoes_dia}`}
-                hint={formatDuration(data.tempo_total_segundos)}
+              <StatCard
+                icon={BookIcon}
+                label="Cobertura"
+                value={cobertura}
+                suffix="%"
+                decimals={0}
+                hint={`${data.questoes_respondidas}/${data.total_questoes_banco} do banco`}
               />
             </StaggerItem>
           </Stagger>
 
-          <div className="mx-auto mt-5 max-w-xl text-center">
-            <Progress
-              value={metaPct}
-              indicatorClassName={metaPct >= 100 ? 'bg-success' : undefined}
-            />
-            <p className="mt-2 text-xs text-muted-foreground">
-              Progresso da meta diária · {formatPercent(metaPct, 0)}
-            </p>
+          {/* 3. Resumo fino */}
+          <FadeIn delay={0.05}>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <MiniStat
+                icon={CheckIcon}
+                label="Acertos"
+                value={data.questoes_acertadas}
+                className="text-success"
+              />
+              <MiniStat
+                icon={ErrorsIcon}
+                label="Erros"
+                value={data.questoes_erradas}
+                className="text-destructive"
+              />
+              <MiniStat
+                icon={WarningIcon}
+                label="Atenção"
+                value={data.pontos_atencao}
+                className="text-warning"
+              />
+              <MiniStat
+                icon={BookIcon}
+                label="Pendentes"
+                value={data.questoes_nao_respondidas ?? 0}
+              />
+            </div>
+          </FadeIn>
+
+          {/* 4. Gráficos principais */}
+          <div className="grid gap-4 lg:grid-cols-3">
+            <FadeIn delay={0.06} className="lg:col-span-2">
+              <Card className="h-full">
+                <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
+                  <div>
+                    <CardTitle>Curva de aproveitamento</CardTitle>
+                    <p className="mt-1 text-xs text-muted-foreground">Últimos 14 dias</p>
+                  </div>
+                  <Badge variant="secondary">%</Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 sm:h-72">
+                    {(data.evolucao_diaria || []).length ? (
+                      <AreaTrendChart data={data.evolucao_diaria || []} />
+                    ) : (
+                      <EmptyChart
+                        title="Sem histórico ainda"
+                        hint="Responda questões para ver a curva."
+                      />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </FadeIn>
+
+            <FadeIn delay={0.08}>
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>Acertos × erros</CardTitle>
+                  <p className="mt-1 text-xs text-muted-foreground">Distribuição geral</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 sm:h-72">
+                    {data.questoes_respondidas > 0 ? (
+                      <DoughnutRing
+                        slices={[
+                          {
+                            label: 'Acertos',
+                            value: data.questoes_acertadas,
+                            color: CHART_OK,
+                          },
+                          {
+                            label: 'Erros',
+                            value: data.questoes_erradas,
+                            color: CHART_ERR,
+                          },
+                        ]}
+                        centerValue={formatPercent(data.percentual_acerto, 0)}
+                        centerLabel="acerto"
+                      />
+                    ) : (
+                      <EmptyChart title="Sem respostas" hint="Comece pelo Estudar." />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </FadeIn>
           </div>
 
-          <div className="mt-6 grid gap-4 lg:grid-cols-3">
-            <Card className="lg:col-span-2">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Evolução do aproveitamento</CardTitle>
-                <Badge variant="secondary">14 dias</Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="h-64">
-                  {(data.evolucao_diaria || []).length ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={data.evolucao_diaria}>
-                        <defs>
-                          <linearGradient id="pctFill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor={CHART_BLUE} stopOpacity={0.35} />
-                            <stop offset="100%" stopColor={CHART_BLUE} stopOpacity={0.02} />
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                        <XAxis
-                          dataKey="data"
-                          tick={{ fontSize: 11 }}
-                          tickFormatter={(v: string) => v.slice(5)}
-                        />
-                        <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
-                        <Tooltip
-                          content={
-                            <ChartTooltip
-                              formatter={(v) => `${v}%`}
-                              labelFormatter={(l) => `Dia ${l}`}
-                            />
-                          }
-                        />
-                        <Area
-                          type="monotone"
-                          dataKey="percentual"
-                          name="Acerto"
-                          stroke={CHART_BLUE}
-                          fill="url(#pctFill)"
-                          strokeWidth={2.5}
-                          animationDuration={900}
-                          activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
-                        />
-                      </AreaChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <EmptyChart
-                      title="Sem histórico ainda"
-                      hint="Responda questões para ver a curva de evolução."
-                    />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Acertos × erros</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-64">
-                  {pieAcertos.length && data.questoes_respondidas > 0 ? (
-                    <DoughnutRing
-                      slices={[
-                        { label: 'Acertos', value: data.questoes_acertadas, color: CHART_GREEN },
-                        { label: 'Erros', value: data.questoes_erradas, color: CHART_RED },
-                      ]}
-                      centerValue={formatPercent(data.percentual_acerto, 0)}
-                      centerLabel="acerto"
-                    />
-                  ) : (
-                    <EmptyChart title="Sem respostas" hint="Comece pelo banco de questões." />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Desempenho por disciplina</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-72">
-                  {discChart.length ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={discChart} layout="vertical" margin={{ left: 8 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                        <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11 }} />
-                        <YAxis type="category" dataKey="nome" width={110} tick={{ fontSize: 11 }} />
-                        <Tooltip
-                          content={
-                            <ChartTooltip
-                              formatter={(v, item) =>
-                                `${v}% (${String(item.payload?.total ?? '—')} q.)`
-                              }
-                              labelFormatter={(_, payload) =>
-                                String(payload?.[0]?.payload?.full ?? '')
-                              }
-                            />
-                          }
-                        />
-                        <Bar
-                          dataKey="percentual"
-                          name="Aproveitamento"
-                          fill={CHART_BLUE}
-                          radius={[0, 8, 8, 0]}
-                          animationDuration={800}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
+          {/* 5. Disciplinas + dificuldade */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <FadeIn delay={0.1}>
+              <Card className="h-full">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>Por disciplina</CardTitle>
+                    <p className="mt-1 text-xs text-muted-foreground">Aproveitamento relativo</p>
+                  </div>
+                  <Link
+                    to="/mapa"
+                    className="text-xs font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    Mapa
+                  </Link>
+                </CardHeader>
+                <CardContent>
+                  {discBars.length ? (
+                    <MetricBars items={discBars} />
                   ) : (
                     <EmptyChart
                       title="Sem desempenho por disciplina"
-                      hint="Os gráficos aparecem após as primeiras respostas."
+                      hint="Os dados aparecem após as primeiras respostas."
                     />
                   )}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </FadeIn>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Questões no banco por disciplina</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-72">
-                  {bancoChart.length ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={bancoChart}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                        <XAxis dataKey="nome" tick={{ fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={60} />
-                        <YAxis tick={{ fontSize: 11 }} />
-                        <Tooltip
-                          content={
-                            <ChartTooltip
-                              formatter={(v) => String(v)}
-                              labelFormatter={(_, p) => String(p?.[0]?.payload?.full ?? '')}
-                            />
-                          }
-                        />
-                        <Bar dataKey="questoes" name="Questões" radius={[8, 8, 0, 0]} animationDuration={800}>
-                          {bancoChart.map((_, i) => (
-                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
+            <FadeIn delay={0.12}>
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>Por dificuldade</CardTitle>
+                  <p className="mt-1 text-xs text-muted-foreground">Volume respondido</p>
+                </CardHeader>
+                <CardContent>
+                  {diffBars.length ? (
+                    <MetricBars items={diffBars} unit="" />
                   ) : (
                     <EmptyChart
-                      title="Banco ainda vazio"
-                      hint="Execute a ingestão dos PDFs no backend."
+                      title="Sem dados"
+                      hint="Varie o nível das questões na prática."
                     />
                   )}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </FadeIn>
           </div>
 
-          <div className="mt-4 grid gap-4 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Por dificuldade</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-56">
-                  {diffChart.length ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={diffChart}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                        <XAxis dataKey="nome" tick={{ fontSize: 11 }} />
-                        <YAxis tick={{ fontSize: 11 }} />
-                        <Tooltip content={<ChartTooltip formatter={(v) => String(v)} />} />
-                        <Bar
-                          dataKey="total"
-                          fill={CHART_AMBER}
-                          name="Respondidas"
-                          radius={[8, 8, 0, 0]}
-                          animationDuration={800}
-                        />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <EmptyChart title="Sem dados" hint="Responda questões de níveis variados." />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Recomendação de hoje</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {data.revisao_recomendada ? (
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-2">
-                      <AlertTriangle className="mt-0.5 h-4 w-4 text-warning" />
+          {/* 6. Próximo passo + atalhos */}
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+            <FadeIn delay={0.14}>
+              <Card className="h-full border-primary/20 bg-gradient-to-br from-card to-primary/[0.03]">
+                <CardHeader>
+                  <CardTitle>Próximo passo</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {data.revisao_recomendada ? (
+                    <div className="space-y-4">
                       <div>
-                        <p className="font-medium text-foreground">
+                        <p className="font-display text-lg font-semibold text-foreground">
                           {data.revisao_recomendada.assunto}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="mt-1 text-sm text-muted-foreground">
                           {data.revisao_recomendada.disciplina}
                         </p>
                       </div>
+                      <Badge variant="warning">
+                        {formatPercent(data.revisao_recomendada.percentual, 0)} ·{' '}
+                        {data.revisao_recomendada.nivel}
+                      </Badge>
+                      <Link to="/revisao" className="block">
+                        <Button className="w-full gap-2">
+                          Começar revisão
+                          <ArrowRightIcon className="h-4 w-4" weight={ICON_WEIGHT} aria-hidden />
+                        </Button>
+                      </Link>
                     </div>
-                    <Badge variant="warning">
-                      {formatPercent(data.revisao_recomendada.percentual, 0)} ·{' '}
-                      {data.revisao_recomendada.nivel}
-                    </Badge>
-                    <Link to="/revisao" className="block">
-                      <Button className="w-full" variant="secondary">
-                        Começar revisão
-                      </Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="space-y-3 text-sm text-muted-foreground">
-                    <Target className="h-8 w-8 text-primary" />
-                    <p>Responda questões para ativar recomendações personalizadas.</p>
-                    <Link to="/questoes" className="block">
-                      <Button variant="outline" className="w-full">
-                        Ir ao banco
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  ) : (
+                    <div className="space-y-4">
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        Responda algumas questões para liberar uma recomendação personalizada.
+                      </p>
+                      <Link to="/estudar" className="block">
+                        <Button variant="outline" className="w-full gap-2">
+                          Ir para Estudar
+                          <ArrowRightIcon className="h-4 w-4" weight={ICON_WEIGHT} aria-hidden />
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </FadeIn>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Atalhos</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <HorizontalCarousel label="Atalhos do painel" className="lg:hidden">
-                  {[
-                    { to: '/erros', title: 'Meus erros', desc: `${data.questoes_erradas} questões` },
-                    {
-                      to: '/mapa',
-                      title: 'Mapa de conhecimento',
-                      desc: `${data.pontos_atencao} pontos de atenção`,
-                    },
-                    { to: '/simulados', title: 'Simulados', desc: 'Prova cronometrada' },
-                    {
-                      to: '/dominados',
-                      title: 'Conteúdos dominados',
-                      desc: `${data.dominios_confirmados} confirmados`,
-                    },
-                  ].map((item) => (
-                    <div key={item.to} className="min-w-[78%] shrink-0 sm:min-w-[45%]">
-                      <QuickLink {...item} />
-                    </div>
-                  ))}
-                </HorizontalCarousel>
-                <div className="hidden space-y-2 lg:block">
-                  <QuickLink to="/erros" title="Meus erros" desc={`${data.questoes_erradas} questões`} />
-                  <QuickLink
-                    to="/mapa"
-                    title="Mapa de conhecimento"
-                    desc={`${data.pontos_atencao} pontos de atenção`}
-                  />
-                  <QuickLink to="/simulados" title="Simulados" desc="Prova cronometrada" />
-                  <QuickLink
-                    to="/dominados"
-                    title="Conteúdos dominados"
-                    desc={`${data.dominios_confirmados} confirmados`}
-                  />
-                </div>
-              </CardContent>
-            </Card>
+            <FadeIn delay={0.16}>
+              <Card className="h-full">
+                <CardHeader>
+                  <CardTitle>Atalhos</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <ActionTile
+                      to="/erros"
+                      title="Meus erros"
+                      desc={`${data.questoes_erradas} questões`}
+                      icon={ErrorsIcon}
+                    />
+                    <ActionTile
+                      to="/mapa"
+                      title="Mapa"
+                      desc={`${data.pontos_atencao} pontos`}
+                      icon={MapIcon}
+                    />
+                    <ActionTile
+                      to="/simulados"
+                      title="Simulados"
+                      desc="Prova cronometrada"
+                      icon={GoalsIcon}
+                    />
+                    <ActionTile
+                      to="/competicao"
+                      title="Competição"
+                      desc="Pratique em tempo real"
+                      icon={CompeteIcon}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </FadeIn>
           </div>
         </>
-      ) : null}
-    </FadeIn>
+      ) : (
+        <PageHeader title="Início" description="Carregando seu painel…" />
+      )}
+    </div>
   )
 }
 
-function KpiCard({
+function StatCard({
   icon: Icon,
   label,
   value,
@@ -493,60 +427,119 @@ function KpiCard({
   suffix,
   decimals = 0,
 }: {
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  icon: PhosphorIcon
   label: string
   value: number
   hint: string
-  tone?: 'default' | 'brand' | 'success' | 'danger'
+  tone?: 'default' | 'brand'
   suffix?: string
   decimals?: number
 }) {
-  const toneClass =
-    tone === 'success'
-      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-200'
-      : tone === 'danger'
-        ? 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200'
-        : tone === 'brand'
-          ? 'bg-primary/10 text-primary dark:bg-primary/20'
-          : 'bg-secondary text-primary'
-
   return (
-    <Card className="h-full transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-md hover:shadow-primary/10">
-      <CardContent className="flex flex-col items-center px-4 pt-5 pb-5 text-center">
-        <div className={`mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl ${toneClass}`}>
-          <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
+    <Card className="motion-keep-fade motion-no-translate h-full transition-[box-shadow,background-color,border-color] duration-200 hover:border-primary/25 hover:shadow-md hover:shadow-primary/8">
+      <CardContent className="flex items-start gap-3 p-4 sm:p-5">
+        <div
+          className={cn(
+            'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
+            tone === 'brand' ? 'bg-primary/10 text-primary' : 'bg-secondary text-secondary-foreground',
+          )}
+        >
+          <Icon className="h-5 w-5" weight={ICON_WEIGHT} aria-hidden />
         </div>
-        <p className="text-[11px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-          {label}
-        </p>
-        <p className="mt-1.5 font-display text-2xl font-semibold tracking-tight text-foreground">
-          <AnimatedNumber value={value} suffix={suffix} maximumFractionDigits={decimals} />
-        </p>
-        <p className="mt-1.5 max-w-[14rem] text-xs leading-relaxed text-muted-foreground">
-          {hint}
-        </p>
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold tracking-[0.12em] text-muted-foreground uppercase">
+            {label}
+          </p>
+          <p className="mt-1 font-display text-2xl font-semibold tracking-tight text-foreground">
+            <AnimatedNumber value={value} suffix={suffix} maximumFractionDigits={decimals} />
+          </p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{hint}</p>
+        </div>
       </CardContent>
     </Card>
   )
 }
 
-function QuickLink({ to, title, desc }: { to: string; title: string; desc: string }) {
+function MiniStat({
+  icon: Icon,
+  label,
+  value,
+  className,
+}: {
+  icon: PhosphorIcon
+  label: string
+  value: number
+  className?: string
+}) {
+  return (
+    <div className="flex items-center gap-2.5 rounded-xl border border-border bg-card/80 px-3 py-2.5">
+      <Icon
+        className={cn('h-4 w-4 shrink-0 text-muted-foreground', className)}
+        weight={ICON_WEIGHT}
+        aria-hidden
+      />
+      <div className="min-w-0">
+        <p className="text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
+          {label}
+        </p>
+        <p className="font-display text-sm font-semibold tabular-nums text-foreground">
+          <AnimatedNumber value={value} />
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function ActionTile({
+  to,
+  title,
+  desc,
+  icon: Icon,
+}: {
+  to: string
+  title: string
+  desc: string
+  icon: PhosphorIcon
+}) {
   return (
     <Link
       to={to}
-      className="block rounded-xl border border-border bg-background/70 px-3 py-3 transition-[background-color,border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/5"
+      className="motion-keep-fade motion-no-translate group flex items-start gap-3 rounded-xl border border-border bg-background/60 px-3 py-3 transition-[background-color,border-color,box-shadow] duration-200 hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <p className="text-sm font-medium text-foreground">{title}</p>
-      <p className="text-xs text-muted-foreground">{desc}</p>
+      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary transition-colors group-hover:bg-primary/10">
+        <Icon className="h-4 w-4" weight={ICON_WEIGHT} aria-hidden />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-sm font-medium text-foreground">{title}</span>
+        <span className="mt-0.5 block text-xs text-muted-foreground">{desc}</span>
+      </span>
     </Link>
   )
 }
 
 function EmptyChart({ title, hint }: { title: string; hint: string }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center text-center">
+    <div className="flex h-full min-h-[10rem] flex-col items-center justify-center px-4 text-center">
       <p className="font-medium text-foreground">{title}</p>
       <p className="mt-1 max-w-xs text-sm text-muted-foreground">{hint}</p>
+    </div>
+  )
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-6" role="status" aria-live="polite">
+      <Skeleton className="h-44 w-full rounded-2xl" />
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-28 rounded-2xl" />
+        ))}
+      </div>
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Skeleton className="h-80 rounded-2xl lg:col-span-2" />
+        <Skeleton className="h-80 rounded-2xl" />
+      </div>
+      <span className="sr-only">Carregando painel…</span>
     </div>
   )
 }

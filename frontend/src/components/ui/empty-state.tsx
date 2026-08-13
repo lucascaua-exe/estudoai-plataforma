@@ -1,10 +1,9 @@
-import type { LucideIcon } from 'lucide-react'
-import { Inbox } from 'lucide-react'
+import { EmptyIcon, ICON_WEIGHT, type PhosphorIcon } from '@/components/ui/icons'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 interface EmptyStateProps {
-  icon?: LucideIcon
+  icon?: PhosphorIcon
   title: string
   description?: string
   actionLabel?: string
@@ -13,7 +12,7 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({
-  icon: Icon = Inbox,
+  icon: Icon = EmptyIcon,
   title,
   description,
   actionLabel,
@@ -28,7 +27,7 @@ export function EmptyState({
       )}
     >
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground">
-        <Icon className="h-6 w-6" />
+        <Icon className="h-6 w-6" weight={ICON_WEIGHT} aria-hidden />
       </div>
       <h3 className="font-display text-lg font-bold text-foreground">{title}</h3>
       {description ? (

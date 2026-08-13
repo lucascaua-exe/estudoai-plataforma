@@ -1,6 +1,13 @@
 import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Bookmark, ChevronLeft, ChevronRight, Flag } from 'lucide-react'
+import {
+  BookmarkIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  FlagIcon,
+  ICON_WEIGHT,
+  ICON_WEIGHT_UI,
+} from '@/components/ui/icons'
 import {
   useCatalog,
   useQuestionBancas,
@@ -310,8 +317,9 @@ export function QuestionsPage() {
                         }
                       }}
                     >
-                      <Bookmark
-                        className={`h-4 w-4 ${q.favorita ? 'fill-primary text-primary' : ''}`}
+                      <BookmarkIcon
+                        className={`h-4 w-4 ${q.favorita ? 'text-primary' : ''}`}
+                        weight={q.favorita ? 'fill' : ICON_WEIGHT_UI}
                         aria-hidden
                       />
                     </Button>
@@ -334,8 +342,9 @@ export function QuestionsPage() {
                         }
                       }}
                     >
-                      <Flag
-                        className={`h-4 w-4 ${q.marcar_revisao ? 'fill-warning text-warning' : ''}`}
+                      <FlagIcon
+                        className={`h-4 w-4 ${q.marcar_revisao ? 'text-warning' : ''}`}
+                        weight={q.marcar_revisao ? 'fill' : ICON_WEIGHT_UI}
                         aria-hidden
                       />
                     </Button>
@@ -354,7 +363,7 @@ export function QuestionsPage() {
               disabled={!query.data.previous}
               onClick={() => update('page', String(page - 1))}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeftIcon className="h-4 w-4" weight={ICON_WEIGHT} />
               Anterior
             </Button>
             <span className="text-sm text-muted-foreground">Página {page}</span>
@@ -364,7 +373,7 @@ export function QuestionsPage() {
               onClick={() => update('page', String(page + 1))}
             >
               Próxima
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRightIcon className="h-4 w-4" weight={ICON_WEIGHT} />
             </Button>
           </div>
         </>

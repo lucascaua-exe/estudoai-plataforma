@@ -1,6 +1,8 @@
 import { useId, useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
-import { Menu, X } from 'lucide-react'
+import { BrandLogo } from '@/components/BrandLogo'
+import { CloseIcon, MenuIcon } from '@/components/ui/icons'
+import { BRAND_NAME, BRAND_TAGLINE } from '@/lib/brand'
 import { useAuthStore } from '@/lib/auth-store'
 import { PLANS, type PlanId } from '@/lib/plans'
 import { cn } from '@/lib/utils'
@@ -108,10 +110,10 @@ export function LandingPage() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 md:px-8">
           <Link
             to="/"
-            translate="no"
-            className="font-brand text-xl text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-2xl"
+            className="inline-flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={BRAND_NAME}
           >
-            EstudoAI
+            <BrandLogo size="sm" compact className="h-10 md:h-11" />
           </Link>
 
           <nav className="hidden items-center gap-1 md:flex" aria-label="Principal">
@@ -147,7 +149,11 @@ export function LandingPage() {
             aria-label={menuOpen ? 'Fechar menu' : 'Abrir menu'}
             onClick={() => setMenuOpen((v) => !v)}
           >
-            {menuOpen ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
+            {menuOpen ? (
+              <CloseIcon className="h-5 w-5" weight="bold" aria-hidden />
+            ) : (
+              <MenuIcon className="h-5 w-5" weight="bold" aria-hidden />
+            )}
           </button>
         </div>
 
@@ -189,16 +195,14 @@ export function LandingPage() {
           />
           <div className="mx-auto max-w-6xl px-4 md:px-8">
             <FadeIn>
-              <p className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
-                Analista de TI · Araguaína · 2026
-              </p>
-              <h1 className="mt-5 max-w-[14ch] font-display text-5xl font-semibold tracking-tight text-primary md:text-6xl">
-                EstudoAI
+              <BrandLogo size="hero" className="origin-left" />
+              <h1 className="sr-only">
+                {BRAND_NAME}: {BRAND_TAGLINE}
               </h1>
-              <p className="mt-4 max-w-[28ch] font-display text-2xl font-medium text-foreground md:text-3xl">
+              <p className="mt-6 max-w-[36ch] font-display text-xl font-medium text-foreground md:text-2xl">
                 Preparação clara para o edital real.
               </p>
-              <p className="mt-5 max-w-[52ch] text-base leading-relaxed text-muted-foreground md:text-lg">
+              <p className="mt-4 max-w-[52ch] text-base leading-relaxed text-muted-foreground md:text-lg">
                 Mais de 2.300 questões oficiais, revisão inteligente e simulados — sem ruído visual,
                 com foco no que importa: passar.
               </p>
@@ -434,11 +438,9 @@ export function LandingPage() {
       <footer className="border-t border-border py-12">
         <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 md:flex-row md:items-start md:justify-between md:px-8">
           <div>
-            <p translate="no" className="font-brand text-lg text-primary">
-              EstudoAI
-            </p>
+            <BrandLogo size="sm" compact className="h-11" />
             <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-muted-foreground">
-              Preparação para concursos com banco oficial, métricas e revisão inteligente.
+              {BRAND_TAGLINE}. Preparação com banco oficial, métricas e revisão inteligente.
             </p>
           </div>
           <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-muted-foreground">
@@ -457,7 +459,7 @@ export function LandingPage() {
           </nav>
         </div>
         <p className="mx-auto mt-10 max-w-6xl px-4 text-xs tracking-wide text-muted-foreground uppercase md:px-8">
-          © {new Date().getFullYear()} EstudoAI
+          © {new Date().getFullYear()} {BRAND_NAME}
         </p>
       </footer>
     </div>

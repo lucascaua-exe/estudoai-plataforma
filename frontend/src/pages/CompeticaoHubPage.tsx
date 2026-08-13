@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Swords, Users } from 'lucide-react'
+import { CompeteIcon, ICON_WEIGHT, UsersIcon } from '@/components/ui/icons'
 import { toast } from 'sonner'
 import {
   useCatalog,
@@ -172,7 +172,7 @@ export function CompeticaoHubPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Swords className="h-4 w-4 text-primary" aria-hidden />
+                <CompeteIcon className="h-4 w-4 text-primary" weight={ICON_WEIGHT} aria-hidden />
                 Criar sala
               </CardTitle>
             </CardHeader>
@@ -297,7 +297,7 @@ export function CompeticaoHubPage() {
           <Card className="h-fit">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" aria-hidden />
+                <UsersIcon className="h-4 w-4 text-primary" weight={ICON_WEIGHT} aria-hidden />
                 Entrar com código
               </CardTitle>
             </CardHeader>

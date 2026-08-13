@@ -61,6 +61,18 @@ class UserSerializer(serializers.ModelSerializer):
         for key, value in profile_data.items():
             setattr(profile, key, value)
         profile.save()
+        # Espelha cargo/concurso no registro do concurso do usuário
+        if any(k in profile_data for k in ("cargo_alvo", "concurso_alvo", "data_prova")):
+            from apps.concurso.models import Concurso
+
+            conc, _ = Concurso.objects.get_or_create(user=instance)
+            if "cargo_alvo" in profile_data:
+                conc.cargo = profile.cargo_alvo or ""
+            if "concurso_alvo" in profile_data:
+                conc.nome = profile.concurso_alvo or ""
+            if "data_prova" in profile_data:
+                conc.data_prova = profile.data_prova
+            conc.save()
         return instance
 
 
@@ -71,6 +83,12 @@ class RegisterSerializer(serializers.Serializer):
     password_confirm = serializers.CharField(write_only=True)
     plan = serializers.ChoiceField(
         choices=["free", "pro", "premium"], required=False, default="free"
+    )
+    cargo_alvo = serializers.CharField(
+        max_length=255, required=False, allow_blank=True, default=""
+    )
+    concurso_alvo = serializers.CharField(
+        max_length=255, required=False, allow_blank=True, default=""
     )
 
     def validate_email(self, value):
@@ -93,6 +111,8 @@ class RegisterSerializer(serializers.Serializer):
         from .models import Invoice
 
         plan = validated_data.pop("plan", "free") or "free"
+        cargo_alvo = (validated_data.pop("cargo_alvo", "") or "").strip()
+        concurso_alvo = (validated_data.pop("concurso_alvo", "") or "").strip()
         validated_data.pop("password_confirm")
         user = User.objects.create_user(
             email=validated_data["email"],
@@ -104,17 +124,17 @@ class RegisterSerializer(serializers.Serializer):
         Concurso.objects.get_or_create(
             user=user,
             defaults={
-                "nome": "Prefeitura de Araguaína — TO 2026",
-                "orgao": "Prefeitura Municipal de Araguaína",
-                "cargo": "Analista de Tecnologia da Informação",
-                "banca": "IMPAR",
+                "nome": concurso_alvo,
+                "orgao": "",
+                "cargo": cargo_alvo,
+                "banca": "",
             },
         )
         MetaEstudo.objects.get_or_create(user=user)
         now = timezone.now()
         profile = user.profile
-        profile.concurso_alvo = "Prefeitura de Araguaína — TO 2026"
-        profile.cargo_alvo = "Analista de Tecnologia da Informação"
+        profile.concurso_alvo = concurso_alvo
+        profile.cargo_alvo = cargo_alvo
         profile.plano = plan
         profile.assinatura_status = "active"
         profile.periodo_inicio = now

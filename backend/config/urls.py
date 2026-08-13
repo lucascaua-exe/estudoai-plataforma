@@ -42,7 +42,7 @@ router.register(r"competicoes", SalaCompeticaoViewSet, basename="competicoes")
 
 
 def health(_request):
-    return JsonResponse({"status": "ok", "service": "estudoai-api"})
+    return JsonResponse({"status": "ok", "service": "a-forja-api"})
 
 
 urlpatterns = [

@@ -1,6 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { CheckCircle2, Crown, Loader2, Trophy, XCircle } from 'lucide-react'
+import {
+  CheckIcon,
+  CrownIcon,
+  ErrorsIcon,
+  ICON_WEIGHT,
+  SpinnerIcon,
+  TrophyIcon,
+} from '@/components/ui/icons'
 import { toast } from 'sonner'
 import {
   useCompeticaoAvancar,
@@ -331,7 +338,7 @@ export function CompeticaoRoomPage() {
                     <span className="font-medium">
                       {p.apelido}
                       {p.is_host ? (
-                        <Crown className="ml-1 inline h-3.5 w-3.5 text-amber-500" aria-label="Host" />
+                        <CrownIcon className="ml-1 inline h-3.5 w-3.5 text-amber-500" weight={ICON_WEIGHT} aria-label="Host" />
                       ) : null}
                       {data.me?.id === p.id ? (
                         <span className="ml-1 text-xs text-muted-foreground">(você)</span>
@@ -359,7 +366,7 @@ export function CompeticaoRoomPage() {
               </Button>
             ) : (
               <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                <SpinnerIcon className="h-4 w-4 animate-spin" weight={ICON_WEIGHT} aria-hidden />
                 Aguardando o host iniciar…
               </p>
             )}
@@ -505,10 +512,10 @@ export function CompeticaoRoomPage() {
                     <span className="font-bold">{alt.letra}</span>
                     <span className="flex-1 text-sm">{formatStudyText(alt.texto)}</span>
                     {isCorrect ? (
-                      <CheckCircle2 className="h-5 w-5 text-success" aria-label="Correta" />
+                      <CheckIcon className="h-5 w-5 text-success" weight={ICON_WEIGHT} aria-label="Correta" />
                     ) : null}
                     {isMine && !isCorrect ? (
-                      <XCircle className="h-5 w-5 text-destructive" aria-label="Sua escolha" />
+                      <ErrorsIcon className="h-5 w-5 text-destructive" weight={ICON_WEIGHT} aria-label="Sua escolha" />
                     ) : null}
                   </div>
                 )
@@ -520,7 +527,7 @@ export function CompeticaoRoomPage() {
         <Card>
           <CardContent className="pt-5">
             <p className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-[0.12em] text-muted-foreground uppercase">
-              <Trophy className="h-3.5 w-3.5" aria-hidden />
+              <TrophyIcon className="h-3.5 w-3.5" weight={ICON_WEIGHT} aria-hidden />
               Ranking
             </p>
             <RankingList ranking={data.ranking} highlightId={data.me?.id} animate showRound />
@@ -552,7 +559,7 @@ export function CompeticaoRoomPage() {
     return (
       <div className="animate-fade-up mx-auto max-w-2xl space-y-6">
         <div className="text-center">
-          <Trophy className="mx-auto h-10 w-10 text-amber-500" aria-hidden />
+          <TrophyIcon className="mx-auto h-10 w-10 text-amber-500" weight={ICON_WEIGHT} aria-hidden />
           <h1 className="mt-3 font-display text-2xl font-semibold">Fim da partida</h1>
           {data.vencedor ? (
             <p className="mt-2 text-muted-foreground">
@@ -612,7 +619,7 @@ export function CompeticaoRoomPage() {
 
   return (
     <div className="flex items-center justify-center py-16 text-sm text-muted-foreground">
-      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      <SpinnerIcon className="mr-2 h-4 w-4 animate-spin" weight={ICON_WEIGHT} />
       Sincronizando sala…
     </div>
   )
