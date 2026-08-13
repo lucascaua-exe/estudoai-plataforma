@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import Autoplay from 'embla-carousel-autoplay'
+import { AnimatePresence, motion } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { useReducedMotionPreference } from '@/hooks/use-reduced-motion'
 
@@ -13,7 +14,7 @@ export type LoginHeroSlide = {
   caption: string
 }
 
-/** Imagens Unsplash no contexto de estudo, educação e concursos. */
+/** Imagens Unsplash — educação, estudo e preparação para provas. */
 export const LOGIN_HERO_SLIDES: LoginHeroSlide[] = [
   {
     id: 'anotacoes',
@@ -47,7 +48,7 @@ export const LOGIN_HERO_SLIDES: LoginHeroSlide[] = [
       'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1400&q=80 1400w',
       'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1800&q=80 1800w',
     ].join(', '),
-    alt: 'Sala de aula com foco em aprendizado e preparação',
+    alt: 'Ambiente de aprendizado com foco em preparação',
     title: 'Foco no que cai na prova.',
     caption: 'Menos ruído, mais prática com métricas que mostram evolução.',
   },
@@ -72,14 +73,13 @@ export const LOGIN_HERO_SLIDES: LoginHeroSlide[] = [
       'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1800&q=80 1800w',
     ].join(', '),
     alt: 'Grupo de estudantes colaborando em ambiente acadêmico',
-    title: 'Competição saudável acelera o aprendizado.',
-    caption: 'Salas, ranking e desafios para treinar sob pressão.',
+    title: 'Treine sob pressão, com clareza.',
+    caption: 'Competições e simulados para acelerar o aprendizado.',
   },
 ]
 
 type LoginHeroCarouselProps = {
   className?: string
-  /** compact = faixa mobile; full = painel lateral desktop */
   variant?: 'compact' | 'full'
   slides?: LoginHeroSlide[]
 }
@@ -93,16 +93,10 @@ export function LoginHeroCarousel({
   const [selected, setSelected] = useState(0)
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, duration: 28, watchDrag: variant === 'full' },
+    { loop: true, duration: reducedMotion ? 0 : 32 },
     reducedMotion
       ? []
-      : [
-          Autoplay({
-            delay: 5500,
-            stopOnInteraction: false,
-            stopOnMouseEnter: true,
-          }),
-        ],
+      : [Autoplay({ delay: 6000, stopOnInteraction: false, stopOnMouseEnter: true })],
   )
 
   const onSelect = useCallback(() => {
@@ -130,7 +124,7 @@ export function LoginHeroCarousel({
       aria-label="Imagens de estudo e preparação para concursos"
     >
       <div className="h-full overflow-hidden" ref={emblaRef}>
-        <div className="flex h-full">
+        <div className="flex h-full touch-pan-y">
           {slides.map((slide, index) => (
             <div key={slide.id} className="relative min-w-0 shrink-0 grow-0 basis-full">
               <img
@@ -158,49 +152,63 @@ export function LoginHeroCarousel({
         className={cn(
           'pointer-events-none absolute inset-0',
           variant === 'compact'
-            ? 'bg-gradient-to-b from-foreground/25 via-transparent to-background'
-            : 'bg-gradient-to-t from-[#0B1424]/90 via-[#0B1F3A]/45 to-[#1D4ED8]/15',
+            ? 'bg-gradient-to-b from-black/25 via-transparent to-background'
+            : 'bg-gradient-to-t from-black/75 via-black/25 to-black/10',
         )}
         aria-hidden
       />
 
       {variant === 'full' && active ? (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 p-10 xl:p-14">
-          <p
-            key={active.id + '-title'}
-            className="max-w-md font-display text-3xl font-semibold leading-tight text-balance text-white motion-safe:animate-fade-up xl:text-[2.15rem]"
-          >
-            {active.title}
-          </p>
-          <p
-            key={active.id + '-caption'}
-            className="mt-3 max-w-sm text-pretty text-[0.95rem] leading-relaxed text-white/80"
-          >
-            {active.caption}
-          </p>
+        <div className="absolute inset-x-0 bottom-0 p-10 xl:p-14">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={active.id}
+              initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
+              transition={
+                reducedMotion
+                  ? { duration: 0.2 }
+                  : { type: 'spring', bounce: 0, duration: 0.4 }
+              }
+            >
+              <p className="max-w-md font-display text-[1.85rem] font-semibold leading-[1.12] tracking-[-0.03em] text-balance text-white xl:text-[2.15rem]">
+                {active.title}
+              </p>
+              <p className="mt-3 max-w-sm text-[0.95rem] leading-relaxed tracking-[-0.01em] text-white/80">
+                {active.caption}
+              </p>
+            </motion.div>
+          </AnimatePresence>
 
-          <div className="pointer-events-auto mt-6 flex items-center gap-2" role="tablist" aria-label="Slides">
-            {slides.map((slide, index) => (
-              <button
-                key={slide.id}
-                type="button"
-                role="tab"
-                aria-selected={index === selected}
-                aria-label={`Ir para imagem ${index + 1}: ${slide.title}`}
-                className={cn(
-                  'h-2.5 min-h-11 cursor-pointer rounded-full px-1 transition-all duration-300',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80',
-                )}
-                onClick={() => emblaApi?.scrollTo(index)}
-              >
-                <span
-                  className={cn(
-                    'block h-2.5 rounded-full transition-all duration-300',
-                    index === selected ? 'w-8 bg-white' : 'w-2.5 bg-white/45 hover:bg-white/70',
-                  )}
-                />
-              </button>
-            ))}
+          <div
+            className="mt-7 flex items-center gap-2"
+            role="tablist"
+            aria-label="Slides do carrossel"
+          >
+            {slides.map((slide, index) => {
+              const activeDot = index === selected
+              return (
+                <button
+                  key={slide.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeDot}
+                  aria-label={`Imagem ${index + 1}`}
+                  className="group flex h-11 min-w-11 cursor-pointer items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                  onPointerDown={() => emblaApi?.scrollTo(index)}
+                >
+                  <span
+                    className={cn(
+                      'block h-1.5 rounded-full transition-[width,background-color] duration-300 ease-out',
+                      activeDot
+                        ? 'w-7 bg-white'
+                        : 'w-1.5 bg-white/40 group-hover:bg-white/65 group-active:scale-95',
+                    )}
+                  />
+                </button>
+              )
+            })}
           </div>
         </div>
       ) : null}
